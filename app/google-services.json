@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "926148479348",
+    "project_id": "sincra-74133",
+    "storage_bucket": "sincra-74133.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926148479348:android:5aa74163fde13cf305c421",
+        "android_client_info": {
+          "package_name": "com.example.sincra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPLu3Rvf4YR4sg3Fv96rofOyA4ujg9ZMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
