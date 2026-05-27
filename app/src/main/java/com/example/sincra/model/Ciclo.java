@@ -11,14 +11,14 @@ public class Ciclo {
     private int durataTotale;
     private int durataPeriodo;
     private List<String> sintomiComuni;
-    private List<RegistroDiario> registrazioni;
+    private List<Registrazione> registrazioni;
 
     public Ciclo(){
         this.sintomiComuni = new ArrayList<>();
         this.registrazioni = new ArrayList<>();
     }
 
-    public Ciclo(String id, Date dataInizio, Date dataFine, int durataTotale, int durataPeriodo, List<String> sintomiComuni, List<RegistroDiario> registrazioni){
+    public Ciclo(String id, Date dataInizio, Date dataFine, int durataTotale, int durataPeriodo, List<String> sintomiComuni, List<Registrazione> registrazioni){
         this.id = id;
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
@@ -78,11 +78,15 @@ public class Ciclo {
         this.sintomiComuni = sintomiComuni;
     }
 
-    public List<RegistroDiario> getRegistrazioni() {
+    public List<Registrazione> getRegistrazioni() {
         return registrazioni;
     }
 
-    public void setRegistrazioni(List<RegistroDiario> registrazioni) {
+    public void setRegistrazioni(List<Registrazione> registrazioni) {
         this.registrazioni = registrazioni;
+    }
+
+    public Registrazione getRegistrazione(int i) {
+        return this.registrazioni.get(i);
     }
 }

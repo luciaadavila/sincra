@@ -10,7 +10,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.room.Room;
 
+import com.example.sincra.database.AppDatabase;
 import com.example.sincra.ui.EstadisticaFragment;
 import com.example.sincra.ui.HistorialFragment;
 import com.example.sincra.ui.HomeFragment;
@@ -28,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sincra-db").build();
+
         setContentView(R.layout.activity_main);
 
         bottomNavigation = findViewById(R.id.bottom_navigation);
@@ -59,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
+
+
     }
 
 

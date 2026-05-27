@@ -1,16 +1,19 @@
 package com.example.sincra.adapter;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
 import com.example.sincra.model.Ciclo;
+import com.example.sincra.ui.StatisticheCicloFragment;
 
 import java.util.List;
 
@@ -55,6 +58,20 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
 
         GiorniCicloAdapter adapter = new GiorniCicloAdapter(item.getRegistrazioni());
         holder.daysRecycler.setAdapter(adapter);
+
+        holder.itemView.setOnClickListener(v -> {
+            Ciclo ciclo = items.get(position);
+            StatisticheCicloFragment fragment = new StatisticheCicloFragment();
+
+            ((FragmentActivity) v.getContext())
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+
+
+        });
     }
 
     @Override

@@ -10,14 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
-import com.example.sincra.model.RegistroDiario;
+import com.example.sincra.model.Registrazione;
 
 import java.util.List;
 
 public class GiorniCicloAdapter extends RecyclerView.Adapter<GiorniCicloAdapter.GiorniCicloViewHolder> {
-    private List<RegistroDiario> items;
+    private List<Registrazione> items;
 
-    public GiorniCicloAdapter(List<RegistroDiario> items) {
+    public GiorniCicloAdapter(List<Registrazione> items) {
         this.items = items;
     }
 
@@ -39,7 +39,7 @@ public class GiorniCicloAdapter extends RecyclerView.Adapter<GiorniCicloAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull GiorniCicloViewHolder holder, int position) {
-        RegistroDiario item = items.get(position);
+        Registrazione item = items.get(position);
 
         if (item.isPeriodo()){
             holder.dayCircle.setBackgroundColor(Color.RED);

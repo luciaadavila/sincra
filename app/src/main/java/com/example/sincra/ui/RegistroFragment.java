@@ -12,10 +12,10 @@ import android.view.ViewGroup;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.RegistroAdapter;
-import com.example.sincra.model.RegistroDiario;
+import com.example.sincra.model.ElementoCatalogo;
+import com.example.sincra.model.Registrazione;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RegistroFragment extends Fragment {
@@ -35,25 +35,34 @@ public class RegistroFragment extends Fragment {
 
         registroRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        List<RegistroDiario> lista = new ArrayList<>();
+        List<Registrazione> lista = new ArrayList<>();
 
-        RegistroDiario d1 = new RegistroDiario(
+        List<ElementoCatalogo> mood = new ArrayList<>();
+
+        mood.add(new ElementoCatalogo("Feliz", "mood"));
+        mood.add(new ElementoCatalogo("Triste", "mood"));
+        List<ElementoCatalogo> sintomi = new ArrayList<>();
+
+        sintomi.add(new ElementoCatalogo("Dolor de cabeza", "sintoma"));
+        sintomi.add(new ElementoCatalogo("Dolor de garganta", "sintoma"));
+
+        Registrazione d1 = new Registrazione(
                 "2026-05-01",
                 true,
                 false,
                 3,
-                Arrays.asList("Feliz", "Energica"),
-                Arrays.asList("Ninguno"),
+                sintomi,
+                mood,
                 "Buen día"
         );
 
-        RegistroDiario d2 = new RegistroDiario(
+        Registrazione d2 = new Registrazione(
                 "2026-05-02",
                 false,
                 false,
                 4,
-                Arrays.asList("Cansada"),
-                Arrays.asList("Dolor cabeza"),
+                mood,
+                sintomi,
                 ""
         );
 

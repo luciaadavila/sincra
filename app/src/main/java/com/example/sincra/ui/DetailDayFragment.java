@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.example.sincra.R;
 import com.example.sincra.adapter.CatalogoAdapter;
 import com.example.sincra.model.ElementoCatalogo;
+import com.example.sincra.model.Registrazione;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,16 @@ public class DetailDayFragment extends Fragment {
         List<ElementoCatalogo> symptoms = new ArrayList<>();
         symptoms.add(new ElementoCatalogo("Dolor abdominal", "sintoma"));
         symptoms.add(new ElementoCatalogo("Dolor cabeza", "sintoma"));
+
+        Registrazione registro = new Registrazione(
+                "2026-05-01",
+                true,
+                false,
+                3,
+                moods,
+                symptoms,
+                "Buen día"
+        );
 
         CatalogoAdapter moodAdapter = new CatalogoAdapter(moods);
         CatalogoAdapter symptomAdapter = new CatalogoAdapter(symptoms);

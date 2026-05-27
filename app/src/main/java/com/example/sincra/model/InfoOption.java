@@ -15,4 +15,4 @@ public class InfoOption {
         this.title = title;
     }
 }
-}
+

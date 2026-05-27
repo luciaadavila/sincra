@@ -11,15 +11,15 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
-import com.example.sincra.model.RegistroDiario;
+import com.example.sincra.model.Registrazione;
 import com.example.sincra.ui.DetailDayFragment;
 
 import java.util.List;
 
 public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.RegistroViewHolder> {
-    private List<RegistroDiario> items;
+    private List<Registrazione> items;
 
-    public RegistroAdapter(List<RegistroDiario> items) {
+    public RegistroAdapter(List<Registrazione> items) {
         this.items = items;
     }
 
@@ -47,7 +47,7 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
 
     @Override
     public void onBindViewHolder(@NonNull RegistroViewHolder holder, int position) {
-        RegistroDiario item = items.get(position);
+        Registrazione item = items.get(position);
 
 
         holder.itemView.setOnClickListener(v -> {
@@ -69,8 +69,8 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
         holder.dayTitle.setText(item.getDate());
         holder.cycleDay.setText("Ciclo: " + item.getGiornoCiclo());
         holder.isCycleDay.setText("Giorno di ciclo? " + (item.isGiornoProbabile() ? "Si" : "No"));
-        holder.moods.setText("Mood: " + item.getIdStatoAnimo());
-        holder.symptoms.setText("Síntomas: " + item.getIdSintomi());
+        holder.moods.setText("Mood: " + item.getStatiAnimo().toString());
+        holder.symptoms.setText("Síntomas: " + item.getSintomi().toString());
     }
 
     @Override
