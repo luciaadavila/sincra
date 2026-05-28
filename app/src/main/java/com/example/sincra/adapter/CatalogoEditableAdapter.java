@@ -69,4 +69,10 @@ public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditab
     public int getItemCount() {
         return items.size();
     }
+
+    public void updateList(List<ElementoCatalogo> data){
+        items = data;
+        notifyDataSetChanged();
+    }
 }
+

@@ -19,10 +19,11 @@ public interface ElementoCatalogoDAO {
     @Delete
     void delete(ElementoCatalogo elementoCatalogo);
 
+
     @Query("SELECT * FROM elemento_catalogo")
     List<ElementoCatalogo> getAll();
 
-    @Query("SELECT * FROM elemento_catalogo WHERE tipo = :tipo")
+    @Query("SELECT * FROM elemento_catalogo WHERE tipo = :tipo ORDER BY nome ASC")
     List<ElementoCatalogo> getByType(String tipo);
 
 }

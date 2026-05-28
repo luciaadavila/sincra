@@ -1,19 +1,46 @@
 package com.example.sincra.database;
 
 
-import androidx.room.Database;
-import androidx.room.RoomDatabase;
+import android.content.Context;
 
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
+
+import com.example.sincra.database.dao.CicloDAO;
 import com.example.sincra.database.dao.ElementoCatalogoDAO;
 import com.example.sincra.database.dao.RegistrazioneDAO;
+import com.example.sincra.database.dao.UserDAO;
+import com.example.sincra.model.Ciclo;
 import com.example.sincra.model.ElementoCatalogo;
 import com.example.sincra.model.Registrazione;
+import com.example.sincra.model.RegistroCatalogoRel;
+
 
 @Database(entities = {
             ElementoCatalogo.class,
-            Registrazione.class},
-        version = 2)
+            Registrazione.class,
+            Ciclo.class,
+            UserDAO.class,
+            RegistroCatalogoRel.class},
+        version = 4)
+@TypeConverters(Converters.class)
+
 public abstract class AppDatabase extends RoomDatabase {
     public abstract ElementoCatalogoDAO elementoCatalogoDAO();
     public abstract RegistrazioneDAO registrazioneDAO();
+    public abstract CicloDAO cicloDAO();
+    public abstract UserDAO userDAO();
+    public abstract RegistroCatalogoRel registroCatalogoRel();
+
+    public static AppDatabase INSTANCE;
+    public static AppDatabase getDatabase(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "app_database")
+                    .fallbackToDestructiveMigration()
+                    .build();
+        }
+        return INSTANCE;
+    }
 }

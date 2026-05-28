@@ -1,48 +1,60 @@
 package com.example.sincra.model;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import java.util.Date;
 import java.util.List;
 
+@Entity(tableName = "ciclo",
+        foreignKeys = @ForeignKey(
+                entity = User.class,
+                parentColumns = "userId",
+                childColumns = "userId",
+                onDelete = ForeignKey.CASCADE
+        ),
+        indices = @Index(value = "userId")
+)
 public class Ciclo {
-    private String id;
+    @PrimaryKey(autoGenerate = true)
+    private int cicloId;
+    @NonNull
     private Date dataInizio;
     private Date dataFine;
     private int durataTotale;
     private int durataPeriodo;
-    private List<String> sintomiComuni;
-    private List<Registrazione> registrazioni;
+    private int userId;
+    //private List<String> sintomiComuni;
+    //private List<Registrazione> registrazioni;
 
     public Ciclo(){
-        this.sintomiComuni = new ArrayList<>();
-        this.registrazioni = new ArrayList<>();
     }
 
-    public Ciclo(String id, Date dataInizio, Date dataFine, int durataTotale, int durataPeriodo, List<String> sintomiComuni, List<Registrazione> registrazioni){
-        this.id = id;
+    public Ciclo(@NonNull Date dataInizio, Date dataFine, int durataTotale, int durataPeriodo, List<String> sintomiComuni, List<Registrazione> registrazioni, int userId){
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
         this.durataTotale = durataTotale;
         this.durataPeriodo = durataPeriodo;
-        this.sintomiComuni = sintomiComuni != null ? sintomiComuni : new ArrayList<>();
-        this.registrazioni = registrazioni != null ? registrazioni : new ArrayList<>();
+        this.userId = userId;
+        //this.sintomiComuni = sintomiComuni != null ? sintomiComuni : new ArrayList<>();
+        //this.registrazioni = registrazioni != null ? registrazioni : new ArrayList<>();
     }
 
 
     // getters y setter
-    public String getId() {
-        return id;
+    public int getCicloId() {
+        return cicloId;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
+    @NonNull
     public Date getDataInizio() {
         return dataInizio;
     }
 
-    public void setDataInizio(Date dataInizio) {
+    public void setDataInizio(@NonNull Date dataInizio) {
         this.dataInizio = dataInizio;
     }
 
@@ -70,6 +82,15 @@ public class Ciclo {
         this.durataPeriodo = durataPeriodo;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+/*
     public List<String> getSintomiComuni() {
         return sintomiComuni;
     }
@@ -89,4 +110,6 @@ public class Ciclo {
     public Registrazione getRegistrazione(int i) {
         return this.registrazioni.get(i);
     }
+    */
+
 }

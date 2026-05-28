@@ -11,15 +11,18 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
+import com.example.sincra.model.ElementoCatalogo;
 import com.example.sincra.model.Registrazione;
+import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 import com.example.sincra.ui.DetailDayFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.RegistroViewHolder> {
-    private List<Registrazione> items;
+    private List<RegistrazioneConElementi> items;
 
-    public RegistroAdapter(List<Registrazione> items) {
+    public RegistroAdapter(List<RegistrazioneConElementi> items) {
         this.items = items;
     }
 
@@ -47,14 +50,25 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
 
     @Override
     public void onBindViewHolder(@NonNull RegistroViewHolder holder, int position) {
-        Registrazione item = items.get(position);
+        RegistrazioneConElementi item = items.get(position);
+        Registrazione registro = item.registrazione;
+        List<String> moodsList = new ArrayList<>();
+        List<String> symptomsList = new ArrayList<>();
 
+        for (ElementoCatalogo e : item.elementiCatalogo) {
+
+            if ("mood".equals(e.getTipo())) {
+                moodsList.add(e.getNome());
+
+            } else if ("symptom".equals(e.getTipo())) {
+                symptomsList.add(e.getNome());
+            }
+        }
 
         holder.itemView.setOnClickListener(v -> {
-
             DetailDayFragment fragment = new DetailDayFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("date", item.getDate());
+            bundle.putString("date", registro.getDate().toString());
 
             fragment.setArguments(bundle);
 
@@ -66,16 +80,21 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
                     .commit();
         });
 
-        holder.dayTitle.setText(item.getDate());
-        holder.cycleDay.setText("Ciclo: " + item.getGiornoCiclo());
-        holder.isCycleDay.setText("Giorno di ciclo? " + (item.isGiornoProbabile() ? "Si" : "No"));
-        holder.moods.setText("Mood: " + item.getStatiAnimo().toString());
-        holder.symptoms.setText("Síntomas: " + item.getSintomi().toString());
+        holder.dayTitle.setText(registro.getDate().toString());
+        holder.cycleDay.setText("Ciclo: " + registro.getGiornoCiclo());
+        holder.isCycleDay.setText("Giorno di ciclo? " + (registro.isGiornoProbabile() ? "Si" : "No"));
+        holder.moods.setText("Mood: " + moodsList.toString());
+        holder.symptoms.setText("Síntomas: " + symptomsList.toString());
     }
 
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void updateList(List<RegistrazioneConElementi> newItems){
+        this.items = newItems;
+        notifyDataSetChanged();
     }
 
 }

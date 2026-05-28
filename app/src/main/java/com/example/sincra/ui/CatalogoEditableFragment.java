@@ -3,6 +3,8 @@ package com.example.sincra.ui;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,7 +17,10 @@ import android.widget.TextView;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.CatalogoEditableAdapter;
+import com.example.sincra.database.AppDatabase;
+import com.example.sincra.database.dao.ElementoCatalogoDAO;
 import com.example.sincra.model.ElementoCatalogo;
+import com.example.sincra.viewModel.CatalogoViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +28,9 @@ import java.util.List;
 
 public class CatalogoEditableFragment extends Fragment {
 
-    private List<ElementoCatalogo> items;
     private CatalogoEditableAdapter adapter;
+    private CatalogoViewModel viewModel;
+    private String tipo;
 
     public CatalogoEditableFragment() {
         // Required empty public constructor
@@ -41,20 +47,28 @@ public class CatalogoEditableFragment extends Fragment {
         Button addButton = view.findViewById(R.id.addButton);
         RecyclerView recycler = view.findViewById(R.id.catalogRecycler);
 
+        tipo = getArguments() != null ? getArguments().getString("tipo") : "mood";
+        title.setText(tipo.equals("mood") ? "Stati d'animo" : "Sintomi");
+
+        viewModel.loadByType("mood");
+
+
+        CatalogoViewModel viewModel = new ViewModelProvider(this).get(CatalogoViewModel.class);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        items = new ArrayList<>();
-        items.add(new ElementoCatalogo("Feliz", "mood"));
-        items.add(new ElementoCatalogo("Ansiosa", "mood"));
-
-        adapter = new CatalogoEditableAdapter(items);
-
+        adapter = new CatalogoEditableAdapter(new ArrayList<>());
         recycler.setAdapter(adapter);
 
+        viewModel.getItems().observe(getViewLifecycleOwner(), data -> {
+            adapter.updateList(data);
+        });
+
+        viewModel.loadByType(tipo);
+
         addButton.setOnClickListener(v -> {
-            String inputText = input.getText().toString();
-            if (!inputText.isEmpty()) {
-                items.add(new ElementoCatalogo(inputText, "mood"));
-                adapter.notifyDataSetChanged();
+            String inputText = input.getText().toString().trim();
+
+            if (!inputText.isEmpty()){
+                viewModel.addItem(inputText, tipo);
                 input.setText("");
             }
         });

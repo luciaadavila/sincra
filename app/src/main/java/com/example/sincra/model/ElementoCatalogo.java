@@ -2,44 +2,49 @@ package com.example.sincra.model;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "elemento_catalogo")
+@Entity(tableName = "elemento_catalogo",
+        foreignKeys = @ForeignKey(
+                entity = User.class,
+                parentColumns = "userId",
+                childColumns = "userId",
+                onDelete = ForeignKey.CASCADE
+        ),
+        indices = @Index(value = "userId")
+        )
 public class ElementoCatalogo {
     @PrimaryKey(autoGenerate = true)
-    private String id;
+    private int elementoId;
     @NonNull
     private String tipo;
     @NonNull
     private String nome;
     private String icona;
     private boolean isPersonalizzato;
-    private boolean selected;
+    private int userId;
 
     public ElementoCatalogo(){}
 
-    public ElementoCatalogo(String id, @NonNull String tipo,@NonNull String nome, String icona, boolean ePersonalizzato, boolean selected){
-        this.id = id;
+    public ElementoCatalogo(@NonNull String tipo,@NonNull String nome, String icona, boolean ePersonalizzato, int userId){
         this.tipo = tipo;
         this.nome = nome;
         this.icona = icona;
         this.isPersonalizzato = ePersonalizzato;
-        this.selected= selected;
+        this.userId = userId;
     }
 
-    public ElementoCatalogo(@NonNull String nome, @NonNull String tipo){
+    public ElementoCatalogo(@NonNull String nome, @NonNull String tipo, int userId){
         this.nome = nome;
         this.tipo = tipo;
-        this.selected = false;
+        this.userId = userId;
     }
 
     // getters y setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public int getElementoId() {
+        return elementoId;
     }
 
     @NonNull
@@ -78,11 +83,11 @@ public class ElementoCatalogo {
         this.isPersonalizzato = isPersonalizzato;
     }
 
-    public boolean isSelected() {
-        return selected;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

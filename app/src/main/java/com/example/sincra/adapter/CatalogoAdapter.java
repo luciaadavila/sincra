@@ -57,4 +57,9 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
         }
     }
 
+    public void updateList(List<ElementoCatalogo> data){
+        this.listaCatalogo = data;
+        notifyDataSetChanged();
+    }
+
 }

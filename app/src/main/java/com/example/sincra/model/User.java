@@ -1,18 +1,24 @@
 package com.example.sincra.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.util.Date;
 
-public class Usuario {
-    private String id;
+@Entity(tableName = "users")
+public class User {
+    @PrimaryKey(autoGenerate = true)
+    private int userId;
+    @NonNull
     private String nombre;
     private Date dataRegistro;
     private int durataMediaCiclo;
     private int durataMediaPeriodo;
 
-    public Usuario(){}
+    public User(){}
 
-    public Usuario(String id, String nombre, Date dataRegistro, int durataMediaCiclo, int durataMediaPeriodo){
-        this.id = id;
+    public User(@NonNull String nombre, Date dataRegistro, int durataMediaCiclo, int durataMediaPeriodo){
         this.nombre = nombre;
         this.dataRegistro = dataRegistro;
         this.durataMediaCiclo = durataMediaCiclo;
@@ -21,12 +27,17 @@ public class Usuario {
 
 
     // getters y setters
-    public String getId() {
-        return id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    @NonNull
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(@NonNull String nombre) {
+        this.nombre = nombre;
     }
 
     public Date getDataRegistro() {

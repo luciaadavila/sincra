@@ -7,6 +7,7 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity(tableName = "registrazione",
@@ -27,7 +28,7 @@ public class Registrazione {
 
     private int cicloId;
     @NonNull
-    private String date;
+    private Date data;
 
     private int pasos;
 
@@ -43,16 +44,19 @@ public class Registrazione {
     public Registrazione() {
     }
 
-    public Registrazione(@NonNull String date,
+    public Registrazione(@NonNull Date data,
                          boolean isPeriodo,
                          boolean isGiornoProbabile,
                          int giornoCiclo,
-                         String notas) {
+                         String notas,
+                         int cicloId, int pasos) {
 
-        this.date = date;
+        this.data = data;
         this.isPeriodo = isPeriodo;
         this.isGiornoProbabile = isGiornoProbabile;
         this.giornoCiclo = giornoCiclo;
+        this.cicloId = cicloId;
+        this.pasos = pasos;
 
         //this.statiAnimo = statiAnimo != null ? statiAnimo : new ArrayList<>();
         //this.sintomi = sintomi != null ? sintomi : new ArrayList<>();
@@ -61,12 +65,12 @@ public class Registrazione {
     }
 
     @NonNull
-    public String getDate() {
-        return date;
+    public Date getDate() {
+        return data;
     }
 
-    public void setDate(@NonNull String date) {
-        this.date = date;
+    public void setDate(@NonNull Date data) {
+        this.data = data;
     }
 
     public int getGiornoCiclo() {
@@ -117,4 +121,22 @@ public class Registrazione {
     public void setGiornoProbabile(boolean giornoProbabile) {
         isGiornoProbabile = giornoProbabile;
     }
+
+    public int getCicloId() {
+        return cicloId;
+    }
+
+    public void setCicloId(int cicloId) {
+        this.cicloId = cicloId;
+    }
+
+    public int getRegistroId() {
+        return registroId;
+    }
+
+    public int getPasos() {
+        return pasos;
+    }
+
+
 }
