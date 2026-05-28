@@ -3,15 +3,16 @@ package com.example.sincra.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
 import com.example.sincra.model.ElementoCatalogo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.CatalogoViewHolder> {
@@ -35,11 +36,26 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
 
         holder.text.setText(elemento.getNome());
 
-        holder.text.setTextColor(elemento.isSelected() ? 0xFFE91E63 : 0xFF888888);
-
+        if (elemento.isSelected()) {
+            holder.text.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.red));
+            // Opcional: puedes cambiar el fondo del contenedor entero si quieres que parezca un botón activo
+            // holder.itemView.setBackgroundResource(R.drawable.bg_item_seleccionado);
+        } else {
+            // Ejemplo: un gris neutro
+            holder.text.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.gray));
+            // holder.itemView.setBackgroundResource(R.drawable.bg_item_deseleccionado);
+        }
         holder.itemView.setOnClickListener(v -> {
-            elemento.setSelected(!elemento.isSelected());
-            notifyDataSetChanged();
+            int actualPosition = holder.getBindingAdapterPosition();
+            if (actualPosition != RecyclerView.NO_POSITION) {
+                ElementoCatalogo itemClickeado = listaCatalogo.get(actualPosition);
+
+                // Invertimos el booleano en memoria
+                itemClickeado.setSelected(!itemClickeado.isSelected());
+
+                // Refrescamos ÚNICAMENTE esta celda. Adiós al lag de notifyDataSetChanged()
+                notifyItemChanged(actualPosition);
+            }
         });
     }
 
@@ -47,6 +63,25 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
     public int getItemCount() {
         return listaCatalogo.size();
     }
+
+    public List<ElementoCatalogo> getSeleccionados() {
+        List<ElementoCatalogo> seleccionados = new ArrayList<>();
+        if (listaCatalogo != null) {
+            for (ElementoCatalogo e : listaCatalogo) {
+                if (e.isSelected()) {
+                    seleccionados.add(e);
+                }
+            }
+        }
+        return seleccionados;
+    }
+
+    public void updateList(List<ElementoCatalogo> data){
+        this.listaCatalogo = data;
+        notifyDataSetChanged();
+    }
+
+
 
     public static class CatalogoViewHolder extends RecyclerView.ViewHolder {
         private TextView text;
@@ -56,10 +91,4 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
             text = itemView.findViewById(R.id.item_catalogo);
         }
     }
-
-    public void updateList(List<ElementoCatalogo> data){
-        this.listaCatalogo = data;
-        notifyDataSetChanged();
-    }
-
 }

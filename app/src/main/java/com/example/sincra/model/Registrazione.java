@@ -65,8 +65,16 @@ public class Registrazione {
     }
 
     @NonNull
+    public Date getData() {
+        return data;
+    }
+
     public Date getDate() {
         return data;
+    }
+
+    public void setData(@NonNull Date data) {
+        this.data = data;
     }
 
     public void setDate(@NonNull Date data) {
@@ -79,6 +87,11 @@ public class Registrazione {
 
     public void setGiornoCiclo(int giornoCiclo) {
         this.giornoCiclo = giornoCiclo;
+    }
+
+
+    public void setRegistroId(int registroId) {
+        this.registroId = registroId;
     }
 
     /*
@@ -136,6 +149,10 @@ public class Registrazione {
 
     public int getPasos() {
         return pasos;
+    }
+
+    public void setPasos(int pasos) {
+        this.pasos = pasos;
     }
 
 

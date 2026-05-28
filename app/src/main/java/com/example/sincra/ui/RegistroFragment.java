@@ -2,6 +2,8 @@ package com.example.sincra.ui;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,17 +36,24 @@ public class RegistroFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_registro, container, false);
+        return inflater.inflate(R.layout.fragment_registro, container, false);
+    }
+
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
+
+        // 1. configuramos vistas
         registroRecycler = view.findViewById(R.id.registroRecycler);
         registroRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        RegistroAdapter adapter = new RegistroAdapter(new ArrayList<>());
+        // 2. configuramos adapter
+        adapter = new RegistroAdapter(new ArrayList<>());
         registroRecycler.setAdapter(adapter);
 
+        // 3. inicializamos viewModel
         viewModel = new ViewModelProvider(this).get(RegistroViewModel.class);
-        viewModel.getRegistro().observe(getViewLifecycleOwner(), data -> {
+        viewModel.getRegistri().observe(getViewLifecycleOwner(), data -> {
             adapter.updateList(data);
         });
-        return view;
     }
 }

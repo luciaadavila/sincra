@@ -31,6 +31,11 @@ public class User {
         return userId;
     }
 
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+    
+
     @NonNull
     public String getNombre() {
         return nombre;

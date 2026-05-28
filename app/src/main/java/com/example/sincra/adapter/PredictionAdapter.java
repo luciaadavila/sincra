@@ -88,6 +88,11 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
         }
     }
 
+    public void updateList(List<PredictSettimana> newItems){
+        this.items = newItems;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return items.size();

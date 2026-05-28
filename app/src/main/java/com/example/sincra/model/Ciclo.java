@@ -27,8 +27,6 @@ public class Ciclo {
     private int durataTotale;
     private int durataPeriodo;
     private int userId;
-    //private List<String> sintomiComuni;
-    //private List<Registrazione> registrazioni;
 
     public Ciclo(){
     }
@@ -48,6 +46,11 @@ public class Ciclo {
     public int getCicloId() {
         return cicloId;
     }
+
+    public void setCicloId(int cicloId) {
+        this.cicloId = cicloId;
+    }
+
 
     @NonNull
     public Date getDataInizio() {
@@ -99,13 +102,6 @@ public class Ciclo {
         this.sintomiComuni = sintomiComuni;
     }
 
-    public List<Registrazione> getRegistrazioni() {
-        return registrazioni;
-    }
-
-    public void setRegistrazioni(List<Registrazione> registrazioni) {
-        this.registrazioni = registrazioni;
-    }
 
     public Registrazione getRegistrazione(int i) {
         return this.registrazioni.get(i);

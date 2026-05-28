@@ -1,5 +1,7 @@
 package com.example.sincra.database.dao;
 
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
@@ -11,6 +13,7 @@ import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 
 import java.util.List;
 
+@Dao
 public interface RegistrazioneDAO {
 
     @Insert
@@ -22,17 +25,28 @@ public interface RegistrazioneDAO {
     @Update
     void update(Registrazione registro);
 
+    @Transaction
     @Query("SELECT * FROM registrazione WHERE cicloId = :cicloId")
-    List<RegistrazioneConElementi> getByCicloId(int cicloId);
-
-    @Query("SELECT * FROM registrazione WHERE data = :data LIMIT 1")
-    RegistrazioneConElementi getByDate(String data);
+    LiveData<List<RegistrazioneConElementi>> getByCicloId(int cicloId, int userId);
 
     @Transaction
-    @Query("SELECT * FROM registrazione")
-    List<RegistrazioneConElementi> getRegistrazioniConElementi();
+    @Query("SELECT r.* FROM registrazione r " +
+                  "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
+                  "WHERE r.data = :data AND c.userId = :userId LIMIT 1")    RegistrazioneConElementi getByDate(String data);
+    LiveData<RegistrazioneConElementi> getByDateAndUser(String data, int userId);
+    @Transaction
+    @Query("SELECT r.* FROM registrazione r " +
+            "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
+            "WHERE c.userId = :userId " +
+            "ORDER BY r.data DESC")
+    LiveData<List<RegistrazioneConElementi>> getAllByUserId(int userId);
 
     @Transaction
-    @Query("SELECT * FROM registrazione ORDER BY data DESC")
-    List<RegistrazioneConElementi> getAll();
+    default void insertRegistroCompleto(Registrazione registro, List<Integer> elementoIds) {
+        long registroId = insert(registro);
+        for (Integer elementoId : elementoIds) {
+            RegistroCatalogoRel rel = new RegistroCatalogoRel((int) registroId, elementoId);
+            insertRel(rel);
+        }
+    }
 }

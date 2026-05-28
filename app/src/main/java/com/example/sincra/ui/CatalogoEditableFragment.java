@@ -53,7 +53,7 @@ public class CatalogoEditableFragment extends Fragment {
         viewModel.loadByType("mood");
 
 
-        CatalogoViewModel viewModel = new ViewModelProvider(this).get(CatalogoViewModel.class);
+        viewModel = new ViewModelProvider(this).get(CatalogoViewModel.class);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new CatalogoEditableAdapter(new ArrayList<>());
         recycler.setAdapter(adapter);

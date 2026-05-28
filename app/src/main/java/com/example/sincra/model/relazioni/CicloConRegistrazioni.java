@@ -14,6 +14,21 @@ public class CicloConRegistrazioni {
     private Ciclo ciclo;
 
     @Relation(parentColumn = "cicloId", entityColumn = "cicloId")
-
     private List<Registrazione> registrazioni;
+
+    public Ciclo getCiclo() {
+        return ciclo;
+    }
+
+    public void setCiclo(Ciclo ciclo) {
+        this.ciclo = ciclo;
+    }
+
+    public List<Registrazione> getRegistrazioni() {
+        return registrazioni;
+    }
+
+    public void setRegistrazioni(List<Registrazione> registrazioni) {
+        this.registrazioni = registrazioni;
+    }
 }

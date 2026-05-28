@@ -16,13 +16,14 @@ import com.example.sincra.model.Ciclo;
 import com.example.sincra.model.ElementoCatalogo;
 import com.example.sincra.model.Registrazione;
 import com.example.sincra.model.RegistroCatalogoRel;
+import com.example.sincra.model.User;
 
 
 @Database(entities = {
             ElementoCatalogo.class,
             Registrazione.class,
             Ciclo.class,
-            UserDAO.class,
+            User.class,
             RegistroCatalogoRel.class},
         version = 4)
 @TypeConverters(Converters.class)
@@ -32,7 +33,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract RegistrazioneDAO registrazioneDAO();
     public abstract CicloDAO cicloDAO();
     public abstract UserDAO userDAO();
-    public abstract RegistroCatalogoRel registroCatalogoRel();
 
     public static AppDatabase INSTANCE;
     public static AppDatabase getDatabase(Context context) {

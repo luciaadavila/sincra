@@ -28,19 +28,16 @@ public class CatalogoViewModel extends AndroidViewModel {
     }
 
     public void loadByType(String tipo) {
-
         repo.getByType(tipo, data -> {
             items.postValue(data);
         });
     }
 
     public void addItem(String nome, String tipo) {
-
         ElementoCatalogo elemento =
                 new ElementoCatalogo(tipo, nome, 1);
 
         repo.insert(elemento);
-
         loadByType(tipo);
     }
 

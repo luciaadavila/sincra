@@ -3,6 +3,7 @@ package com.example.sincra.model;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -26,6 +27,9 @@ public class ElementoCatalogo {
     private boolean isPersonalizzato;
     private int userId;
 
+    @Ignore
+    private boolean isSelected;
+
     public ElementoCatalogo(){}
 
     public ElementoCatalogo(@NonNull String tipo,@NonNull String nome, String icona, boolean ePersonalizzato, int userId){
@@ -42,10 +46,17 @@ public class ElementoCatalogo {
         this.userId = userId;
     }
 
+
     // getters y setters
     public int getElementoId() {
         return elementoId;
     }
+
+
+    public void setElementoId(int elementoId) {
+        this.elementoId = elementoId;
+    }
+
 
     @NonNull
     public String getTipo() {
@@ -89,5 +100,13 @@ public class ElementoCatalogo {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
 }

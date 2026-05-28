@@ -4,29 +4,30 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.sincra.database.repositorio.RegistrazioneRepository;
 import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 
+import java.util.Date;
 import java.util.List;
 
 public class RegistroViewModel extends AndroidViewModel {
     private final RegistrazioneRepository repo;
-    private final MutableLiveData<List<RegistrazioneConElementi>> registro = new MutableLiveData<>();
+    private final LiveData<List<RegistrazioneConElementi>> registroList;
 
     public RegistroViewModel(@NonNull Application application) {
         super(application);
         repo = new RegistrazioneRepository(application);
+        this.registroList = repo.getAll();
     }
 
-    public MutableLiveData<List<RegistrazioneConElementi>> getRegistro() {
-        return registro;
+    public LiveData<List<RegistrazioneConElementi>> getRegistri() {
+        return registroList;
     }
 
-    public void loadAll() {
-        repo.getAll(data -> registro.postValue(data));
+    public LiveData<RegistrazioneConElementi> getByDate(String date){
+        return repo.getByDate(date);
     }
-
-
 }

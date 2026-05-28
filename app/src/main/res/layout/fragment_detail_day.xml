@@ -10,7 +10,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- barra arriba con el día que es -->
         <TextView
             android:id="@+id/todayBar"
             android:layout_width="match_parent"
@@ -23,7 +22,6 @@
             android:elevation="4dp"
             android:layout_marginBottom="20dp"/>
 
-        <!-- lista para el estado de animo -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,7 +42,6 @@
             android:text="@string/aggiungere"
             android:layout_marginTop="8dp"/>
 
-        <!-- lista para los síntomas -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,6 +62,16 @@
             android:layout_height="45dp"
             android:text="@string/aggiungere"
             android:layout_marginTop="8dp"/>
+
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
+            android:text="Salvare"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
