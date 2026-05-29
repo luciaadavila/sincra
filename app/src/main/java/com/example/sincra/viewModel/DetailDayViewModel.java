@@ -24,6 +24,7 @@ public class DetailDayViewModel extends AndroidViewModel {
     private final LiveData<List<ElementoCatalogo>> allMoods;
     private final LiveData<List<ElementoCatalogo>> allSymptoms;
 
+
     public DetailDayViewModel(@NonNull Application application) {
         super(application);
         repo = new RegistrazioneRepository(application);

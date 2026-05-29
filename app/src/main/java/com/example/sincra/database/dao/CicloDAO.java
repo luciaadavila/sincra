@@ -20,17 +20,26 @@ public interface CicloDAO {
     @Update
     void update(Ciclo ciclo);
 
-    @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId AND userId = :userId")
-    LiveData<Ciclo> getById(int cicloId, int userId);
+    @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
+    LiveData<Ciclo> getById(int cicloId);
+
+    @Transaction
+    @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
+    LiveData<CicloConRegistrazioni> getCicloByIdConRegistrazioni(int cicloId);
 
     @Transaction
     @Query("SELECT * FROM ciclo WHERE userId = :userId")
-    LiveData<List<CicloConRegistrazioni>> getCicliConRegistrazioni(int userId);
+    LiveData<List<CicloConRegistrazioni>> getCicliConRegistrazioni(String userId);
 
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC")
-    LiveData<List<Ciclo>> getHistorialCicli(int userId);
+    LiveData<List<Ciclo>> getHistorialCicli(String userId);
 
     // una sin liveData para consultas asincronas
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC")
-    List<Ciclo> getHistorialCicliSync(int userId);
+    List<Ciclo> getHistorialCicliSync(String userId);
+
+    // conseguimos el ciclo actual
+    @Transaction
+    @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC LIMIT 1")
+    LiveData<CicloConRegistrazioni> getCicloActualConRegistrazioni(String userId);
 }

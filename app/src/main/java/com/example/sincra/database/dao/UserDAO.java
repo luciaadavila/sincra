@@ -22,5 +22,5 @@ public interface UserDAO {
     void delete(User user);
 
     @Query("SELECT * FROM users WHERE userId = :userId")
-    User getById(int userId);
+    User getById(String userId);
 }

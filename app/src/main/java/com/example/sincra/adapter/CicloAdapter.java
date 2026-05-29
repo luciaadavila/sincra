@@ -6,21 +6,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
 import com.example.sincra.model.Ciclo;
 import com.example.sincra.model.relazioni.CicloConRegistrazioni;
-import com.example.sincra.ui.StatisticheCicloFragment;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHolder>{
     private List<Object> items;
     private final OnCicloClickListener clickListener;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
     public interface OnCicloClickListener {
         void onCicloClick(Object item);
@@ -33,9 +34,8 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
 
     public void setList(List<?> nuevosItems) {
         this.items = (List<Object>) nuevosItems;
-        notifyDataSetChanged(); // Notifica al RecyclerView que los datos cambiaron para que se repinte
+        notifyDataSetChanged();
     }
-
 
     @NonNull
     @Override
@@ -60,8 +60,14 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
         }
 
         if (ciclo != null){
-            holder.title.setText(ciclo.getDurataTotale() + " giorni: " + ciclo.getDataInizio() + " - " + ciclo.getDataFine());
-            holder.subtitle.setText("Periodo de " + ciclo.getDurataPeriodo() + " giorni");
+            String start = dateFormat.format(ciclo.getDataInizio());
+            String end = ciclo.getDataFine() != null ? dateFormat.format(ciclo.getDataFine()) : "...";
+            
+            holder.title.setText(holder.itemView.getContext().getString(R.string.giorni_ciclo_durata, 
+                    ciclo.getDurataTotale(), start, end));
+            
+            holder.subtitle.setText(holder.itemView.getContext().getString(R.string.periodo_durata, 
+                    ciclo.getDurataPeriodo()));
 
             if (holder.daysRecycler.getLayoutManager() == null){
                 holder.daysRecycler.setLayoutManager(
@@ -69,7 +75,6 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
                 );
             }
         }
-
 
         GiorniCicloAdapter adapter = new GiorniCicloAdapter((List) registrazioni);
         holder.daysRecycler.setAdapter(adapter);
@@ -82,10 +87,9 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
         });
     }
 
-
     @Override
     public int getItemCount() {
-        return items.size();
+        return items != null ? items.size() : 0;
     }
 
     public static class CicloViewHolder extends RecyclerView.ViewHolder {

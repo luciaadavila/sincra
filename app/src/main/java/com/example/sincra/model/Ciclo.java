@@ -26,12 +26,12 @@ public class Ciclo {
     private Date dataFine;
     private int durataTotale;
     private int durataPeriodo;
-    private int userId;
+    private String userId;
 
     public Ciclo(){
     }
 
-    public Ciclo(@NonNull Date dataInizio, Date dataFine, int durataTotale, int durataPeriodo, List<String> sintomiComuni, List<Registrazione> registrazioni, int userId){
+    public Ciclo(@NonNull Date dataInizio, Date dataFine, int durataTotale, int durataPeriodo, List<String> sintomiComuni, List<Registrazione> registrazioni, String userId){
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
         this.durataTotale = durataTotale;
@@ -85,11 +85,11 @@ public class Ciclo {
         this.durataPeriodo = durataPeriodo;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

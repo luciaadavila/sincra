@@ -50,9 +50,6 @@ public class CatalogoEditableFragment extends Fragment {
         tipo = getArguments() != null ? getArguments().getString("tipo") : "mood";
         title.setText(tipo.equals("mood") ? "Stati d'animo" : "Sintomi");
 
-        viewModel.loadByType("mood");
-
-
         viewModel = new ViewModelProvider(this).get(CatalogoViewModel.class);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new CatalogoEditableAdapter(new ArrayList<>());
@@ -63,6 +60,7 @@ public class CatalogoEditableFragment extends Fragment {
         });
 
         viewModel.loadByType(tipo);
+
 
         addButton.setOnClickListener(v -> {
             String inputText = input.getText().toString().trim();

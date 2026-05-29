@@ -12,7 +12,20 @@
           "package_name": "com.example.sincra"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "926148479348-2c3gnvn6t2tpuovc9d5vf8fsphprffo9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sincra",
+            "certificate_hash": "822bf146768d6891ce90f2d08a22033efa97fba2"
+          }
+        },
+        {
+          "client_id": "926148479348-6u1dksitvuipd7p2omrf6icpq77std6h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDPLu3Rvf4YR4sg3Fv96rofOyA4ujg9ZMs"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "926148479348-6u1dksitvuipd7p2omrf6icpq77std6h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

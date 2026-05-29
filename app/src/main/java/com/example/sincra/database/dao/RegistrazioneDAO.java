@@ -27,19 +27,19 @@ public interface RegistrazioneDAO {
 
     @Transaction
     @Query("SELECT * FROM registrazione WHERE cicloId = :cicloId")
-    LiveData<List<RegistrazioneConElementi>> getByCicloId(int cicloId, int userId);
+    LiveData<List<RegistrazioneConElementi>> getByCicloId(int cicloId);
 
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +
                   "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
-                  "WHERE r.data = :data AND c.userId = :userId LIMIT 1")    RegistrazioneConElementi getByDate(String data);
-    LiveData<RegistrazioneConElementi> getByDateAndUser(String data, int userId);
+                  "WHERE r.data = :data AND c.userId = :userId LIMIT 1")
+    LiveData<RegistrazioneConElementi> getByDateAndUser(String data, String userId);
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +
             "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
             "WHERE c.userId = :userId " +
             "ORDER BY r.data DESC")
-    LiveData<List<RegistrazioneConElementi>> getAllByUserId(int userId);
+    LiveData<List<RegistrazioneConElementi>> getAllByUserId(String userId);
 
     @Transaction
     default void insertRegistroCompleto(Registrazione registro, List<Integer> elementoIds) {

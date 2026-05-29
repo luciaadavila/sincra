@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 public class RegistroViewModel extends AndroidViewModel {
+
     private final RegistrazioneRepository repo;
     private final LiveData<List<RegistrazioneConElementi>> registroList;
 

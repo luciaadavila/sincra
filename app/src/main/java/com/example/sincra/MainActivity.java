@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sincra-db").build();
-
         setContentView(R.layout.activity_main);
 
         bottomNavigation = findViewById(R.id.bottom_navigation);

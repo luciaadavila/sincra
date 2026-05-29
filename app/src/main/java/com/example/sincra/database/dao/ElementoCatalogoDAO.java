@@ -23,5 +23,5 @@ public interface ElementoCatalogoDAO {
     void delete(ElementoCatalogo elementoCatalogo);
 
     @Query("SELECT * FROM elemento_catalogo WHERE userId = :userId AND tipo = :tipo ORDER BY nome ASC")
-    LiveData<List<ElementoCatalogo>> getElementosByUsuarioAndTipo(int userId, String tipo);
+    LiveData<List<ElementoCatalogo>> getElementosByUsuarioAndTipo(String userId, String tipo);
 }

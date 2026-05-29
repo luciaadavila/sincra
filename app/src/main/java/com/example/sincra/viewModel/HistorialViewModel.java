@@ -19,6 +19,7 @@ public class HistorialViewModel extends AndroidViewModel {
     private final CicloRepository repo;
     private final LiveData<List<Ciclo>> cicli;
 
+
     public HistorialViewModel(@NonNull Application application) {
         super(application);
         repo = new CicloRepository(application);

@@ -15,9 +15,15 @@ import java.util.List;
 
 public class InfoAdapter extends RecyclerView.Adapter<InfoAdapter.InfoViewHolder> {
     private List<InfoOption> options;
+    private OnOptionClickListener listener;
 
-    public InfoAdapter(List<InfoOption> options) {
+    public interface OnOptionClickListener {
+        void onOptionClick(InfoOption option, int position);
+    }
+
+    public InfoAdapter(List<InfoOption> options, OnOptionClickListener listener) {
         this.options = options;
+        this.listener = listener;
     }
 
     public static class InfoViewHolder extends RecyclerView.ViewHolder {
@@ -40,8 +46,12 @@ public class InfoAdapter extends RecyclerView.Adapter<InfoAdapter.InfoViewHolder
     public void onBindViewHolder(@NonNull InfoViewHolder holder, int position) {
         InfoOption option = options.get(position);
         holder.optionTitle.setText(option.getTitle());
-        holder.itemView.setOnClickListener(v -> {
 
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                // Usamos holder.getBindingAdapterPosition() que es más seguro que 'position'
+                listener.onOptionClick(option, holder.getBindingAdapterPosition());
+            }
         });
     }
 

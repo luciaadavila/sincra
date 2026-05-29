@@ -15,18 +15,18 @@ import android.view.ViewGroup;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.RegistroAdapter;
-import com.example.sincra.model.ElementoCatalogo;
-import com.example.sincra.model.Registrazione;
 import com.example.sincra.viewModel.RegistroViewModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 
 public class RegistroFragment extends Fragment {
 
     private RegistroAdapter adapter;
     private RegistroViewModel viewModel;
     private RecyclerView registroRecycler;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     public RegistroFragment() {
         // Required empty public constructor
@@ -39,6 +39,7 @@ public class RegistroFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_registro, container, false);
     }
 
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
@@ -46,14 +47,26 @@ public class RegistroFragment extends Fragment {
         registroRecycler = view.findViewById(R.id.registroRecycler);
         registroRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        // 2. configuramos adapter
-        adapter = new RegistroAdapter(new ArrayList<>());
+        // 2. configuramos adapter con el listener de navegación
+        adapter = new RegistroAdapter(new ArrayList<>(), item -> {
+            DetailDayFragment detailFragment = new DetailDayFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("date", dateFormat.format(item.registrazione.getDate()));
+            detailFragment.setArguments(bundle);
+
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, detailFragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
         registroRecycler.setAdapter(adapter);
 
         // 3. inicializamos viewModel
         viewModel = new ViewModelProvider(this).get(RegistroViewModel.class);
         viewModel.getRegistri().observe(getViewLifecycleOwner(), data -> {
-            adapter.updateList(data);
+            if (data != null) {
+                adapter.updateList(data);
+            }
         });
     }
 }

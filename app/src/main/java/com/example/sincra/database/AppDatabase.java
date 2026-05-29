@@ -1,6 +1,5 @@
 package com.example.sincra.database;
 
-
 import android.content.Context;
 
 import androidx.room.Database;
@@ -18,7 +17,6 @@ import com.example.sincra.model.Registrazione;
 import com.example.sincra.model.RegistroCatalogoRel;
 import com.example.sincra.model.User;
 
-
 @Database(entities = {
             ElementoCatalogo.class,
             Registrazione.class,
@@ -27,19 +25,24 @@ import com.example.sincra.model.User;
             RegistroCatalogoRel.class},
         version = 4)
 @TypeConverters(Converters.class)
-
 public abstract class AppDatabase extends RoomDatabase {
     public abstract ElementoCatalogoDAO elementoCatalogoDAO();
     public abstract RegistrazioneDAO registrazioneDAO();
     public abstract CicloDAO cicloDAO();
     public abstract UserDAO userDAO();
 
-    public static AppDatabase INSTANCE;
-    public static AppDatabase getDatabase(Context context) {
+    private static volatile AppDatabase INSTANCE;
+
+    public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
-            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "app_database")
-                    .fallbackToDestructiveMigration()
-                    .build();
+            synchronized (AppDatabase.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
+                                    AppDatabase.class, "sincra_db")
+                            .fallbackToDestructiveMigration()
+                            .build();
+                }
+            }
         }
         return INSTANCE;
     }

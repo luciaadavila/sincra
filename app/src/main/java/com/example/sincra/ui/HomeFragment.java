@@ -2,7 +2,10 @@ package com.example.sincra.ui;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,16 +15,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.sincra.R;
-import com.example.sincra.adapter.GiornoAdapter;
-import com.example.sincra.model.GiornoItem;
+import com.example.sincra.adapter.CalendarioHorizontalAdapter;
+import com.example.sincra.viewModel.HomeViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 public class HomeFragment extends Fragment {
 
-    private RecyclerView dayRecycler;
+    private CalendarioHorizontalAdapter adapter;
     private Button dayButton;
+    private String fechaSeleccionadaFormateada;
+    private HomeViewModel viewModel;
+    private RecyclerView dayRecycler;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -30,27 +36,53 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
 
         dayButton = view.findViewById(R.id.dayButton);
-        dayButton.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new DetailDayFragment()).addToBackStack(null).commit();
+        dayRecycler = view.findViewById(R.id.calendarRecyclerView);
+
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+        fechaSeleccionadaFormateada = viewModel.formatDate(new Date());
+        dayButton.setText(fechaSeleccionadaFormateada);
+
+        adapter = new CalendarioHorizontalAdapter(new ArrayList<>(), fechaSeleccionada -> {
+            fechaSeleccionadaFormateada = viewModel.formatDate(fechaSeleccionada);
+            dayButton.setText(fechaSeleccionadaFormateada);
         });
 
-        dayRecycler = view.findViewById(R.id.dayRecycler);
-
-        dayRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        List<GiornoItem> days = new ArrayList<>();
-
-        for (int i = 1; i <= 31; i++) {
-            days.add(new GiornoItem(i, false));
-        }
-
-        GiornoAdapter adapter = new GiornoAdapter(days);
-
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        dayRecycler.setLayoutManager(layoutManager);
         dayRecycler.setAdapter(adapter);
 
-        return view;
+        viewModel.getListaFechas().observe(getViewLifecycleOwner(), fechas -> {
+            if (fechas != null) {
+                adapter.setListaFechas(fechas);
+                dayRecycler.scrollToPosition(15);
+            }
+        });
+
+        viewModel.getDiasDeRegla().observe(getViewLifecycleOwner(), diasDeRegla -> {
+            if (diasDeRegla != null) {
+                adapter.setFechasConPeriodo(diasDeRegla);
+            }
+        });
+
+        dayButton.setOnClickListener(v -> {
+            DetailDayFragment detailFragment = new DetailDayFragment();
+            Bundle args = new Bundle();
+            args.putString("date", fechaSeleccionadaFormateada);
+            detailFragment.setArguments(args);
+
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, detailFragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 }

@@ -9,7 +9,7 @@ import java.util.Date;
 @Entity(tableName = "users")
 public class User {
     @PrimaryKey(autoGenerate = true)
-    private int userId;
+    private long userId;
     @NonNull
     private String nombre;
     private Date dataRegistro;
@@ -27,11 +27,11 @@ public class User {
 
 
     // getters y setters
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
     

@@ -1,9 +1,26 @@
 <resources>
     <string name="app_name">sincra</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="stato_d_animo">Stato d\'animo</string>
+    <string name="stato_d_animo">Umore</string>
     <string name="aggiungere">+</string>
     <string name="sintomi">Sintomi</string>
 
+    <string name="ciclo_giorno">Giorno del ciclo: %1$d</string>
+    <string name="is_ciclo_giorno">Giorno di ciclo? %1$s</string>
+    <string name="si">Sì</string>
+    <string name="no">No</string>
+    <string name="mood_label">Umore: %1$s</string>
+    <string name="sintomi_label">Sintomi: %1$s</string>
+
+    <string name="giorni_ciclo_durata">%1$d giorni: %2$s - %3$s</string>
+    <string name="periodo_durata">Periodo di %1$d giorni</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>
