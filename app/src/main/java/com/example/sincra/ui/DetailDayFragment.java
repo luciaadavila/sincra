@@ -18,12 +18,17 @@ import com.example.sincra.R;
 import com.example.sincra.adapter.CatalogoAdapter;
 import com.example.sincra.model.ElementoCatalogo;
 import com.example.sincra.model.Registrazione;
+import com.example.sincra.model.relazioni.CicloConRegistrazioni;
 import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 import com.example.sincra.viewModel.DetailDayViewModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import android.widget.Toast;
 
 public class DetailDayFragment extends Fragment {
 
@@ -32,6 +37,9 @@ public class DetailDayFragment extends Fragment {
     private DetailDayViewModel viewModel;
     private Button btnGuardar;
     private String currentDate;
+    private int cicloIdActivo = -1;
+    private int registroIdExistente = 0;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
 
     private List<ElementoCatalogo> currentMoodsFromDb = new ArrayList<>();
@@ -82,10 +90,19 @@ public class DetailDayFragment extends Fragment {
 
         // miramos si el dia ya contaba con registros seleccionados
         viewModel.getRegistro().observe(getViewLifecycleOwner(), registroConElementi -> {
-            if (registroConElementi != null && registroConElementi.elementiCatalogo != null) {
-                marcarElementosComoSeleccionados(registroConElementi.elementiCatalogo);
+            if (registroConElementi != null) {
+                registroIdExistente = registroConElementi.registrazione.getRegistroId();
+                if (registroConElementi.elementiCatalogo != null) {
+                    marcarElementosComoSeleccionados(registroConElementi.elementiCatalogo);
+                }
             }
             sincronizarElementosSeleccionados();
+        });
+
+        viewModel.getCicloActual().observe(getViewLifecycleOwner(), ciclo -> {
+            if (ciclo != null) {
+                cicloIdActivo = ciclo.getCiclo().getCicloId();
+            }
         });
 
         if (getArguments() != null) {
@@ -120,16 +137,32 @@ public class DetailDayFragment extends Fragment {
     }
 
     private void guardarRegistroDelDia() {
+        if (cicloIdActivo == -1) {
+            Toast.makeText(getContext(), "No hay un ciclo activo para guardar el registro", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         List<ElementoCatalogo> seleccionados = new ArrayList<>();
 
         // Gracias a tu método público getSeleccionados(), extraemos de forma limpia lo seleccionado en la UI
         seleccionados.addAll(moodAdapter.getSeleccionados());
         seleccionados.addAll(symptomAdapter.getSeleccionados());
 
-        // NOTA: Reemplaza este id de prueba por el id del ciclo actual activo que requiera tu app
-        int cicloIdActivo = 1;
+        Date dateToSave;
+        if (currentDate != null) {
+            try {
+                dateToSave = dateFormat.parse(currentDate);
+            } catch (ParseException e) {
+                dateToSave = new Date();
+            }
+        } else {
+            dateToSave = new Date();
+        }
 
-        Registrazione r = new Registrazione(new Date(), false, false, 1, "", cicloIdActivo, 0);
+        Registrazione r = new Registrazione(dateToSave, false, false, 1, "", cicloIdActivo, 0);
+        if (registroIdExistente != 0) {
+            r.setRegistroId(registroIdExistente);
+        }
 
         // Envío asíncrono al repositorio
         viewModel.save(r, seleccionados);

@@ -25,14 +25,14 @@ public class ElementoCatalogo {
     private String nome;
     private String icona;
     private boolean isPersonalizzato;
-    private String userId;
+    private long userId;
 
     @Ignore
     private boolean isSelected;
 
     public ElementoCatalogo(){}
 
-    public ElementoCatalogo(@NonNull String tipo,@NonNull String nome, String icona, boolean isPersonalizzato, String userId){
+    public ElementoCatalogo(@NonNull String tipo,@NonNull String nome, String icona, boolean isPersonalizzato, long userId){
         this.tipo = tipo;
         this.nome = nome;
         this.icona = icona;
@@ -40,7 +40,7 @@ public class ElementoCatalogo {
         this.userId = userId;
     }
 
-    public ElementoCatalogo(@NonNull String tipo, @NonNull String nome, String userId){
+    public ElementoCatalogo(@NonNull String tipo, @NonNull String nome, long userId){
         this.tipo = tipo;
         this.nome = nome;
         this.userId = userId;
@@ -94,11 +94,11 @@ public class ElementoCatalogo {
         this.isPersonalizzato = isPersonalizzato;
     }
 
-    public String getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

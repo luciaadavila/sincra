@@ -39,9 +39,10 @@ public class CatalogoViewModel extends AndroidViewModel {
     }
 
     public void addItem(String nome, String tipo) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            ElementoCatalogo elemento = new ElementoCatalogo(tipo, nome, user.getUid());
+        long localId = getApplication().getSharedPreferences("user_prefs", android.content.Context.MODE_PRIVATE)
+                .getLong("local_user_id", -1L);
+        if (localId != -1) {
+            ElementoCatalogo elemento = new ElementoCatalogo(tipo, nome, localId);
             repo.insert(elemento);
         }
     }

@@ -14,8 +14,11 @@ import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,27 +27,37 @@ public class RegistrazioneRepository {
     private final ElementoCatalogoDAO catalogoDAO;
     private final ExecutorService executor;
 
+    private final Context context;
+
     public RegistrazioneRepository(Context context){
+        this.context = context;
         AppDatabase db = AppDatabase.getDatabase(context);
         dao = db.registrazioneDAO();
         catalogoDAO = db.elementoCatalogoDAO();
         executor = Executors.newSingleThreadExecutor();
     }
 
-    private String getUid() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        return user != null ? user.getUid() : "";
+    private long getLocalId() {
+        return context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+                .getLong("local_user_id", -1L);
     }
 
     public LiveData<List<ElementoCatalogo>> getAllElementosByUsuario(String tipo) {
-        return catalogoDAO.getElementosByUsuarioAndTipo(getUid(), tipo);
+        return catalogoDAO.getElementosByUsuarioAndTipo(getLocalId(), tipo);
     }
     public LiveData<List<RegistrazioneConElementi>> getAll() {
-        return dao.getAllByUserId(getUid());
+        return dao.getAllByUserId(getLocalId());
     }
 
     public LiveData<RegistrazioneConElementi> getByDate(String date) {
-        return dao.getByDateAndUser(date, getUid());
+        long timestamp = 0;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            timestamp = sdf.parse(date).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dao.getByDateAndUser(timestamp, getLocalId());
     }
 
     public void saveDay(Registrazione registro, List<ElementoCatalogo> elementos) {

@@ -20,15 +20,18 @@ public class ElementoCatalogoRepository {
     private final ElementoCatalogoDAO dao;
     private final ExecutorService executor;
 
+    private final Context context;
+
     public ElementoCatalogoRepository(Context context) {
+        this.context = context;
         AppDatabase db = AppDatabase.getDatabase(context);
         dao = db.elementoCatalogoDAO();
         executor = Executors.newSingleThreadExecutor();
     }
 
-    private String getUid() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        return user != null ? user.getUid() : "";
+    private long getLocalId() {
+        return context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+                .getLong("local_user_id", -1L);
     }
 
     public void insert(ElementoCatalogo e){
@@ -40,7 +43,7 @@ public class ElementoCatalogoRepository {
     }
 
     public LiveData<List<ElementoCatalogo>> getByType(String tipo){
-        return dao.getElementosByUsuarioAndTipo(getUid(), tipo);
+        return dao.getElementosByUsuarioAndTipo(getLocalId(), tipo);
     }
 
 }

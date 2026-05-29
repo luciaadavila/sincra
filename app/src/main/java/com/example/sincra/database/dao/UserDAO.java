@@ -22,5 +22,11 @@ public interface UserDAO {
     void delete(User user);
 
     @Query("SELECT * FROM users WHERE userId = :userId")
-    User getById(String userId);
+    User getById(long userId);
+
+    @Query("SELECT * FROM users WHERE firebaseUid = :uid LIMIT 1")
+    User getByFirebaseUid(String uid);
+
+    @Query("SELECT userId FROM users WHERE firebaseUid = :uid LIMIT 1")
+    long getLocalIdByFirebaseUid(String uid);
 }

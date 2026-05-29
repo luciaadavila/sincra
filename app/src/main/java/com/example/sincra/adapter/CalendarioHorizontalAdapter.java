@@ -23,8 +23,14 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
     private OnDateClickListener listener;
     private List<String> fechasConPeriodo; // Formato "yyyy-MM-dd" que traeremos de Room
 
+
+    private long ultimoClick = 0;
+    private static final long INTERVALO = 300;
+
+
     public interface OnDateClickListener {
         void onDateClick(Date fechaSeleccionada);
+        void onDateDoubleClick(Date fechaSeleccionada);
     }
 
     public CalendarioHorizontalAdapter(List<Date> listaFechas, OnDateClickListener listener) {
@@ -73,6 +79,8 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
             // Este día tiene marcado período (REGLA EN ROJO)
             holder.dayNum.setTextColor(Color.RED);
             holder.dayLabel.setTextColor(Color.RED);
+            holder.dayNum.setBackgroundResource(R.drawable.circle_red_border);
+
         } else {
             // Día normal
             holder.dayNum.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.black));
@@ -80,14 +88,24 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
         }
 
         holder.itemView.setOnClickListener(v -> {
-            int prevPos = posicionSeleccionada;
-            posicionSeleccionada = holder.getBindingAdapterPosition();
-            notifyItemChanged(prevPos);
-            notifyItemChanged(posicionSeleccionada);
+            long tiempoActual = System.currentTimeMillis();
 
-            if (listener != null && posicionSeleccionada != RecyclerView.NO_POSITION) {
-                listener.onDateClick(listaFechas.get(posicionSeleccionada));
+            if (tiempoActual - ultimoClick < INTERVALO){
+                int currentPos = holder.getBindingAdapterPosition();
+                if (listener != null && currentPos != RecyclerView.NO_POSITION) {
+                    listener.onDateDoubleClick(listaFechas.get(currentPos));
+                }
+            } else {
+                int prevPos = posicionSeleccionada;
+                posicionSeleccionada = holder.getBindingAdapterPosition();
+                notifyItemChanged(prevPos);
+                notifyItemChanged(posicionSeleccionada);
+
+                if (listener != null && posicionSeleccionada != RecyclerView.NO_POSITION) {
+                    listener.onDateClick(listaFechas.get(posicionSeleccionada));
+                }
             }
+
         });
     }
 

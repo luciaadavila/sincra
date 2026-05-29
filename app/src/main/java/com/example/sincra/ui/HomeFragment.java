@@ -51,9 +51,17 @@ public class HomeFragment extends Fragment {
         fechaSeleccionadaFormateada = viewModel.formatDate(new Date());
         dayButton.setText(fechaSeleccionadaFormateada);
 
-        adapter = new CalendarioHorizontalAdapter(new ArrayList<>(), fechaSeleccionada -> {
-            fechaSeleccionadaFormateada = viewModel.formatDate(fechaSeleccionada);
-            dayButton.setText(fechaSeleccionadaFormateada);
+        adapter = new CalendarioHorizontalAdapter(new ArrayList<>(), new CalendarioHorizontalAdapter.OnDateClickListener() {
+            @Override
+            public void onDateClick(Date fechaSeleccionada) {
+                fechaSeleccionadaFormateada = viewModel.formatDate(fechaSeleccionada);
+                dayButton.setText(fechaSeleccionadaFormateada);
+            }
+
+            @Override
+            public void onDateDoubleClick(Date fechaSeleccionada) {
+                viewModel.addOrDeletePeriodDay(fechaSeleccionada);
+            }
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);

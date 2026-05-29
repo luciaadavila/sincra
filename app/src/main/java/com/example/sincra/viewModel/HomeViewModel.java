@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.example.sincra.database.repositorio.CicloRepository;
+import com.example.sincra.model.Ciclo;
 import com.example.sincra.model.Registrazione;
 import com.example.sincra.model.relazioni.CicloConRegistrazioni;
 
@@ -25,11 +26,23 @@ public class HomeViewModel extends AndroidViewModel {
     private final LiveData<List<String>> diasDeRegla;
     private final MutableLiveData<List<Date>> listaFechas = new MutableLiveData<>();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private final CicloRepository repo;
 
     public HomeViewModel(@NonNull Application application){
         super(application);
-        CicloRepository repo = new CicloRepository(application);
+        repo = new CicloRepository(application);
         this.cicloActual = repo.getCicloActual();
+
+        // Si no hay ciclo, creamos uno por defecto (para evitar crash en DetailDay)
+        this.cicloActual.observeForever(cicloConRegistrazioni -> {
+            if (cicloConRegistrazioni == null) {
+                long localId = repo.getLocalId();
+                if (localId != -1) {
+                    Ciclo nuevoCiclo = new Ciclo(new Date(), null, 28, 5, null, null, localId);
+                    repo.insert(nuevoCiclo);
+                }
+            }
+        });
         
         this.diasDeRegla = Transformations.map(cicloActual, cicloConRegistrazioni -> {
             List<String> dias = new ArrayList<>();
@@ -71,5 +84,9 @@ public class HomeViewModel extends AndroidViewModel {
     
     public String formatDate(Date date) {
         return dateFormat.format(date);
+    }
+
+    public void addOrDeletePeriodDay(Date date){
+        return repo.addOrDeletePeriodDay(date);
     }
 }

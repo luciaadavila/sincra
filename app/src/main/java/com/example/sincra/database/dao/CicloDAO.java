@@ -10,6 +10,7 @@ import androidx.room.Update;
 import com.example.sincra.model.Ciclo;
 import com.example.sincra.model.relazioni.CicloConRegistrazioni;
 
+import java.util.Date;
 import java.util.List;
 
 @Dao
@@ -29,17 +30,20 @@ public interface CicloDAO {
 
     @Transaction
     @Query("SELECT * FROM ciclo WHERE userId = :userId")
-    LiveData<List<CicloConRegistrazioni>> getCicliConRegistrazioni(String userId);
+    LiveData<List<CicloConRegistrazioni>> getCicliConRegistrazioni(long userId);
 
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC")
-    LiveData<List<Ciclo>> getHistorialCicli(String userId);
+    LiveData<List<Ciclo>> getHistorialCicli(long userId);
 
     // una sin liveData para consultas asincronas
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC")
-    List<Ciclo> getHistorialCicliSync(String userId);
+    List<Ciclo> getHistorialCicliSync(long userId);
 
     // conseguimos el ciclo actual
     @Transaction
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC LIMIT 1")
-    LiveData<CicloConRegistrazioni> getCicloActualConRegistrazioni(String userId);
+    LiveData<CicloConRegistrazioni> getCicloActualConRegistrazioni(long userId);
+
+    @Query("SELECT ")
+    void addOrDeletePeriodDay(Date date);
 }

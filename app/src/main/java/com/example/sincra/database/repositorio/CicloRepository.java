@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,31 +23,29 @@ public class CicloRepository {
     private CicloDAO dao;
     private ExecutorService executor;
 
+    private final Context context;
+
     public CicloRepository(Context context){
+        this.context = context;
         dao = AppDatabase.getDatabase(context).cicloDAO();
         executor = Executors.newSingleThreadExecutor();
     }
 
-    /*
-    private String getCurrentUserId() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            return user.getUid();
-        }
-        return ""; // O manejar el error si no hay un usuario logueado
-    }*/
-
-    public String getUid() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        return user != null ? user.getUid() : "";
+    public long getLocalId() {
+        return context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+                .getLong("local_user_id", -1L);
     }
 
     public LiveData<List<CicloConRegistrazioni>> getCicliConRegistrazioni() {
-        return dao.getCicliConRegistrazioni(getUid());
+        return dao.getCicliConRegistrazioni(getLocalId());
     }
 
     public LiveData<List<Ciclo>> getHistorialCicli(){
-        return dao.getHistorialCicli(getUid());
+        return dao.getHistorialCicli(getLocalId());
+    }
+
+    public void addOrDeletePeriodDay(Date date) {
+        dao.addOrDeletePeriodDay(date);
     }
 
     public interface PredictionCallback {
@@ -56,7 +55,7 @@ public class CicloRepository {
     public void generatePredictions(PredictionCallback callback) {
         executor.execute(() -> {
             // 1. Obtenemos el historial de forma síncrona para el cálculo (Room permite llamadas directas en hilos background)
-            List<Ciclo> historial = dao.getHistorialCicliSync(getUid());
+            List<Ciclo> historial = dao.getHistorialCicliSync(getLocalId());
 
             List<PredictSettimana> resultadoPredicciones = new ArrayList<>();
 
@@ -71,8 +70,12 @@ public class CicloRepository {
         });
     }
 
+    public void insert(Ciclo ciclo) {
+        executor.execute(() -> dao.insert(ciclo));
+    }
+
     public LiveData<CicloConRegistrazioni> getCicloActual(){
-        return dao.getCicloActualConRegistrazioni(getUid());
+        return dao.getCicloActualConRegistrazioni(getLocalId());
     }
 
     public LiveData<CicloConRegistrazioni> getCicloByIdConRegistrazioni(int cicloId){

@@ -167,12 +167,34 @@ public class GoogleSignInActivity extends AppCompatActivity {
     }
     // [END sign_out]
 
-    private void updateUI(FirebaseUser user) {
-        if (user != null){
-            Intent intent = new Intent(GoogleSignInActivity.this, MainActivity.class);
-            intent.putExtra("USER_ID", user.getUid());
-            startActivity(intent);
-            finish();
+    private void updateUI(FirebaseUser firebaseUser) {
+        if (firebaseUser != null){
+            // Sincronizar con base de datos local
+            Executors.newSingleThreadExecutor().execute(() -> {
+                com.example.sincra.database.AppDatabase db = com.example.sincra.database.AppDatabase.getDatabase(this);
+                com.example.sincra.model.User user = db.userDAO().getByFirebaseUid(firebaseUser.getUid());
+                long localId;
+                if (user == null) {
+                    user = new com.example.sincra.model.User(firebaseUser.getUid(), 
+                            firebaseUser.getDisplayName() != null ? firebaseUser.getDisplayName() : "Usuario", 
+                            new java.util.Date(), 28, 5);
+                    db.userDAO().insert(user);
+                    localId = db.userDAO().getLocalIdByFirebaseUid(firebaseUser.getUid());
+                } else {
+                    localId = user.getUserId();
+                }
+                
+                // Guardar localId en SharedPreferences para acceso rápido
+                getSharedPreferences("user_prefs", MODE_PRIVATE).edit()
+                        .putLong("local_user_id", localId).apply();
+
+                runOnUiThread(() -> {
+                    Intent intent = new Intent(GoogleSignInActivity.this, MainActivity.class);
+                    intent.putExtra("USER_ID", localId);
+                    startActivity(intent);
+                    finish();
+                });
+            });
         }
     }
 }

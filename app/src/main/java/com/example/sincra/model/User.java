@@ -11,6 +11,8 @@ public class User {
     @PrimaryKey(autoGenerate = true)
     private long userId;
     @NonNull
+    private String firebaseUid;
+    @NonNull
     private String nombre;
     private Date dataRegistro;
     private int durataMediaCiclo;
@@ -18,7 +20,8 @@ public class User {
 
     public User(){}
 
-    public User(@NonNull String nombre, Date dataRegistro, int durataMediaCiclo, int durataMediaPeriodo){
+    public User(@NonNull String firebaseUid, @NonNull String nombre, Date dataRegistro, int durataMediaCiclo, int durataMediaPeriodo){
+        this.firebaseUid = firebaseUid;
         this.nombre = nombre;
         this.dataRegistro = dataRegistro;
         this.durataMediaCiclo = durataMediaCiclo;
@@ -34,7 +37,15 @@ public class User {
     public void setUserId(long userId) {
         this.userId = userId;
     }
-    
+
+    @NonNull
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(@NonNull String firebaseUid) {
+        this.firebaseUid = firebaseUid;
+    }
 
     @NonNull
     public String getNombre() {
