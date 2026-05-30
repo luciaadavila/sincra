@@ -38,7 +38,7 @@ public class HomeViewModel extends AndroidViewModel {
             if (cicloConRegistrazioni == null) {
                 long localId = repo.getLocalId();
                 if (localId != -1) {
-                    Ciclo nuevoCiclo = new Ciclo(new Date(), null, 28, 5, null, null, localId);
+                    Ciclo nuevoCiclo = new Ciclo(new Date(), null, 28, 5, localId);
                     repo.insert(nuevoCiclo);
                 }
             }
@@ -87,6 +87,6 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void addOrDeletePeriodDay(Date date){
-        return repo.addOrDeletePeriodDay(date);
+        repo.addOrDeletePeriodDay(date);
     }
 }

@@ -17,7 +17,9 @@ import com.google.firebase.auth.FirebaseUser;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,19 +52,19 @@ public class RegistrazioneRepository {
     }
 
     public LiveData<RegistrazioneConElementi> getByDate(String date) {
-        long timestamp = 0;
+        Date data = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            timestamp = sdf.parse(date).getTime();
+            data = sdf.parse(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return dao.getByDateAndUser(timestamp, getLocalId());
+        return dao.getByDateAndUser(data, getLocalId());
     }
 
     public void saveDay(Registrazione registro, List<ElementoCatalogo> elementos) {
         executor.execute(() -> {
-            // Extraemos solo los IDs para pasárselos al método por defecto del DAO
+            // Extraemos solo los IDs para pasárselos al metodo por defecto del DAO
             List<Integer> ids = new ArrayList<>();
             for (ElementoCatalogo e : elementos) {
                 ids.add(e.getElementoId());

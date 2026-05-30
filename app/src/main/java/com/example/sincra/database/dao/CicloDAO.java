@@ -16,7 +16,7 @@ import java.util.List;
 @Dao
 public interface CicloDAO {
     @Insert
-    void insert(Ciclo ciclo);
+    long insert(Ciclo ciclo);
 
     @Update
     void update(Ciclo ciclo);
@@ -44,6 +44,8 @@ public interface CicloDAO {
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC LIMIT 1")
     LiveData<CicloConRegistrazioni> getCicloActualConRegistrazioni(long userId);
 
-    @Query("SELECT ")
-    void addOrDeletePeriodDay(Date date);
+    // ciclo actual
+    @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC LIMIT 1")
+    Ciclo getCurrentCiclo(long userId);
+
 }

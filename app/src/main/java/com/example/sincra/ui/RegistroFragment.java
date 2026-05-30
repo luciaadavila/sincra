@@ -65,7 +65,7 @@ public class RegistroFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(RegistroViewModel.class);
         viewModel.getRegistri().observe(getViewLifecycleOwner(), data -> {
             if (data != null) {
-                adapter.updateList(data);
+                adapter.setRegistrazioni(data);
             }
         });
     }

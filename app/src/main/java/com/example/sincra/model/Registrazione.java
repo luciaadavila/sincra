@@ -3,6 +3,7 @@ package com.example.sincra.model;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -41,7 +42,9 @@ public class Registrazione {
 
     private String notas;
 
-    public Registrazione() {
+    @Ignore
+    public Registrazione(@NonNull Date data) {
+        this.data = data;
     }
 
     public Registrazione(@NonNull Date data,

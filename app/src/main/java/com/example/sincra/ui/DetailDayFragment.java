@@ -35,10 +35,8 @@ public class DetailDayFragment extends Fragment {
     private CatalogoAdapter moodAdapter;
     private CatalogoAdapter symptomAdapter;
     private DetailDayViewModel viewModel;
-    private Button btnGuardar;
-    private String currentDate;
-    private int cicloIdActivo = -1;
-    private int registroIdExistente = 0;
+    private String currentDate = "";
+    private Registrazione registrazione;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
 
@@ -58,9 +56,16 @@ public class DetailDayFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
+        // inicializamos la fecha pasada por argumentos y creamos una registrazione con ella
+        if (getArguments() != null) {
+            currentDate = getArguments().getString("date");
+        }
+        registrazione = new Registrazione(stringToDate(currentDate));
+
+
         RecyclerView moodRecycler = view.findViewById(R.id.moodRecycler);
         RecyclerView symptomRecycler = view.findViewById(R.id.symptomRecycler);
-        btnGuardar = view.findViewById(R.id.btnGuardar);
+        Button btnGuardar = view.findViewById(R.id.btnGuardar);
 
         // 2. Configurar la disposición visual en cuadrículas (3 columnas)
         moodRecycler.setLayoutManager(new GridLayoutManager(getContext(), 3));
@@ -72,7 +77,7 @@ public class DetailDayFragment extends Fragment {
         symptomRecycler.setAdapter(symptomAdapter);
 
         viewModel = new ViewModelProvider(this).get(DetailDayViewModel.class);
-        // 5. Observar todos los estados de ánimo disponibles para el usuario
+        // 5. Observar todos los estados de ánimo disponibles para el usuario -> currentMoodsFromDB
         viewModel.getAllMoods().observe(getViewLifecycleOwner(), moods -> {
             if (moods != null) {
                 currentMoodsFromDb = moods;
@@ -80,7 +85,7 @@ public class DetailDayFragment extends Fragment {
             }
         });
 
-        // 6. Observar todos los síntomas disponibles para el usuario
+        // 6. Observar todos los síntomas disponibles para el usuario -> currentSymptomsFromDB
         viewModel.getAllSymptoms().observe(getViewLifecycleOwner(), symptoms -> {
             if (symptoms != null) {
                 currentSymptomsFromDb = symptoms;
@@ -91,7 +96,7 @@ public class DetailDayFragment extends Fragment {
         // miramos si el dia ya contaba con registros seleccionados
         viewModel.getRegistro().observe(getViewLifecycleOwner(), registroConElementi -> {
             if (registroConElementi != null) {
-                registroIdExistente = registroConElementi.registrazione.getRegistroId();
+                registrazione = registroConElementi.registrazione;
                 if (registroConElementi.elementiCatalogo != null) {
                     marcarElementosComoSeleccionados(registroConElementi.elementiCatalogo);
                 }
@@ -99,11 +104,7 @@ public class DetailDayFragment extends Fragment {
             sincronizarElementosSeleccionados();
         });
 
-        viewModel.getCicloActual().observe(getViewLifecycleOwner(), ciclo -> {
-            if (ciclo != null) {
-                cicloIdActivo = ciclo.getCiclo().getCicloId();
-            }
-        });
+
 
         if (getArguments() != null) {
             currentDate = getArguments().getString("date");
@@ -111,6 +112,7 @@ public class DetailDayFragment extends Fragment {
                 viewModel.setDate(currentDate);
             }
         }
+
 
         btnGuardar.setOnClickListener(v -> guardarRegistroDelDia());
     }
@@ -137,21 +139,26 @@ public class DetailDayFragment extends Fragment {
     }
 
     private void guardarRegistroDelDia() {
-        if (cicloIdActivo == -1) {
-            Toast.makeText(getContext(), "No hay un ciclo activo para guardar el registro", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         List<ElementoCatalogo> seleccionados = new ArrayList<>();
 
-        // Gracias a tu método público getSeleccionados(), extraemos de forma limpia lo seleccionado en la UI
+        // Gracias a tu metodo público getSeleccionados(), extraemos de forma limpia lo seleccionado en la UI
         seleccionados.addAll(moodAdapter.getSeleccionados());
         seleccionados.addAll(symptomAdapter.getSeleccionados());
 
+        // Envío asíncrono al repositorio
+        viewModel.save(registrazione, seleccionados);
+
+        // Finalizar y remover el fragment de la pila de navegación
+        if (getActivity() != null) {
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
+    }
+
+    public Date stringToDate(String dateString){
         Date dateToSave;
-        if (currentDate != null) {
+        if (dateString != null) {
             try {
-                dateToSave = dateFormat.parse(currentDate);
+                dateToSave = dateFormat.parse(dateString);
             } catch (ParseException e) {
                 dateToSave = new Date();
             }
@@ -159,18 +166,7 @@ public class DetailDayFragment extends Fragment {
             dateToSave = new Date();
         }
 
-        Registrazione r = new Registrazione(dateToSave, false, false, 1, "", cicloIdActivo, 0);
-        if (registroIdExistente != 0) {
-            r.setRegistroId(registroIdExistente);
-        }
-
-        // Envío asíncrono al repositorio
-        viewModel.save(r, seleccionados);
-
-        // Finalizar y remover el fragment de la pila de navegación
-        if (getActivity() != null) {
-            getActivity().getSupportFragmentManager().popBackStack();
-        }
+        return dateToSave;
     }
 
 }

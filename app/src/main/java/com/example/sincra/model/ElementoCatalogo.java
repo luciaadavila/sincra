@@ -24,7 +24,6 @@ public class ElementoCatalogo {
     @NonNull
     private String nome;
     private String icona;
-    private boolean isPersonalizzato;
     private long userId;
 
     @Ignore
@@ -32,11 +31,10 @@ public class ElementoCatalogo {
 
     public ElementoCatalogo(){}
 
-    public ElementoCatalogo(@NonNull String tipo,@NonNull String nome, String icona, boolean isPersonalizzato, long userId){
+    public ElementoCatalogo(@NonNull String tipo,@NonNull String nome, String icona, long userId){
         this.tipo = tipo;
         this.nome = nome;
         this.icona = icona;
-        this.isPersonalizzato = isPersonalizzato;
         this.userId = userId;
     }
 
@@ -84,14 +82,6 @@ public class ElementoCatalogo {
 
     public void setIcona(String icona) {
         this.icona = icona;
-    }
-
-    public boolean isPersonalizzato() {
-        return isPersonalizzato;
-    }
-
-    public void setPersonalizzato(boolean isPersonalizzato) {
-        this.isPersonalizzato = isPersonalizzato;
     }
 
     public long getUserId() {

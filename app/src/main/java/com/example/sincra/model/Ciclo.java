@@ -31,14 +31,12 @@ public class Ciclo {
     public Ciclo(){
     }
 
-    public Ciclo(@NonNull Date dataInizio, Date dataFine, int durataTotale, int durataPeriodo, List<String> sintomiComuni, List<Registrazione> registrazioni, long userId){
+    public Ciclo(@NonNull Date dataInizio, Date dataFine, int durataTotale, int durataPeriodo, long userId){
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
         this.durataTotale = durataTotale;
         this.durataPeriodo = durataPeriodo;
         this.userId = userId;
-        //this.sintomiComuni = sintomiComuni != null ? sintomiComuni : new ArrayList<>();
-        //this.registrazioni = registrazioni != null ? registrazioni : new ArrayList<>();
     }
 
 

@@ -3,6 +3,7 @@ package com.example.sincra.database.dao;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
@@ -11,6 +12,7 @@ import com.example.sincra.model.Registrazione;
 import com.example.sincra.model.RegistroCatalogoRel;
 import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 
+import java.util.Date;
 import java.util.List;
 
 @Dao
@@ -21,6 +23,9 @@ public interface RegistrazioneDAO {
 
     @Insert
     long insertRel(RegistroCatalogoRel rel);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertOrUpdate(Registrazione registrazione);
 
     @Query("DELETE FROM registro_catalogo WHERE registroId = :registroId")
     void deleteRelByRegistroId(int registroId);
@@ -35,8 +40,13 @@ public interface RegistrazioneDAO {
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +
                   "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
-                  "WHERE r.data = :dataTimestamp AND c.userId = :userId LIMIT 1")
-    LiveData<RegistrazioneConElementi> getByDateAndUser(long dataTimestamp, long userId);
+                  "WHERE r.data = :data AND c.userId = :userId LIMIT 1")
+    LiveData<RegistrazioneConElementi> getByDateAndUser(Date data, long userId);
+
+    @Transaction
+    @Query("SELECT * FROM registrazione r INNER JOIN ciclo c ON r.cicloId = c.cicloId WHERE data = :date AND userId = :userId LIMIT 1 ")
+    Registrazione getRegistroByDate(Date date, long userId);
+
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +
             "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
