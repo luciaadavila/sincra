@@ -38,7 +38,10 @@ public class HomeViewModel extends AndroidViewModel {
             if (cicloConRegistrazioni == null) {
                 long localId = repo.getLocalId();
                 if (localId != -1) {
-                    Ciclo nuevoCiclo = new Ciclo(new Date(), null, 28, 5, localId);
+                    // Usamos fecha truncada para el inicio del ciclo
+                    Ciclo nuevoCiclo = new Ciclo(
+                            CicloRepository.truncarFecha(new Date()),
+                            null, 28, 5, localId);
                     repo.insert(nuevoCiclo);
                 }
             }
@@ -62,6 +65,12 @@ public class HomeViewModel extends AndroidViewModel {
     private void generateFechas() {
         List<Date> fechas = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
+        // Truncamos la fecha de hoy para empezar desde las 00:00
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
         cal.add(Calendar.DAY_OF_YEAR, -15);
         for (int i = 0; i < 31; i++) {
             fechas.add(cal.getTime());

@@ -52,31 +52,35 @@ public class CicloRepository {
         return dao.getHistorialCicli(getLocalId());
     }
 
-    public void addOrDeletePeriodDay(Date data) {
+    public void addOrDeletePeriodDay(Date dataInput) {
         executor.execute(() -> {
+            Date data = truncarFecha(dataInput);
             Registrazione registrazioneDate = daoRe.getRegistroByDate(data, getLocalId());
             Registrazione registrazionePrevDate = daoRe.getRegistroByDate(prevDay(data), getLocalId());
+            Registrazione registrazioneNextDate = daoRe.getRegistroByDate(nextDay(data), getLocalId());
+
             Ciclo currentCiclo = dao.getCurrentCiclo(getLocalId());
 
             // si todavía no había una registración, significa que el día no era de regla
             // creamos registrazione y la insertamos
             if (registrazioneDate == null){
-                registrazioneDate = new Registrazione(data, false, false, 1, null, currentCiclo.getCicloId(), 0);
+                int cicloId = (currentCiclo != null) ? currentCiclo.getCicloId() : 0;
+                registrazioneDate = new Registrazione(data, false, false, 1, null, cicloId, 0);
             }
             boolean isPeriodDay = registrazioneDate.isPeriodo();
 
             if (isPeriodDay){
-                registrazioneDate.setPeriodo(false);
-                daoRe.insertOrUpdate(registrazioneDate);
-
-                // si quitamos una regla intermedia temeos que cambiar lógica
+                handleDeletePeriodo(data, registrazionePrevDate, registrazioneNextDate, currentCiclo);
                 return;
             }
+
+            // Si llegamos aquí es que queremos añadir el día de periodo
+            registrazioneDate.setPeriodo(true);
 
             boolean wasPeriodDay = (registrazionePrevDate != null && registrazionePrevDate.isPeriodo());
             if (!wasPeriodDay){ // si el día anterior no había regla y ahora sí -> empieza nuevo ciclo
                 if (currentCiclo != null && currentCiclo.getDataFine() == null){
-                    closePrevCiclo(currentCiclo, data);
+                    closePrevCiclo(currentCiclo, prevDay(data));
                 }
 
                 Ciclo nuevoCiclo = new Ciclo(data, null, 28, 5, getLocalId());
@@ -87,6 +91,11 @@ public class CicloRepository {
             } else {
                 if (currentCiclo != null){
                     registrazioneDate.setCicloId(currentCiclo.getCicloId());
+                } else {
+                    // Si no hay ciclo actual pero el anterior tenía periodo, creamos uno nuevo por seguridad
+                    Ciclo nuevoCiclo = new Ciclo(data, null, 28, 5, getLocalId());
+                    long id = dao.insert(nuevoCiclo);
+                    registrazioneDate.setCicloId((int) id);
                 }
                 daoRe.insertOrUpdate(registrazioneDate);
             }
@@ -105,7 +114,7 @@ public class CicloRepository {
         Date dataEv = ciclo.getDataInizio();
 
         int i = 1;
-        while (dataEv.after(dataFine)){
+        while (!dataEv.after(dataFine)){
             Registrazione reg = daoRe.getRegistroByDate(dataEv, getLocalId());
             if (reg == null){
                 reg = new Registrazione(dataEv, false, false, i, null, ciclo.getCicloId(), 0);
@@ -120,24 +129,131 @@ public class CicloRepository {
         }
     }
 
+    private void handleDeletePeriodo(Date data, Registrazione prevReg, Registrazione nextReg, Ciclo currentCiclo){
+        Registrazione reg = daoRe.getRegistroByDate(data, getLocalId());
+        if (reg == null || reg.getCicloId() == 0) return;
+
+        int cicloIdOriginal = reg.getCicloId();
+        Ciclo cicloOriginal = dao.getByIdSync(cicloIdOriginal);
+        if (cicloOriginal == null ) return;
+
+        // Desmarcamos el día de regla
+        reg.setPeriodo(false);
+        daoRe.insertOrUpdate(reg);
+
+        boolean wasPeriodDay = (prevReg != null && prevReg.isPeriodo());
+        boolean isNextPeriodDay = (nextReg != null && nextReg.isPeriodo());
+
+        // =========================================================================
+        // ESCENARIO 1: DIVIDIR EL CICLO (Ayer REGLA y Mañana REGLA)
+        // =========================================================================
+        if (wasPeriodDay && isNextPeriodDay){
+            // Cerramos el ciclo original en el día de ayer
+            closePrevCiclo(cicloOriginal, prevDay(data));
+
+            // Creamos nuevo ciclo que empieza mañana (con el primer día de regla restante)
+            Ciclo nuevoCiclo = new Ciclo(nextDay(data), null, 28, 5, getLocalId());
+            long nuevoCicloId = dao.insert(nuevoCiclo);
+
+            List<Registrazione> posteriores = daoRe.getRegistrosPosterioresSync(cicloOriginal.getCicloId(), nextDay(data), getLocalId());
+            if (posteriores != null){
+                for (Registrazione r: posteriores){
+                    r.setCicloId((int) nuevoCicloId);
+                    daoRe.insertOrUpdate(r);
+                }
+            }
+
+            updatePeriodDays(cicloOriginal);
+            Ciclo nuevoCicloCargado = dao.getByIdSync((int) nuevoCicloId);
+            if (nuevoCicloCargado != null){
+                updatePeriodDays(nuevoCicloCargado);
+            }
+        }
+        // =========================================================================
+        // ESCENARIO 2: RETRASAR EL INICIO (Ayer NO REGLA y Mañana REGLA)
+        // =========================================================================
+        else if (!wasPeriodDay && isNextPeriodDay) {
+            // El ciclo ya no empieza el día 'data', ahora empieza mañana
+            Date fechaManana = nextDay(data);
+            cicloOriginal.setDataInizio(fechaManana);
+            if (cicloOriginal.getDataFine() != null) {
+                cicloOriginal.setDurataTotale((int) difDays(fechaManana, cicloOriginal.getDataFine()));
+            }
+            dao.update(cicloOriginal);
+
+            updatePeriodDays(cicloOriginal);
+        }
+        // =========================================================================
+        // ESCENARIO 3: UNIFICAR / ELIMINAR CICLO (Ayer NO REGLA y Mañana NO REGLA)
+        // =========================================================================
+        else if (!wasPeriodDay && !isNextPeriodDay) {
+            // Buscamos si existe un ciclo anterior en el historial para absorber estos días huérfanos
+            Ciclo cicloAnterior = dao.getCicloAnteriorSync(cicloOriginal.getDataInizio(), getLocalId());
+
+            List<Registrazione> todosLosDelCiclo = daoRe.getRegistrosPosterioresSync(cicloIdOriginal, cicloOriginal.getDataInizio(), getLocalId());
+
+            if (cicloAnterior != null) {
+                // Pasamos todos los días de este ciclo eliminado al ciclo anterior
+                if (todosLosDelCiclo != null) {
+                    for (Registrazione r : todosLosDelCiclo) {
+                        r.setCicloId(cicloAnterior.getCicloId());
+                        daoRe.insertOrUpdate(r);
+                    }
+
+                    // Si el ciclo anterior ya tenía fecha de fin, la extendemos hasta absorber el último día movido
+                    if (cicloAnterior.getDataFine() != null && !todosLosDelCiclo.isEmpty()) {
+                        Date ultimaFecha = todosLosDelCiclo.get(todosLosDelCiclo.size() - 1).getDate();
+                        cicloAnterior.setDataFine(ultimaFecha);
+                        cicloAnterior.setDurataTotale((int) difDays(cicloAnterior.getDataInizio(), ultimaFecha));
+                        dao.update(cicloAnterior);
+                    }
+                }
+
+                // Eliminamos de la base de datos el ciclo actual redundante
+                dao.delete(cicloOriginal);
+                updatePeriodDays(cicloAnterior);
+
+            } else {
+                // Si no hay ciclo anterior en el historial, desvinculamos los registros (cicloId = 0)
+                if (todosLosDelCiclo != null) {
+                    for (Registrazione r : todosLosDelCiclo) {
+                        r.setCicloId(0);
+                        r.setGiornoCiclo(0);
+                        daoRe.insertOrUpdate(r);
+                    }
+                }
+                dao.delete(cicloOriginal);
+            }
+        }
+    }
+
+    private void updatePeriodDays(Ciclo ciclo) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(ciclo.getDataInizio());
+        Date dataEv = truncarFecha(cal.getTime());
+        Date fechaFin = (ciclo.getDataFine() != null) ? ciclo.getDataFine() : truncarFecha(new Date());
+
+        int i = 1;
+        while (!dataEv.after(fechaFin)) {
+            Registrazione reg = daoRe.getRegistroByDate(dataEv, getLocalId());
+            if (reg != null && reg.getCicloId() == ciclo.getCicloId()) {
+                reg.setGiornoCiclo(i);
+                daoRe.insertOrUpdate(reg);
+            }
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            dataEv = truncarFecha(cal.getTime());
+            i++;
+        }
+    }
+
     public interface PredictionCallback {
         void onPredictionsGenerated(List<PredictSettimana> predictions);
     }
 
     public void generatePredictions(PredictionCallback callback) {
         executor.execute(() -> {
-            // 1. Obtenemos el historial de forma síncrona para el cálculo (Room permite llamadas directas en hilos background)
             List<Ciclo> historial = dao.getHistorialCicliSync(getLocalId());
-
             List<PredictSettimana> resultadoPredicciones = new ArrayList<>();
-
-            if (historial != null && !historial.isEmpty()) {
-                // TODO: Aquí irá tu lógica/algoritmo matemático de predicción real.
-                // Ejemplo ficticio para que no vuelva vacío:
-                // resultadoPredicciones = miAlgoritmo.calcular(historial);
-            }
-
-            // 2. Devolvemos el resultado al ViewModel
             callback.onPredictionsGenerated(resultadoPredicciones);
         });
     }
@@ -153,9 +269,6 @@ public class CicloRepository {
     public LiveData<CicloConRegistrazioni> getCicloByIdConRegistrazioni(int cicloId){
         return dao.getCicloByIdConRegistrazioni(cicloId);
     }
-
-
-
 
     public static Date truncarFecha(Date date) {
         Calendar cal = Calendar.getInstance();
@@ -174,13 +287,17 @@ public class CicloRepository {
         return truncarFecha(calendar.getTime());
     }
 
+    public static Date nextDay(Date data) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(data);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        return truncarFecha(calendar.getTime());
+    }
+
     public static int difDays(Date dataInizio, Date dataFine) {
         Date d1 = truncarFecha(dataInizio);
         Date d2 = truncarFecha(dataFine);
         long diferenciaMilisegundos = d2.getTime() - d1.getTime();
-        // Añadimos +1 si quieres contar ambos días inclusive, o déjalo así para medir noches/intervalos.
         return (int) (diferenciaMilisegundos / (1000 * 60 * 60 * 24));
     }
-
-
 }

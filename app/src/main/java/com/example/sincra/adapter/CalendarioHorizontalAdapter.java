@@ -25,7 +25,8 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
 
 
     private long ultimoClick = 0;
-    private static final long INTERVALO = 300;
+    private int ultimoClickPosicion = -1;
+    private static final long INTERVALO = 500;
 
 
     public interface OnDateClickListener {
@@ -89,23 +90,27 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
 
         holder.itemView.setOnClickListener(v -> {
             long tiempoActual = System.currentTimeMillis();
+            int currentPos = holder.getBindingAdapterPosition();
 
-            if (tiempoActual - ultimoClick < INTERVALO){
-                int currentPos = holder.getBindingAdapterPosition();
+            if (currentPos == ultimoClickPosicion && (tiempoActual - ultimoClick < INTERVALO)){
                 if (listener != null && currentPos != RecyclerView.NO_POSITION) {
                     listener.onDateDoubleClick(listaFechas.get(currentPos));
                 }
+                // Reset para evitar triple click
+                ultimoClick = 0;
+                ultimoClickPosicion = -1;
             } else {
                 int prevPos = posicionSeleccionada;
-                posicionSeleccionada = holder.getBindingAdapterPosition();
+                posicionSeleccionada = currentPos;
                 notifyItemChanged(prevPos);
                 notifyItemChanged(posicionSeleccionada);
 
                 if (listener != null && posicionSeleccionada != RecyclerView.NO_POSITION) {
                     listener.onDateClick(listaFechas.get(posicionSeleccionada));
                 }
+                ultimoClick = tiempoActual;
+                ultimoClickPosicion = currentPos;
             }
-
         });
     }
 

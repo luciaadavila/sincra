@@ -64,6 +64,20 @@ public class RegistrazioneRepository {
 
     public void saveDay(Registrazione registro, List<ElementoCatalogo> elementos) {
         executor.execute(() -> {
+            // Si el registro no tiene un ciclo asignado (es nuevo), buscamos el ciclo actual
+            if (registro.getCicloId() == 0) {
+                com.example.sincra.database.dao.CicloDAO cicloDao = AppDatabase.getDatabase(context).cicloDAO();
+                com.example.sincra.model.Ciclo current = cicloDao.getCurrentCiclo(getLocalId());
+                if (current != null) {
+                    registro.setCicloId(current.getCicloId());
+                } else {
+                    // Si no hay ciclo, creamos uno base para evitar el crash por Foreign Key
+                    com.example.sincra.model.Ciclo nuevoCiclo = new com.example.sincra.model.Ciclo(new Date(), null, 28, 5, getLocalId());
+                    long id = cicloDao.insert(nuevoCiclo);
+                    registro.setCicloId((int) id);
+                }
+            }
+
             // Extraemos solo los IDs para pasárselos al metodo por defecto del DAO
             List<Integer> ids = new ArrayList<>();
             for (ElementoCatalogo e : elementos) {

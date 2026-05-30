@@ -2,6 +2,7 @@ package com.example.sincra.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
@@ -21,8 +22,15 @@ public interface CicloDAO {
     @Update
     void update(Ciclo ciclo);
 
+    // Añadido para poder eliminar ciclos redundantes/huérfanos
+    @Delete
+    void delete(Ciclo ciclo);
+
     @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
     LiveData<Ciclo> getById(int cicloId);
+
+    @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
+    Ciclo getByIdSync(int cicloId);
 
     @Transaction
     @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
@@ -48,4 +56,7 @@ public interface CicloDAO {
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC LIMIT 1")
     Ciclo getCurrentCiclo(long userId);
 
+    // Añadido para encontrar el ciclo previo en el historial y absorber días al unificar
+    @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio < :fechaInicio ORDER BY dataInizio DESC LIMIT 1")
+    Ciclo getCicloAnteriorSync(Date fechaInicio, long userId);
 }

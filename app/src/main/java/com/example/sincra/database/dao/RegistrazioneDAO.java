@@ -39,12 +39,14 @@ public interface RegistrazioneDAO {
 
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +
-                  "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
-                  "WHERE r.data = :data AND c.userId = :userId LIMIT 1")
+            "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
+            "WHERE r.data = :data AND c.userId = :userId LIMIT 1")
     LiveData<RegistrazioneConElementi> getByDateAndUser(Date data, long userId);
 
     @Transaction
-    @Query("SELECT * FROM registrazione r INNER JOIN ciclo c ON r.cicloId = c.cicloId WHERE data = :date AND userId = :userId LIMIT 1 ")
+    @Query("SELECT r.* FROM registrazione r " +
+            "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
+            "WHERE r.data = :date AND c.userId = :userId LIMIT 1")
     Registrazione getRegistroByDate(Date date, long userId);
 
     @Transaction
@@ -70,4 +72,12 @@ public interface RegistrazioneDAO {
             insertRel(rel);
         }
     }
+
+    // Adaptado con r.data para mantener coherencia con tus otras queries de Room
+    @Transaction
+    @Query("SELECT r.* FROM registrazione r " +
+            "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
+            "WHERE r.cicloId = :cicloId AND r.data >= :desdeFecha AND c.userId = :userId " +
+            "ORDER BY r.data ASC")
+    List<Registrazione> getRegistrosPosterioresSync(int cicloId, Date desdeFecha, long userId);
 }
