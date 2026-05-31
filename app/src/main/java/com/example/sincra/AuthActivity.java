@@ -1,6 +1,7 @@
 package com.example.sincra;
 // codice di autenticazione con Google di https://firebase.google.com/docs/auth/android/google-signin?hl=es-419#java
 // https://github.com/firebase/snippets-android/blob/a413b0658ff2fc7a72c4b0c59e84a889ff7fac45/auth/app/src/main/java/com/google/firebase/quickstart/auth/GoogleSignInActivity.java
+// https://github.com/firebase/snippets-android/blob/a413b0658ff2fc7a72c4b0c59e84a889ff7fac45/auth/app/src/main/java/com/google/firebase/quickstart/auth/EmailPasswordActivity.java#L60
 
 
 import static com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,15 +33,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.util.MissingFormatArgumentException;
 import java.util.concurrent.Executors;
 
-public class GoogleSignInActivity extends AppCompatActivity {
+public class AuthActivity extends AppCompatActivity {
 
     private static final String TAG = "GoogleActivity";
     private FirebaseAuth mAuth;
     private CredentialManager credentialManager;
-    private SignInButton btnGoogleLogin; // Declaramos el botón
+    private EditText etEmail, etPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +50,27 @@ public class GoogleSignInActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         credentialManager = CredentialManager.create(getBaseContext());
 
-        btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
+        etEmail = findViewById(R.id.etEmail);
+        etPassword = findViewById(R.id.etPassword);
+
+        // Lógica Login Email
+        findViewById(R.id.btnLoginEmail).setOnClickListener(v -> {
+            String email = etEmail.getText().toString();
+            String password = etPassword.getText().toString();
+            if(!email.isEmpty() && !password.isEmpty()){
+                signInEmail(email, password);
+            }
+        });
+
+        // Declaramos el botón
+        SignInButton btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
         btnGoogleLogin.setOnClickListener(v -> {
             launchCredentialManager();
+        });
+
+        findViewById(R.id.tvRegisterLink).setOnClickListener(v -> {
+            // Lanza tu nueva pantalla de Registro
+            startActivity(new Intent(this, RegisterActivity.class));
         });
     }
 
@@ -65,8 +84,18 @@ public class GoogleSignInActivity extends AppCompatActivity {
         }
     }
 
+    private void signInEmail(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        updateUI(mAuth.getCurrentUser());
+                    } else {
+                        Toast.makeText(this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     private void launchCredentialManager() {
-        Log.d(TAG, "Lanzando Credential Manager...");
         // configurar la solicitud de google
         GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false) // Cambiado a false para mostrar todas las cuentas
@@ -80,27 +109,25 @@ public class GoogleSignInActivity extends AppCompatActivity {
 
         // Launch Credential Manager UI
         credentialManager.getCredentialAsync(
-                GoogleSignInActivity.this,
+                AuthActivity.this,
                 request,
                 new CancellationSignal(),
                 Executors.newSingleThreadExecutor(),
                 new CredentialManagerCallback<>() {
                     @Override
                     public void onResult(GetCredentialResponse result) {
-                        Log.d(TAG, "Resultado obtenido de Credential Manager");
                         // Extract credential from the result returned by Credential Manager
                         handleSignIn(result.getCredential());
                     }
 
                     @Override
                     public void onError(GetCredentialException e) {
-                        Log.e(TAG, "Couldn't retrieve user's credentials: " + e.getLocalizedMessage());
                         String errorMsg = "Error: " + e.getMessage();
                         if (e.getMessage() != null && e.getMessage().contains("No credentials available")) {
                             errorMsg = "No hay cuentas de Google vinculadas o error de configuración (SHA-1/Package Name).";
                         }
                         final String finalErrorMsg = errorMsg;
-                        runOnUiThread(() -> Toast.makeText(GoogleSignInActivity.this, finalErrorMsg, Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> Toast.makeText(AuthActivity.this, finalErrorMsg, Toast.LENGTH_LONG).show());
                     }
                 }
         );
@@ -189,7 +216,7 @@ public class GoogleSignInActivity extends AppCompatActivity {
                         .putLong("local_user_id", localId).apply();
 
                 runOnUiThread(() -> {
-                    Intent intent = new Intent(GoogleSignInActivity.this, MainActivity.class);
+                    Intent intent = new Intent(AuthActivity.this, MainActivity.class);
                     intent.putExtra("USER_ID", localId);
                     startActivity(intent);
                     finish();

@@ -68,6 +68,12 @@ public class HomeFragment extends Fragment {
         dayRecycler.setLayoutManager(layoutManager);
         dayRecycler.setAdapter(adapter);
 
+        viewModel.getCicloActual().observe(getViewLifecycleOwner(), cicloConReg -> {
+            if (cicloConReg != null && cicloConReg.getCiclo().getDataInizio() != null) {
+                viewModel.calcoloPredict(cicloConReg.getCiclo().getDataInizio());
+            }
+        });
+
         viewModel.getListaFechas().observe(getViewLifecycleOwner(), fechas -> {
             if (fechas != null) {
                 adapter.setListaFechas(fechas);
@@ -78,6 +84,12 @@ public class HomeFragment extends Fragment {
         viewModel.getDiasDeRegla().observe(getViewLifecycleOwner(), diasDeRegla -> {
             if (diasDeRegla != null) {
                 adapter.setFechasConPeriodo(diasDeRegla);
+            }
+        });
+
+        viewModel.getDiasProbables().observe(getViewLifecycleOwner(), diasProbables -> {
+            if (diasProbables != null) {
+                adapter.setDiasProbables(diasProbables);
             }
         });
 

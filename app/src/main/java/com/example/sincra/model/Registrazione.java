@@ -27,7 +27,7 @@ public class Registrazione {
     @PrimaryKey(autoGenerate = true)
     private int registroId;
 
-    private int cicloId;
+    private Integer cicloId;
     @NonNull
     private Date data;
 
@@ -52,7 +52,7 @@ public class Registrazione {
                          boolean isGiornoProbabile,
                          int giornoCiclo,
                          String notas,
-                         int cicloId, int pasos) {
+                         Integer cicloId, int pasos) {
 
         this.data = data;
         this.isPeriodo = isPeriodo;
@@ -60,9 +60,6 @@ public class Registrazione {
         this.giornoCiclo = giornoCiclo;
         this.cicloId = cicloId;
         this.pasos = pasos;
-
-        //this.statiAnimo = statiAnimo != null ? statiAnimo : new ArrayList<>();
-        //this.sintomi = sintomi != null ? sintomi : new ArrayList<>();
 
         this.notas = notas;
     }
@@ -138,17 +135,18 @@ public class Registrazione {
         isGiornoProbabile = giornoProbabile;
     }
 
-    public int getCicloId() {
+    public Integer getCicloId() {
         return cicloId;
     }
 
-    public void setCicloId(int cicloId) {
+    public void setCicloId(Integer cicloId) {
         this.cicloId = cicloId;
     }
 
     public int getRegistroId() {
         return registroId;
     }
+
 
     public int getPasos() {
         return pasos;

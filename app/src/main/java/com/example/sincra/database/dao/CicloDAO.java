@@ -27,14 +27,14 @@ public interface CicloDAO {
     void delete(Ciclo ciclo);
 
     @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
-    LiveData<Ciclo> getById(int cicloId);
+    LiveData<Ciclo> getById(Integer cicloId);
 
     @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
-    Ciclo getByIdSync(int cicloId);
+    Ciclo getByIdSync(Integer cicloId);
 
     @Transaction
     @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
-    LiveData<CicloConRegistrazioni> getCicloByIdConRegistrazioni(int cicloId);
+    LiveData<CicloConRegistrazioni> getCicloByIdConRegistrazioni(Integer cicloId);
 
     @Transaction
     @Query("SELECT * FROM ciclo WHERE userId = :userId")
@@ -59,4 +59,11 @@ public interface CicloDAO {
     // Añadido para encontrar el ciclo previo en el historial y absorber días al unificar
     @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio < :fechaInicio ORDER BY dataInizio DESC LIMIT 1")
     Ciclo getCicloAnteriorSync(Date fechaInicio, long userId);
+
+    // NUEVO: Añadido para encontrar el ciclo posterior cuando insertamos un periodo en el pasado
+    @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio > :fecha ORDER BY dataInizio ASC LIMIT 1")
+    Ciclo getCicloPosteriorSync(Date fecha, long userId);
+
+    @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataFine IS NOT NULL ORDER BY dataInizio DESC LIMIT 4")
+    List<Ciclo> getLastFourCicliSync(long userId);
 }

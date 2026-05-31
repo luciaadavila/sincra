@@ -25,7 +25,7 @@ public interface RegistrazioneDAO {
     long insertRel(RegistroCatalogoRel rel);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertOrUpdate(Registrazione registrazione);
+    long insertOrUpdate(Registrazione registrazione);
 
     @Query("DELETE FROM registro_catalogo WHERE registroId = :registroId")
     void deleteRelByRegistroId(int registroId);
@@ -80,4 +80,9 @@ public interface RegistrazioneDAO {
             "WHERE r.cicloId = :cicloId AND r.data >= :desdeFecha AND c.userId = :userId " +
             "ORDER BY r.data ASC")
     List<Registrazione> getRegistrosPosterioresSync(int cicloId, Date desdeFecha, long userId);
+
+    @Query("SELECT r.data FROM registrazione r " +
+            "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
+            "WHERE c.userId = :userId AND r.isPeriodo = 1")
+    LiveData<List<Date>> getFechasConPeriodoByUserId(long userId);
 }

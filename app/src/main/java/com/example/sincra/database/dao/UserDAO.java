@@ -1,5 +1,6 @@
 package com.example.sincra.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -22,7 +23,10 @@ public interface UserDAO {
     void delete(User user);
 
     @Query("SELECT * FROM users WHERE userId = :userId")
-    User getById(long userId);
+    LiveData<User> getById(long userId);
+
+    @Query("SELECT * FROM users WHERE userId = :userId")
+    User getByIdAsync(long userId);
 
     @Query("SELECT * FROM users WHERE firebaseUid = :uid LIMIT 1")
     User getByFirebaseUid(String uid);

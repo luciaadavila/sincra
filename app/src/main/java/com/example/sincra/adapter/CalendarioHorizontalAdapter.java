@@ -1,7 +1,10 @@
 package com.example.sincra.adapter;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -22,12 +25,7 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
     private int posicionSeleccionada = 15; // Empezamos enfocados en "Hoy" (el centro de nuestra lista)
     private OnDateClickListener listener;
     private List<String> fechasConPeriodo; // Formato "yyyy-MM-dd" que traeremos de Room
-
-
-    private long ultimoClick = 0;
-    private int ultimoClickPosicion = -1;
-    private static final long INTERVALO = 500;
-
+    private List<String> diasProbables; // Formato "yyyy-MM-dd" que traeremos de Room
 
     public interface OnDateClickListener {
         void onDateClick(Date fechaSeleccionada);
@@ -49,11 +47,17 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
         notifyDataSetChanged();
     }
 
+    public void setDiasProbables(List<String> diasProbables){
+        this.diasProbables = diasProbables;
+        notifyDataSetChanged();
+
+    }
+
     @NonNull
     @Override
     public CalendarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_giorno, parent, false);
-        return new CalendarViewHolder(view);
+        return new CalendarViewHolder(view, listener, this);
     }
 
     @Override
@@ -71,16 +75,23 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
 
         int actualPosition = holder.getBindingAdapterPosition();
 
-        // LOGICA DE COLORES (REGLA VS NORMAL VS SELECCIONADO)
-        if (actualPosition == posicionSeleccionada) {
-            // Está seleccionado por el usuario
+        // Limpiamos el fondo por defecto para evitar errores al reciclar vistas
+        holder.dayNum.setBackgroundResource(0);
+
+        boolean isSelected = (actualPosition == posicionSeleccionada);
+        boolean isPeriodDay = (fechasConPeriodo != null && fechasConPeriodo.contains(keyFecha));
+        boolean isProbableDay = (diasProbables != null && diasProbables.contains(keyFecha));
+
+
+        if (isPeriodDay){
+            holder.dayNum.setBackgroundResource(R.drawable.circle_red_border);
+        } else if (isProbableDay){
+            holder.dayNum.setBackgroundResource(R.drawable.circle_pink_border);
+        }
+
+        if (isSelected) {
             holder.dayNum.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.red));
             holder.dayLabel.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.red));
-        } else if (fechasConPeriodo != null && fechasConPeriodo.contains(keyFecha)) {
-            // Este día tiene marcado período (REGLA EN ROJO)
-            holder.dayNum.setTextColor(Color.RED);
-            holder.dayLabel.setTextColor(Color.RED);
-            holder.dayNum.setBackgroundResource(R.drawable.circle_red_border);
 
         } else {
             // Día normal
@@ -88,30 +99,14 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
             holder.dayLabel.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.gray));
         }
 
-        holder.itemView.setOnClickListener(v -> {
-            long tiempoActual = System.currentTimeMillis();
-            int currentPos = holder.getBindingAdapterPosition();
 
-            if (currentPos == ultimoClickPosicion && (tiempoActual - ultimoClick < INTERVALO)){
-                if (listener != null && currentPos != RecyclerView.NO_POSITION) {
-                    listener.onDateDoubleClick(listaFechas.get(currentPos));
-                }
-                // Reset para evitar triple click
-                ultimoClick = 0;
-                ultimoClickPosicion = -1;
-            } else {
-                int prevPos = posicionSeleccionada;
-                posicionSeleccionada = currentPos;
-                notifyItemChanged(prevPos);
-                notifyItemChanged(posicionSeleccionada);
+    }
 
-                if (listener != null && posicionSeleccionada != RecyclerView.NO_POSITION) {
-                    listener.onDateClick(listaFechas.get(posicionSeleccionada));
-                }
-                ultimoClick = tiempoActual;
-                ultimoClickPosicion = currentPos;
-            }
-        });
+    public void updateSelection(int newPosition){
+        int prevPos = posicionSeleccionada;
+        posicionSeleccionada = newPosition;
+        notifyItemChanged(prevPos);
+        notifyItemChanged(posicionSeleccionada);
     }
 
     @Override
@@ -121,10 +116,41 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
 
     public static class CalendarViewHolder extends RecyclerView.ViewHolder {
         TextView dayLabel, dayNum;
-        public CalendarViewHolder(@NonNull View itemView) {
+        GestureDetector gestureDetector;
+
+        @SuppressLint("ClickableViewAccessibility")
+        public CalendarViewHolder(@NonNull View itemView, OnDateClickListener externalListener, CalendarioHorizontalAdapter adapter) {
             super(itemView);
             dayLabel = itemView.findViewById(R.id.dayLabelText);
             dayNum = itemView.findViewById(R.id.dayNumberText);
+
+            gestureDetector = new GestureDetector(itemView.getContext(), new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
+                    int currentPos = getBindingAdapterPosition();
+                    if (externalListener != null && currentPos != RecyclerView.NO_POSITION) {
+                        // CORREGIDO: Añadido "adapter." para solucionar los errores estáticos
+                        adapter.updateSelection(currentPos);
+                        externalListener.onDateClick(adapter.listaFechas.get(currentPos));
+                    }
+                    return true;
+                }
+
+                @Override
+                public boolean onDoubleTap(@NonNull MotionEvent e) {
+                    int currentPos = getBindingAdapterPosition();
+                    if (externalListener != null && currentPos != RecyclerView.NO_POSITION) {
+                        // CORREGIDO: Añadido "adapter." para obtener la fecha correctamente
+                        externalListener.onDateDoubleClick(adapter.listaFechas.get(currentPos));
+                    }
+                    return true;
+                }
+            });
+
+            itemView.setOnTouchListener((v, event) -> {
+                gestureDetector.onTouchEvent(event);
+                return true;
+            });
         }
     }
 }

@@ -43,7 +43,7 @@ public class InfoFragment extends Fragment {
 
             switch (position) {
                 case 0: // Perfil
-                    // destino = new PerfilFragment();
+                    destino = new ProfiloFragment();
                     break;
                 case 1: // Stato d'animo
                     destino = new CatalogoEditableFragment();

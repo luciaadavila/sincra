@@ -9,8 +9,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.example.sincra.database.repositorio.CicloRepository;
-import com.example.sincra.model.Ciclo;
-import com.example.sincra.model.Registrazione;
 import com.example.sincra.model.relazioni.CicloConRegistrazioni;
 
 import java.text.SimpleDateFormat;
@@ -25,41 +23,44 @@ public class HomeViewModel extends AndroidViewModel {
     private final LiveData<CicloConRegistrazioni> cicloActual;
     private final LiveData<List<String>> diasDeRegla;
     private final MutableLiveData<List<Date>> listaFechas = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> diasProbables = new MutableLiveData<>();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private final CicloRepository repo;
 
     public HomeViewModel(@NonNull Application application){
         super(application);
         repo = new CicloRepository(application);
+
+        // Inicializamos los LiveData básicos
         this.cicloActual = repo.getCicloActual();
 
-        // Si no hay ciclo, creamos uno por defecto (para evitar crash en DetailDay)
-        this.cicloActual.observeForever(cicloConRegistrazioni -> {
-            if (cicloConRegistrazioni == null) {
-                long localId = repo.getLocalId();
-                if (localId != -1) {
-                    // Usamos fecha truncada para el inicio del ciclo
-                    Ciclo nuevoCiclo = new Ciclo(
-                            CicloRepository.truncarFecha(new Date()),
-                            null, 28, 5, localId);
-                    repo.insert(nuevoCiclo);
+        // Transformación de los días de regla para compararlos fácilmente en el Adapter
+        this.diasDeRegla = Transformations.map(repo.getFechasConPeriodo(), lista -> {
+            List<String> diasStr = new ArrayList<>();
+            if (lista != null) {
+                for (Date d : lista) {
+                    diasStr.add(dateFormat.format(d));
                 }
             }
-        });
-        
-        this.diasDeRegla = Transformations.map(cicloActual, cicloConRegistrazioni -> {
-            List<String> dias = new ArrayList<>();
-            if (cicloConRegistrazioni != null && cicloConRegistrazioni.getRegistrazioni() != null) {
-                for (Registrazione r : cicloConRegistrazioni.getRegistrazioni()) {
-                    if (r.isPeriodo()) {
-                        dias.add(dateFormat.format(r.getDate()));
-                    }
-                }
-            }
-            return dias;
+            return diasStr;
         });
 
         generateFechas();
+    }
+
+    /**
+     * Calcula los días probables llamando al repositorio.
+     * Esta función debe ser llamada desde el Fragment cuando el ciclo actual esté disponible.
+     */
+    public void calcoloPredict(Date inizioCiclo){
+        repo.calcoloGiorniProbabile(inizioCiclo, datas -> {
+            List<String> giorniP = new ArrayList<>();
+            for (Date d : datas) {
+                giorniP.add(dateFormat.format(d));
+            }
+            // Usamos postValue porque estamos en un hilo secundario (background thread)
+            diasProbables.postValue(giorniP);
+        });
     }
 
     private void generateFechas() {
@@ -79,21 +80,13 @@ public class HomeViewModel extends AndroidViewModel {
         listaFechas.setValue(fechas);
     }
 
-    public LiveData<CicloConRegistrazioni> getCicloActual() {
-        return cicloActual;
-    }
+    // Getters para que el Fragment pueda observar
+    public LiveData<CicloConRegistrazioni> getCicloActual() { return cicloActual; }
+    public LiveData<List<String>> getDiasDeRegla() { return diasDeRegla; }
+    public LiveData<List<String>> getDiasProbables() { return diasProbables; }
+    public LiveData<List<Date>> getListaFechas() { return listaFechas; }
 
-    public LiveData<List<String>> getDiasDeRegla() {
-        return diasDeRegla;
-    }
-
-    public LiveData<List<Date>> getListaFechas() {
-        return listaFechas;
-    }
-    
-    public String formatDate(Date date) {
-        return dateFormat.format(date);
-    }
+    public String formatDate(Date date) { return dateFormat.format(date); }
 
     public void addOrDeletePeriodDay(Date date){
         repo.addOrDeletePeriodDay(date);

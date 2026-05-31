@@ -28,6 +28,15 @@ public class User {
         this.durataMediaPeriodo = durataMediaPeriodo;
     }
 
+    public User(User other){
+        this.userId = other.getUserId();
+        this.firebaseUid = other.getFirebaseUid();
+        this.nombre = other.getNombre();
+        this.dataRegistro = other.getDataRegistro();
+        this.durataMediaCiclo = other.getDurataMediaCiclo();
+        this.durataMediaPeriodo = other.getDurataMediaPeriodo();
+    }
+
 
     // getters y setters
     public long getUserId() {

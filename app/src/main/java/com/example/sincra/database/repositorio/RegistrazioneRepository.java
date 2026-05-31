@@ -65,7 +65,7 @@ public class RegistrazioneRepository {
     public void saveDay(Registrazione registro, List<ElementoCatalogo> elementos) {
         executor.execute(() -> {
             // Si el registro no tiene un ciclo asignado (es nuevo), buscamos el ciclo actual
-            if (registro.getCicloId() == 0) {
+            if (registro.getCicloId() == null || registro.getCicloId() == 0) {
                 com.example.sincra.database.dao.CicloDAO cicloDao = AppDatabase.getDatabase(context).cicloDAO();
                 com.example.sincra.model.Ciclo current = cicloDao.getCurrentCiclo(getLocalId());
                 if (current != null) {

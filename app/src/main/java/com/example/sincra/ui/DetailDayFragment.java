@@ -11,15 +11,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.CatalogoAdapter;
+import com.example.sincra.database.repositorio.CicloRepository; // IMPORTANTE: Añadido para truncar
 import com.example.sincra.model.ElementoCatalogo;
 import com.example.sincra.model.Registrazione;
-import com.example.sincra.model.relazioni.CicloConRegistrazioni;
-import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 import com.example.sincra.viewModel.DetailDayViewModel;
 
 import java.text.ParseException;
@@ -28,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import android.widget.Toast;
 
 public class DetailDayFragment extends Fragment {
 
@@ -60,6 +57,8 @@ public class DetailDayFragment extends Fragment {
         if (getArguments() != null) {
             currentDate = getArguments().getString("date");
         }
+
+        // La fecha ahora está estrictamente truncada a las 00:00:00
         registrazione = new Registrazione(stringToDate(currentDate));
 
 
@@ -77,7 +76,8 @@ public class DetailDayFragment extends Fragment {
         symptomRecycler.setAdapter(symptomAdapter);
 
         viewModel = new ViewModelProvider(this).get(DetailDayViewModel.class);
-        // 5. Observar todos los estados de ánimo disponibles para el usuario -> currentMoodsFromDB
+
+        // 5. Observar todos los estados de ánimo disponibles para el usuario
         viewModel.getAllMoods().observe(getViewLifecycleOwner(), moods -> {
             if (moods != null) {
                 currentMoodsFromDb = moods;
@@ -85,7 +85,7 @@ public class DetailDayFragment extends Fragment {
             }
         });
 
-        // 6. Observar todos los síntomas disponibles para el usuario -> currentSymptomsFromDB
+        // 6. Observar todos los síntomas disponibles para el usuario
         viewModel.getAllSymptoms().observe(getViewLifecycleOwner(), symptoms -> {
             if (symptoms != null) {
                 currentSymptomsFromDb = symptoms;
@@ -96,6 +96,7 @@ public class DetailDayFragment extends Fragment {
         // miramos si el dia ya contaba con registros seleccionados
         viewModel.getRegistro().observe(getViewLifecycleOwner(), registroConElementi -> {
             if (registroConElementi != null) {
+                // Al cargar de la DB, ya trae su cicloId asociado (si tiene) o 0 si estaba huérfano
                 registrazione = registroConElementi.registrazione;
                 if (registroConElementi.elementiCatalogo != null) {
                     marcarElementosComoSeleccionados(registroConElementi.elementiCatalogo);
@@ -104,15 +105,12 @@ public class DetailDayFragment extends Fragment {
             sincronizarElementosSeleccionados();
         });
 
-
-
         if (getArguments() != null) {
             currentDate = getArguments().getString("date");
             if (currentDate != null) {
                 viewModel.setDate(currentDate);
             }
         }
-
 
         btnGuardar.setOnClickListener(v -> guardarRegistroDelDia());
     }
@@ -141,11 +139,12 @@ public class DetailDayFragment extends Fragment {
     private void guardarRegistroDelDia() {
         List<ElementoCatalogo> seleccionados = new ArrayList<>();
 
-        // Gracias a tu metodo público getSeleccionados(), extraemos de forma limpia lo seleccionado en la UI
+        // Extraemos de forma limpia lo seleccionado en la UI
         seleccionados.addAll(moodAdapter.getSeleccionados());
         seleccionados.addAll(symptomAdapter.getSeleccionados());
 
-        // Envío asíncrono al repositorio
+        // Envío asíncrono al repositorio.
+        // Si registrazione se creó nueva arriba, su cicloId será 0 (huérfano).
         viewModel.save(registrazione, seleccionados);
 
         // Finalizar y remover el fragment de la pila de navegación
@@ -154,19 +153,22 @@ public class DetailDayFragment extends Fragment {
         }
     }
 
+    // APLICAMOS EL TRUNCADO ESTRICTO AQUÍ
     public Date stringToDate(String dateString){
         Date dateToSave;
         if (dateString != null) {
             try {
+                // parse() ya trunca horas porque el formato solo tiene año-mes-día
                 dateToSave = dateFormat.parse(dateString);
             } catch (ParseException e) {
-                dateToSave = new Date();
+                // Si falla, truncamos el Date actual
+                dateToSave = CicloRepository.truncarFecha(new Date());
             }
         } else {
-            dateToSave = new Date();
+            // Si llega nulo, truncamos el Date actual
+            dateToSave = CicloRepository.truncarFecha(new Date());
         }
 
         return dateToSave;
     }
-
 }
