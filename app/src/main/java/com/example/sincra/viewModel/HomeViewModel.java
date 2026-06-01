@@ -48,10 +48,7 @@ public class HomeViewModel extends AndroidViewModel {
         generateFechas();
     }
 
-    /**
-     * Calcula los días probables llamando al repositorio.
-     * Esta función debe ser llamada desde el Fragment cuando el ciclo actual esté disponible.
-     */
+
     public void calcoloPredict(Date inizioCiclo){
         repo.calcoloGiorniProbabile(inizioCiclo, datas -> {
             List<String> giorniP = new ArrayList<>();

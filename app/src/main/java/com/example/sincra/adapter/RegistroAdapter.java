@@ -88,6 +88,6 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
 
     public void setRegistrazioni(List<RegistrazioneConElementi> newItems){
         this.items = newItems;
-        //notifyDataSetChanged(); // creo que no hace falta porque ya viene de un observe de live data
+        notifyDataSetChanged();
     }
 }

@@ -46,27 +46,16 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
 
     @Override
     public void onBindViewHolder(@NonNull CicloViewHolder holder, int position) {
-        Object item = items.get(position);
-
-        Ciclo ciclo = null;
-        List<?> registrazioni = new ArrayList<>();
-
-        if (item instanceof CicloConRegistrazioni) {
-            CicloConRegistrazioni relacion = (CicloConRegistrazioni) item;
-            ciclo = relacion.getCiclo();
-            registrazioni = relacion.getRegistrazioni();
-        } else if (item instanceof Ciclo) {
-            ciclo = (Ciclo) item;
-        }
+        Ciclo ciclo = (Ciclo) items.get(position);
 
         if (ciclo != null){
             String start = dateFormat.format(ciclo.getDataInizio());
             String end = ciclo.getDataFine() != null ? dateFormat.format(ciclo.getDataFine()) : "...";
-            
-            holder.title.setText(holder.itemView.getContext().getString(R.string.giorni_ciclo_durata, 
+
+            holder.title.setText(holder.itemView.getContext().getString(R.string.giorni_ciclo_durata,
                     ciclo.getDurataTotale(), start, end));
-            
-            holder.subtitle.setText(holder.itemView.getContext().getString(R.string.periodo_durata, 
+
+            holder.subtitle.setText(holder.itemView.getContext().getString(R.string.periodo_durata,
                     ciclo.getDurataPeriodo()));
 
             if (holder.daysRecycler.getLayoutManager() == null){
@@ -76,13 +65,12 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
             }
         }
 
-        GiorniCicloAdapter adapter = new GiorniCicloAdapter((List) registrazioni);
+        GiorniCicloAdapter adapter = new GiorniCicloAdapter(ciclo);
         holder.daysRecycler.setAdapter(adapter);
 
         holder.itemView.setOnClickListener(v -> {
-            int currentPosition = holder.getBindingAdapterPosition();
-            if (currentPosition != RecyclerView.NO_POSITION && clickListener != null) {
-                clickListener.onCicloClick(items.get(currentPosition));
+            if (clickListener != null) {
+                clickListener.onCicloClick(ciclo);
             }
         });
     }

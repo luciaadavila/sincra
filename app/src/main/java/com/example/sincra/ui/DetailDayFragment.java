@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,9 +63,14 @@ public class DetailDayFragment extends Fragment {
         registrazione = new Registrazione(stringToDate(currentDate));
 
 
+        TextView textDate = view.findViewById(R.id.todayBar);
         RecyclerView moodRecycler = view.findViewById(R.id.moodRecycler);
         RecyclerView symptomRecycler = view.findViewById(R.id.symptomRecycler);
         Button btnGuardar = view.findViewById(R.id.btnGuardar);
+        Button btnAddMood = view.findViewById(R.id.btnAddMood);
+        Button btnAddSintomi = view.findViewById(R.id.btnAddSymptom);
+
+        textDate.setText(currentDate);
 
         // 2. Configurar la disposición visual en cuadrículas (3 columnas)
         moodRecycler.setLayoutManager(new GridLayoutManager(getContext(), 3));
@@ -113,6 +119,30 @@ public class DetailDayFragment extends Fragment {
         }
 
         btnGuardar.setOnClickListener(v -> guardarRegistroDelDia());
+        btnAddMood.setOnClickListener(v -> {
+            CatalogoEditableFragment fragment = new CatalogoEditableFragment();
+            Bundle argsMood = new Bundle();
+            argsMood.putString("tipo", "mood");
+            fragment.setArguments(argsMood);
+
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        btnAddSintomi.setOnClickListener(v -> {
+            CatalogoEditableFragment fragment = new CatalogoEditableFragment();
+            Bundle argsMood = new Bundle();
+            argsMood.putString("tipo", "symptom");
+            fragment.setArguments(argsMood);
+
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
     }
 
 

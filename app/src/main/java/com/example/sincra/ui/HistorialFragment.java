@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.example.sincra.R;
 import com.example.sincra.adapter.CicloAdapter;
 import com.example.sincra.model.Ciclo;
+import com.example.sincra.model.relazioni.CicloConRegistrazioni;
 import com.example.sincra.viewModel.HistorialViewModel;
 
 import java.util.ArrayList;
@@ -49,7 +50,17 @@ public class HistorialFragment extends Fragment {
         // 2. inicializamos el adapter
         adapter = new CicloAdapter(new ArrayList<>(), item -> {
             Ciclo seleccionado = (Ciclo) item;
+            StatisticheCicloFragment statistiche = new StatisticheCicloFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt("cicloId", seleccionado.getCicloId());
+            statistiche.setArguments(bundle);
+
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, statistiche)
+                    .addToBackStack(null)
+                    .commit();
         });
+
         cicloRecycler.setAdapter(adapter);
 
         // 3. inicializamos el viewModel correctamente

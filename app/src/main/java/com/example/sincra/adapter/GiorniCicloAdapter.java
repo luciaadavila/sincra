@@ -5,20 +5,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
-import com.example.sincra.model.Registrazione;
+import com.example.sincra.model.Ciclo;
 
-import java.util.List;
+import java.util.Calendar;
 
 public class GiorniCicloAdapter extends RecyclerView.Adapter<GiorniCicloAdapter.GiorniCicloViewHolder> {
-    private List<Registrazione> items;
 
-    public GiorniCicloAdapter(List<Registrazione> items) {
-        this.items = items;
+    private final Ciclo ciclo;
+
+    public GiorniCicloAdapter(Ciclo ciclo) {
+        this.ciclo = ciclo;
     }
 
     public static class GiorniCicloViewHolder extends RecyclerView.ViewHolder {
@@ -30,25 +32,39 @@ public class GiorniCicloAdapter extends RecyclerView.Adapter<GiorniCicloAdapter.
         }
     }
 
+    @NonNull
     @Override
     public GiorniCicloViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ciclo_giorni, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_ciclo_giorni, parent, false);
 
         return new GiorniCicloViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull GiorniCicloViewHolder holder, int position) {
-        Registrazione item = items.get(position);
 
-        if (item.isPeriodo()){
-            holder.dayCircle.setBackgroundColor(Color.RED);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(ciclo.getDataInizio());
+        cal.add(Calendar.DAY_OF_MONTH, position);
+
+        int numeroDia = cal.get(Calendar.DAY_OF_MONTH);
+        holder.dayCircle.setText(String.valueOf(numeroDia));
+
+        boolean isPeriodo = position < ciclo.getDurataPeriodo();
+
+        if (isPeriodo) {
+            holder.dayCircle.setBackgroundResource(R.drawable.bg_day_period);
+            holder.dayCircle.setTextColor(Color.WHITE);
         } else {
-            holder.dayCircle.setBackgroundColor(Color.GRAY);
+            holder.dayCircle.setBackgroundResource(R.drawable.bg_day_normal);
+            holder.dayCircle.setTextColor(Color.DKGRAY);
         }
     }
 
     @Override
-    public int getItemCount() { return items.size(); }
-
+    public int getItemCount() {
+        if (ciclo == null) return 0;
+        return ciclo.getDurataTotale();
+    }
 }

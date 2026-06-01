@@ -77,4 +77,11 @@
         app:layout_constraintTop_toBottomOf="@id/btnRicalcolareDati"
         android:layout_marginTop="32dp"/>
 
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cerrar sesión"
+        app:layout_constraintTop_toBottomOf="@id/btnSaveProfile" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

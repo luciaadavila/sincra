@@ -335,24 +335,152 @@ public class CicloRepository {
         return Math.round((float) sumDays / ultimi.size());
     }
 
+    private List<Date> calcoloGiorniProbabileSync(Date inizioUltimoCiclo, User user, int numeroCicli) {
+        List<Date> giorni = new ArrayList<>();
+
+        if (inizioUltimoCiclo == null || user == null) {
+            return giorni;
+        }
+
+        int durataMediaCiclo = user.getDurataMediaCiclo();
+        int durataMediaPeriodo = user.getDurataMediaPeriodo();
+
+        if (durataMediaCiclo <= 0) durataMediaCiclo = 28;
+        if (durataMediaPeriodo <= 0) durataMediaPeriodo = 5;
+
+        Date iterCiclo = inizioUltimoCiclo;
+
+        for (int ciclo = 0; ciclo < numeroCicli; ciclo++) {
+            iterCiclo = xDay(iterCiclo, durataMediaCiclo);
+
+            Date iter = iterCiclo;
+
+            for (int i = 0; i < durataMediaPeriodo; i++) {
+                giorni.add(iter);
+                iter = xDay(iter, 1);
+            }
+        }
+        return giorni;
+    }
+
     public void calcoloGiorniProbabile(Date inizioUltimoCiclo, PredictionsCallback callback) {
         executor.execute(() -> {
-            List<Date> giorni = new ArrayList<>();
             User user = daoUser.getByIdAsync(getLocalId());
-            Date iterCiclo = inizioUltimoCiclo;
-
-            for (int ciclo = 0; ciclo <3; ciclo ++){
-                iterCiclo = xDay(iterCiclo, user.getDurataMediaCiclo());
-                Date iter = iterCiclo;
-                for (int i=0; i< user.getDurataMediaPeriodo(); i++){
-                    giorni.add(iter);
-                    iter = xDay(iter, 1);
-
-                }
-            }
+            List<Date> giorni = calcoloGiorniProbabileSync(
+                    inizioUltimoCiclo,
+                    user,
+                    3
+            );
             callback.onResult(giorni);
         });
     }
+
+
+
+    public void generatePredictions(PredictionCallback callback) {
+        executor.execute(() -> {
+            User user = daoUser.getByIdAsync(getLocalId());
+            Ciclo ciclo = dao.getCurrentCiclo(getLocalId());
+            List<PredictSettimana> risultato = new ArrayList<>();
+
+            if (user == null || ciclo == null || ciclo.getDataInizio() == null) {
+                callback.onPredictionsGenerated(risultato);
+                return;
+            }
+
+            List<Date> giorni = calcoloGiorniProbabileSync(ciclo.getDataInizio(), user, 4);
+            if (giorni == null || giorni.isEmpty()) {
+                callback.onPredictionsGenerated(risultato);
+                return;
+            }
+
+            List<Date>  inizi = obtenerIniciosPeriodos(giorni);
+
+            for (int i=0; i<inizi.size(); i++){
+                Date inizioPeriodo = inizi.get(i);
+                Date inizioCalendario = xDay(inizioPeriodo, -7);
+
+                risultato.add(creaSettimanaPredizione( "Ciclo " + (i+1), inizioCalendario, giorni));
+            }
+            callback.onPredictionsGenerated(risultato);
+        });
+    }
+
+    // crea una semana (7 dias) comprobando si es giorno probable o no
+    private PredictSettimana creaSettimanaPredizione(String titolo, Date inizioSettimana, List<Date> giorniProbabili){
+        List<Boolean> periodo = new ArrayList<>();
+        List<Integer> numeri = new ArrayList<>();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(inizioSettimana);
+
+
+        for (int i=0; i<21; i++){
+            Date giornoAttuale = truncarFecha(cal.getTime());
+            Calendar calGiorno = Calendar.getInstance();
+            calGiorno.setTime(giornoAttuale);
+
+            numeri.add(calGiorno.get(Calendar.DAY_OF_MONTH));
+
+            boolean isPeriodo = contieneData(giorniProbabili, giornoAttuale);
+            periodo.add(isPeriodo);
+
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        Date fineSettimana = xDay(inizioSettimana, 20);
+        String rango = titolo + "\n" + formatRango(inizioSettimana, fineSettimana);
+
+        return new PredictSettimana(rango, periodo, numeri);
+    }
+
+    // queremos obtener el inicio de cada periodo para crear el mini calendario a partir de él
+    private List<Date> obtenerIniciosPeriodos(List<Date> giorniProbabili) {
+        List<Date> inicios = new ArrayList<>();
+
+        if (giorniProbabili == null || giorniProbabili.isEmpty()) {
+            return inicios;
+        }
+
+        inicios.add(truncarFecha(giorniProbabili.get(0)));
+
+        for (int i = 1; i < giorniProbabili.size(); i++) {
+            Date anterior = truncarFecha(giorniProbabili.get(i - 1));
+            Date actual = truncarFecha(giorniProbabili.get(i));
+
+            Date diaDespuesAnterior = xDay(anterior, 1);
+
+            if (!actual.equals(diaDespuesAnterior)) {
+                inicios.add(actual);
+            }
+        }
+
+        return inicios;
+    }
+
+    // para saber si la fecha es un día probable o no
+    private boolean contieneData(List<Date> fechas, Date fechaBuscada) {
+        Date buscada = truncarFecha(fechaBuscada);
+        for (Date fecha : fechas) {
+            if (truncarFecha(fecha).equals(buscada)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // para poner bien el texto del rango
+    private String formatRango(Date inicio, Date fin) {
+        java.text.SimpleDateFormat sdf =
+                new java.text.SimpleDateFormat("dd MMM", java.util.Locale.getDefault());
+
+        return sdf.format(inicio) + " - " + sdf.format(fin);
+    }
+
+    public interface PredictionCallback {
+        void onPredictionsGenerated(List<PredictSettimana> predictions);
+    }
+
+
 
     public interface PredictionsCallback {
         void onResult(List<Date> fechasProbables);
@@ -387,17 +515,7 @@ public class CicloRepository {
         return (int) (diffMillis / (1000 * 60 * 60 * 24)) + 1;
     }
 
-    public void generatePredictions(PredictionCallback callback) {
-        executor.execute(() -> {
-            List<Ciclo> historial = dao.getHistorialCicliSync(getLocalId());
-            List<PredictSettimana> resultadoPredicciones = new ArrayList<>();
-            callback.onPredictionsGenerated(resultadoPredicciones);
-        });
-    }
 
-    public interface PredictionCallback {
-        void onPredictionsGenerated(List<PredictSettimana> predictions);
-    }
 
     public LiveData<CicloConRegistrazioni> getCicloActual(){ return dao.getCicloActualConRegistrazioni(getLocalId()); }
     public LiveData<CicloConRegistrazioni> getCicloByIdConRegistrazioni(int cicloId){ return dao.getCicloByIdConRegistrazioni(cicloId); }

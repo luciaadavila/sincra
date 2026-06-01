@@ -5,7 +5,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.GridLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,7 +26,7 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
 
     public static class PredictionViewHolder extends RecyclerView.ViewHolder {
         TextView rangeText;
-        LinearLayout daysContainer;
+        GridLayout daysContainer;
 
         public PredictionViewHolder(View itemView) {
             super(itemView);
@@ -58,31 +58,18 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
             boolean isPeriod = item.getPeriodo().get(i);
             int number = item.getNumbers().get(i);
 
-            TextView dayCircle = new TextView(holder.itemView.getContext());
+            TextView dayCircle = (TextView) LayoutInflater
+                    .from(holder.daysContainer.getContext())
+                    .inflate(R.layout.item_giorno_circle_predict, holder.daysContainer, false);            dayCircle.setText(String.valueOf(number));
             dayCircle.setText(String.valueOf(number));
 
-            dayCircle.setPadding(30, 30, 30, 30);
-            GradientDrawable shape = new GradientDrawable();
-
-            shape.setShape(GradientDrawable.OVAL);
-
-            shape.setColor(
-                    isPeriod
-                            ? Color.parseColor("#E91E63")
-                            : Color.LTGRAY
-            );
-
-            dayCircle.setBackground(shape);
-
-            LinearLayout.LayoutParams params =
-                    new LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                    );
-
-            params.setMargins(12, 0, 12, 0);
-
-            dayCircle.setLayoutParams(params);
+            if (isPeriod) {
+                dayCircle.setBackgroundResource(R.drawable.bg_day_period);
+                dayCircle.setTextColor(Color.WHITE);
+            } else {
+                dayCircle.setBackgroundResource(R.drawable.bg_day_normal);
+                dayCircle.setTextColor(Color.DKGRAY);
+            }
 
             holder.daysContainer.addView(dayCircle);
         }

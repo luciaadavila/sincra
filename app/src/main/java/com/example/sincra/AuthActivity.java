@@ -169,31 +169,6 @@ public class AuthActivity extends AppCompatActivity {
     }
     // [END auth_with_google]
 
-    // [START sign_out]
-    private void signOut() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // When a user signs out, clear the current user credential state from all credential providers.
-        ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
-        credentialManager.clearCredentialStateAsync(
-                clearRequest,
-                new CancellationSignal(),
-                Executors.newSingleThreadExecutor(),
-                new CredentialManagerCallback<>() {
-                    @Override
-                    public void onResult(@NonNull Void result) {
-                        updateUI(null);
-                    }
-
-                    @Override
-                    public void onError(@NonNull ClearCredentialException e) {
-                        Log.e(TAG, "Couldn't clear user credentials: " + e.getLocalizedMessage());
-                    }
-                });
-    }
-    // [END sign_out]
-
     private void updateUI(FirebaseUser firebaseUser) {
         if (firebaseUser != null){
             // Sincronizar con base de datos local

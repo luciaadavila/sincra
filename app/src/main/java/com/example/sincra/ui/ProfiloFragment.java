@@ -1,27 +1,43 @@
 package com.example.sincra.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.credentials.ClearCredentialStateRequest;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.exceptions.ClearCredentialException;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.CancellationSignal;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.sincra.AuthActivity;
 import com.example.sincra.R;
 import com.example.sincra.model.User;
 import com.example.sincra.viewModel.ProfiloViewModel;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.concurrent.Executors;
 
 
 public class ProfiloFragment extends Fragment {
     private ProfiloViewModel viewModel;
     private User user;
+
+    private FirebaseAuth mAuth;
+    private CredentialManager credentialManager;
+
+
 
     public ProfiloFragment() {
         // Required empty public constructor
@@ -31,6 +47,9 @@ public class ProfiloFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        mAuth = FirebaseAuth.getInstance();
+        credentialManager = CredentialManager.create(requireContext());
+
         return inflater.inflate(R.layout.fragment_profilo, container, false);
     }
 
@@ -43,6 +62,7 @@ public class ProfiloFragment extends Fragment {
         TextInputEditText period = view.findViewById(R.id.etPeriod);
         Button saveButton = view.findViewById(R.id.btnSaveProfile);
         Button ricalcolareButton = view.findViewById(R.id.btnRicalcolareDati);
+        Button logoutButton = view.findViewById(R.id.btnLogout);
 
         viewModel = new ViewModelProvider(this).get(ProfiloViewModel.class);
         viewModel.getUserProfilo().observe(getViewLifecycleOwner(), userFromDb -> {
@@ -75,6 +95,44 @@ public class ProfiloFragment extends Fragment {
             if (!periodInput.isEmpty()) userUpdated.setDurataMediaPeriodo(Integer.parseInt(periodInput));
             viewModel.updateUserProfilo(userUpdated);
         });
+
+        logoutButton.setOnClickListener(v -> {
+            signOut();
+        });
+
+
+    }
+
+    // esta clase fue sacada de la misma página que sigin
+    private void signOut() {
+        // Firebase sign out
+        mAuth.signOut();
+        ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
+        credentialManager.clearCredentialStateAsync(
+            clearRequest,
+            new CancellationSignal(),
+            Executors.newSingleThreadExecutor(),
+            new CredentialManagerCallback<>() {
+                @Override
+                public void onResult(@NonNull Void result) {
+                    requireActivity().runOnUiThread(() -> {
+                        goToLogin();
+                    });
+                }
+
+                @Override
+                public void onError(@NonNull ClearCredentialException e) {
+                    requireActivity().runOnUiThread(() -> {
+                        goToLogin();
+                    });
+                }
+            });
+    }
+
+    private void goToLogin() {
+        Intent intent = new Intent(requireContext(), AuthActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
 

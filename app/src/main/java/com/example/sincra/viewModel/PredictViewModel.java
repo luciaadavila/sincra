@@ -8,15 +8,22 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.sincra.database.repositorio.CicloRepository;
+import com.example.sincra.database.repositorio.UserRepository;
 import com.example.sincra.model.PredictSettimana;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class PredictViewModel extends AndroidViewModel {
 
     private final CicloRepository repo;
+    private final MutableLiveData<List<String>> diasProbables = new MutableLiveData<>();
+
     // en este caso si que es necesario mutable porque no consultamos una tabla
     private final MutableLiveData<List<PredictSettimana>> proxCicli = new MutableLiveData<>();
+
 
     public PredictViewModel(@NonNull Application application) {
         super(application);
@@ -29,7 +36,6 @@ public class PredictViewModel extends AndroidViewModel {
 
     public void loadPredictions() {
         repo.generatePredictions(predictions -> {
-            // postValue se encarga de enviar los datos de forma segura del hilo secundario al hilo principal (UI)
             proxCicli.postValue(predictions);
         });
     }
