@@ -1,5 +1,6 @@
 package com.example.sincra.adapter;
 
+import android.location.GnssAntennaInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,17 @@ import java.util.List;
 
 public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditableAdapter.CatalogoEditableViewHolder> {
 
-    private List<
-            ElementoCatalogo> items;
+    private List<ElementoCatalogo> items;
+    private OnCatalogoClickListener listener;
 
-    public CatalogoEditableAdapter(List<ElementoCatalogo> items) {
+    public CatalogoEditableAdapter(List<ElementoCatalogo> items, OnCatalogoClickListener listener) {
         this.items = items;
+        this.listener = listener;
+    }
+
+    public interface OnCatalogoClickListener {
+        void onEdit(ElementoCatalogo item);
+        void onDelete(ElementoCatalogo item);
     }
 
     public static class CatalogoEditableViewHolder extends RecyclerView.ViewHolder {
@@ -53,15 +60,20 @@ public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditab
         ElementoCatalogo item = items.get(position);
 
         holder.nameText.setText(item.getNome());
-
         holder.deleteButton.setOnClickListener(v -> {
-            items.remove(position);
-            notifyDataSetChanged();
+            int pos = holder.getAdapterPosition();
+
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.onDelete(items.get(pos));
+            }
         });
 
         holder.editButton.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
 
-            // luego hacemos popup editar
+            if (pos != RecyclerView.NO_POSITION) {
+                listener.onEdit(items.get(pos));
+            }
         });
     }
 

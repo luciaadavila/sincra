@@ -47,7 +47,14 @@ public class CatalogoViewModel extends AndroidViewModel {
         }
     }
 
-    public void deleteItem(ElementoCatalogo elemento) {
-        repo.delete(elemento);
+    public void deleteItem(ElementoCatalogo e){
+        repo.deleteItem(e);
+    }
+
+    public void updateItem(ElementoCatalogo e, String nuovoNome){
+        repo.updateItem(e, nuovoNome);
     }
 }
+
+
+

@@ -4,11 +4,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/ligh_pink"
     android:padding="16dp">
+
+    <TextView
+        android:id="@+id/registroTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="I tuoi registri"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#333333" />
+
+    <TextView
+        android:id="@+id/registroSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Espandi un registro per vedere i dettagli"
+        android:textSize="14sp"
+        android:textColor="#777777"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/registroRecycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp" />
 
 </LinearLayout>

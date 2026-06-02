@@ -38,8 +38,19 @@ public class ElementoCatalogoRepository {
         executor.execute(() -> dao.insert(e));
     }
 
-    public void delete(ElementoCatalogo elementoCatalogo){
-        executor.execute(() -> dao.delete(elementoCatalogo));
+
+    public void deleteItem(ElementoCatalogo item) {
+        executor.execute(() -> {
+            dao.delete(item);
+        });
+    }
+
+    public void updateItem(ElementoCatalogo item, String nuovoNome) {
+        item.setNome(nuovoNome);
+
+        executor.execute(() -> {
+            dao.update(item);
+        });
     }
 
     public LiveData<List<ElementoCatalogo>> getByType(String tipo){

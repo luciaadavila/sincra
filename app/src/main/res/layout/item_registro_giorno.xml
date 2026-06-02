@@ -1,52 +1,68 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="260dp"
-    android:layout_height="match_parent"
-    android:layout_margin="10dp"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/registroCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="14dp"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#FFFFFF">
+    android:background="@drawable/bg_registro_card"
+    android:elevation="4dp"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/dayTitle"
-        android:text=""
-        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="31/05/2026"
         android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/cycleDay"
-        android:text="Ciclo: 14"
-        android:layout_marginTop="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Giorno del ciclo: 3"
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:layout_marginBottom="6dp" />
+
+    <TextView
+        android:id="@+id/phase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fase: Fase mestruale"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#E91E63"
+        android:layout_marginBottom="6dp" />
 
     <TextView
         android:id="@+id/isCycleDay"
-        android:text="Giorno di ciclo?"
-        android:layout_marginTop="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:id="@+id/isProbCycleDay"
-        android:text="Possibile giorno di ciclo?"
-        android:layout_marginTop="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Giorno di ciclo? No"
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/moods"
-        android:text="Mood: Feliz, Tranquila"
-        android:layout_marginTop="12dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Umore: —"
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:layout_marginBottom="6dp" />
 
     <TextView
         android:id="@+id/symptoms"
-        android:text="Síntomas: Ninguno"
-        android:layout_marginTop="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sintomi: —"
+        android:textSize="14sp"
+        android:textColor="#555555" />
 
 </LinearLayout>
