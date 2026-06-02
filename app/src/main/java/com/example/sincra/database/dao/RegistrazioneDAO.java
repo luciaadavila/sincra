@@ -34,8 +34,8 @@ public interface RegistrazioneDAO {
     void update(Registrazione registro);
 
     @Transaction
-    @Query("SELECT * FROM registrazione WHERE cicloId = :cicloId")
-    LiveData<List<RegistrazioneConElementi>> getByCicloId(int cicloId);
+    @Query("SELECT * FROM registrazione WHERE cicloId = :cicloId ORDER BY data ASC")
+    LiveData<List<RegistrazioneConElementi>> getRegistrazioniConElementiByCicloId(int cicloId);
 
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +
@@ -48,6 +48,9 @@ public interface RegistrazioneDAO {
             "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
             "WHERE r.data = :date AND c.userId = :userId LIMIT 1")
     Registrazione getRegistroByDate(Date date, long userId);
+
+    @Query("SELECT * FROM registrazione WHERE data = :date LIMIT 1")
+    Registrazione getRegistroByDateDirect(Date date);
 
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +

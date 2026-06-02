@@ -51,6 +51,10 @@ public class RegistrazioneRepository {
         return dao.getAllByUserId(getLocalId());
     }
 
+    public LiveData<List<RegistrazioneConElementi>> getRegistrazioniConElementiByCiclo(int cicloId){
+        return dao.getRegistrazioniConElementiByCicloId(cicloId);
+    }
+
     public LiveData<RegistrazioneConElementi> getByDate(String date) {
         Date data = null;
         try {
@@ -83,6 +87,16 @@ public class RegistrazioneRepository {
             for (ElementoCatalogo e : elementos) {
                 ids.add(e.getElementoId());
             }
+
+            // Calculamos giornoCiclo si ya sabemos el cicloId
+            if (registro.getCicloId() != null && registro.getCicloId() != 0) {
+                com.example.sincra.database.dao.CicloDAO cicloDao = AppDatabase.getDatabase(context).cicloDAO();
+                com.example.sincra.model.Ciclo c = cicloDao.getByIdSync(registro.getCicloId());
+                if (c != null && registro.getGiornoCiclo() <= 0) {
+                    registro.setGiornoCiclo(CicloRepository.difDays(c.getDataInizio(), registro.getData()));
+                }
+            }
+
             dao.insertRegistroCompleto(registro, ids);
         });
     }

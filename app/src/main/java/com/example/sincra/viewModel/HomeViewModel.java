@@ -9,7 +9,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.example.sincra.database.repositorio.CicloRepository;
+import com.example.sincra.model.Ciclo;
 import com.example.sincra.model.relazioni.CicloConRegistrazioni;
+import com.example.sincra.utils.FaseCiclo;
+import com.example.sincra.utils.FaseCicloUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +51,36 @@ public class HomeViewModel extends AndroidViewModel {
         generateFechas();
     }
 
+    public FaseCiclo getFaseCiclo(Date data, Ciclo ciclo){
+        if (data == null || ciclo == null || ciclo.getDataInizio() == null) {
+            return null;
+        }
+
+        Date fechaTruncada = CicloRepository.truncarFecha(data);
+        Date inicioTruncado = CicloRepository.truncarFecha(ciclo.getDataInizio());
+
+        if (fechaTruncada.before(inicioTruncado)) {
+            return null;
+        }
+
+        if (ciclo.getDataFine() != null && fechaTruncada.after(CicloRepository.truncarFecha(ciclo.getDataFine()))) {
+            return null;
+        }
+
+        int durataTotale = ciclo.getDurataTotale();
+        if (durataTotale <= 0){
+            durataTotale = 28;
+        }
+
+        int durataPeriodo = ciclo.getDurataPeriodo();
+        if (durataPeriodo <= 0){
+            durataPeriodo = 5;
+        }
+
+        int giornoCiclo = CicloRepository.difDays(inicioTruncado, fechaTruncada);
+
+        return FaseCicloUtils.calcoloFase(giornoCiclo, durataPeriodo, durataTotale);
+    }
 
     public void calcoloPredict(Date inizioCiclo){
         repo.calcoloGiorniProbabile(inizioCiclo, datas -> {
@@ -69,8 +102,8 @@ public class HomeViewModel extends AndroidViewModel {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        cal.add(Calendar.DAY_OF_YEAR, -15);
-        for (int i = 0; i < 31; i++) {
+        cal.add(Calendar.DAY_OF_YEAR, -30);
+        for (int i = 0; i < 60; i++) {
             fechas.add(cal.getTime());
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }

@@ -9,23 +9,32 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.example.sincra.database.repositorio.CicloRepository;
+import com.example.sincra.database.repositorio.RegistrazioneRepository;
 import com.example.sincra.model.relazioni.CicloConRegistrazioni;
+import com.example.sincra.model.relazioni.RegistrazioneConElementi;
+
+import java.util.List;
 
 public class StatisticheCicloViewModel extends AndroidViewModel {
 
-    private final CicloRepository repo;
-
+    private final CicloRepository repoCiclo;
+    private final RegistrazioneRepository repoReg;
     private final MutableLiveData<Integer> cicloIdInput = new MutableLiveData<>();
-
     private final LiveData<CicloConRegistrazioni> cicloConRegistrazioni;
+    private final LiveData<List<RegistrazioneConElementi>> registrazioniConElementi;
 
     public StatisticheCicloViewModel(@NonNull Application application){
         super(application);
-        repo = new CicloRepository(application);
+        repoCiclo = new CicloRepository(application);
+        repoReg = new RegistrazioneRepository(application);
 
-        cicloConRegistrazioni = Transformations.switchMap(cicloIdInput, id -> {
-            return repo.getCicloByIdConRegistrazioni(id);
-        });
+        cicloConRegistrazioni = Transformations.switchMap(cicloIdInput, id ->
+            repoCiclo.getCicloByIdConRegistrazioni(id)
+        );
+
+        registrazioniConElementi = Transformations.switchMap(cicloIdInput, id ->
+            repoReg.getRegistrazioniConElementiByCiclo(id)
+        );
     }
 
     public void setCicloId(int cicloId) {
@@ -38,6 +47,10 @@ public class StatisticheCicloViewModel extends AndroidViewModel {
 
     public LiveData<CicloConRegistrazioni> getCicloConRegistrazioni() {
         return cicloConRegistrazioni;
+    }
+
+    public LiveData<List<RegistrazioneConElementi>> getRegistrazioniConElementi(){
+        return registrazioniConElementi;
     }
 }
 

@@ -16,10 +16,14 @@ import android.widget.Button;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.CalendarioHorizontalAdapter;
+import com.example.sincra.model.Ciclo;
+import com.example.sincra.utils.FaseCiclo;
 import com.example.sincra.viewModel.HomeViewModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
@@ -28,6 +32,8 @@ public class HomeFragment extends Fragment {
     private String fechaSeleccionadaFormateada;
     private HomeViewModel viewModel;
     private RecyclerView dayRecycler;
+    private Date fechaSeleccionada;
+    private Ciclo cicloSeleccionado;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -48,14 +54,18 @@ public class HomeFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        fechaSeleccionadaFormateada = viewModel.formatDate(new Date());
-        dayButton.setText(fechaSeleccionadaFormateada);
+        fechaSeleccionada = new Date();
+        updateTextoBoton();
+
+        //fechaSeleccionadaFormateada = viewModel.formatDate(new Date());
+        //dayButton.setText(fechaSeleccionadaFormateada);
+
 
         adapter = new CalendarioHorizontalAdapter(new ArrayList<>(), new CalendarioHorizontalAdapter.OnDateClickListener() {
             @Override
-            public void onDateClick(Date fechaSeleccionada) {
-                fechaSeleccionadaFormateada = viewModel.formatDate(fechaSeleccionada);
-                dayButton.setText(fechaSeleccionadaFormateada);
+            public void onDateClick(Date fechaSelec) {
+                fechaSeleccionada = fechaSelec;
+                updateTextoBoton();
             }
 
             @Override
@@ -69,15 +79,33 @@ public class HomeFragment extends Fragment {
         dayRecycler.setAdapter(adapter);
 
         viewModel.getCicloActual().observe(getViewLifecycleOwner(), cicloConReg -> {
-            if (cicloConReg != null && cicloConReg.getCiclo().getDataInizio() != null) {
+            if (cicloConReg != null) {
+                cicloSeleccionado = cicloConReg.getCiclo();
                 viewModel.calcoloPredict(cicloConReg.getCiclo().getDataInizio());
+                updateTextoBoton();
             }
         });
 
         viewModel.getListaFechas().observe(getViewLifecycleOwner(), fechas -> {
             if (fechas != null) {
                 adapter.setListaFechas(fechas);
-                dayRecycler.scrollToPosition(15);
+                
+                // Buscamos el índice del día de hoy en la lista para centrar el calendario
+                int todayIndex = -1;
+                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+                String todayStr = fmt.format(new Date());
+                
+                for (int i = 0; i < fechas.size(); i++) {
+                    if (fmt.format(fechas.get(i)).equals(todayStr)) {
+                        todayIndex = i;
+                        break;
+                    }
+                }
+
+                if (todayIndex != -1) {
+                    adapter.setPosicionSeleccionada(todayIndex);
+                    dayRecycler.scrollToPosition(todayIndex);
+                }
             }
         });
 
@@ -104,5 +132,17 @@ public class HomeFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+    }
+
+    private void updateTextoBoton(){
+        if (fechaSeleccionada == null) return;
+        fechaSeleccionadaFormateada = viewModel.formatDate(fechaSeleccionada);
+        FaseCiclo fase = viewModel.getFaseCiclo(fechaSeleccionada, cicloSeleccionado);
+
+        if (fase == null){
+            dayButton.setText(fechaSeleccionadaFormateada);
+        } else {
+            dayButton.setText(fechaSeleccionadaFormateada + "\n" + fase.getLabel());
+        }
     }
 }

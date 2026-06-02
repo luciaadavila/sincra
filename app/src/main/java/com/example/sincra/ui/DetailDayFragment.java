@@ -41,7 +41,6 @@ public class DetailDayFragment extends Fragment {
     private List<ElementoCatalogo> currentMoodsFromDb = new ArrayList<>();
     private List<ElementoCatalogo> currentSymptomsFromDb = new ArrayList<>();
 
-
     public DetailDayFragment() {}
 
     @Override

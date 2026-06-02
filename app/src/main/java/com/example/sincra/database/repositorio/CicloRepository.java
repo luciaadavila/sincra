@@ -58,8 +58,13 @@ public class CicloRepository {
         executor.execute(() -> {
             Date data = truncarFecha(dataInput);
             Registrazione regActual = daoRe.getRegistroByDate(data, getLocalId());
+            if (regActual == null) regActual = daoRe.getRegistroByDateDirect(data);
+
             Registrazione regPrev = daoRe.getRegistroByDate(xDay(data, -1), getLocalId());
+            if (regPrev == null) regPrev = daoRe.getRegistroByDateDirect(xDay(data, -1));
+
             Registrazione regNext = daoRe.getRegistroByDate(xDay(data, 1), getLocalId());
+            if (regNext == null) regNext = daoRe.getRegistroByDateDirect(xDay(data, 1));
 
             if (regActual == null) {
                 // Si no existe, lo creamos temporalmente desvinculado (cicloId = null)
@@ -294,45 +299,62 @@ public class CicloRepository {
         Date fechaFin = (ciclo.getDataFine() != null) ? truncarFecha(ciclo.getDataFine()) : truncarFecha(new Date());
 
         int i = 1;
+        int countPeriodo = 0;
         while (!dataEv.after(fechaFin)) {
             Registrazione reg = daoRe.getRegistroByDate(dataEv, getLocalId());
+            if (reg == null) reg = daoRe.getRegistroByDateDirect(dataEv);
+
             if (reg == null) {
                 reg = new Registrazione(dataEv, false, false, i, null, ciclo.getCicloId(), 0);
             }
             // Asegurarse de que el día pertenece a este ciclo antes de reescribir su giorno
-            if (reg.getCicloId() == null || reg.getCicloId() == ciclo.getCicloId()) {
+            if (reg.getCicloId() == null || reg.getCicloId().equals(ciclo.getCicloId())) {
                 reg.setCicloId(ciclo.getCicloId());
                 reg.setGiornoCiclo(i);
                 daoRe.insertOrUpdate(reg);
             }
+
+            if (reg.isPeriodo()) {
+                countPeriodo++;
+            }
+
             cal.add(Calendar.DAY_OF_MONTH, 1);
             dataEv = truncarFecha(cal.getTime());
             i++;
         }
+
+        if (ciclo.getDurataPeriodo() != countPeriodo) {
+            ciclo.setDurataPeriodo(countPeriodo);
+            dao.update(ciclo);
+        }
     }
 
     private int calcoloMediaPeriodoUltimi4Cicli(){
+        User user = daoUser.getByIdAsync(getLocalId());
         List<Ciclo> ultimi = dao.getLastFourCicliSync(getLocalId());
         if (ultimi == null || ultimi.isEmpty()){
             return 0;
         }
-        int sumDays = 0;
+        int sumDays = user.getDurataMediaPeriodo();
         for (Ciclo c: ultimi){
             sumDays += c.getDurataPeriodo();
         }
-        return Math.round( (float) sumDays / ultimi.size());
+
+
+        return Math.round( (float) sumDays / (ultimi.size()+1));
     }
 
     private int calcoloMediaCicloUltimi4Cicli(){
+        User user = daoUser.getByIdAsync(getLocalId());
         List<Ciclo> ultimi = dao.getLastFourCicliSync(getLocalId());
         if (ultimi == null || ultimi.isEmpty()){
             return 0;
         }
-        int sumDays = 0;
+        int sumDays = user.getDurataMediaCiclo();
         for (Ciclo c: ultimi){
             sumDays += c.getDurataTotale();
         }
-        return Math.round((float) sumDays / ultimi.size());
+        return Math.round((float) sumDays / (ultimi.size()+1));
     }
 
     private List<Date> calcoloGiorniProbabileSync(Date inizioUltimoCiclo, User user, int numeroCicli) {

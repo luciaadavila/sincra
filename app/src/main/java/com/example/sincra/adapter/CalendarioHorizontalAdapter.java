@@ -22,7 +22,7 @@ import java.util.Locale;
 public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<CalendarioHorizontalAdapter.CalendarViewHolder> {
 
     private List<Date> listaFechas;
-    private int posicionSeleccionada = 15; // Empezamos enfocados en "Hoy" (el centro de nuestra lista)
+    private int posicionSeleccionada = -1; 
     private OnDateClickListener listener;
     private List<String> fechasConPeriodo; // Formato "yyyy-MM-dd" que traeremos de Room
     private List<String> diasProbables; // Formato "yyyy-MM-dd" que traeremos de Room
@@ -39,6 +39,11 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
 
     public void setListaFechas(List<Date> listaFechas) {
         this.listaFechas = listaFechas;
+        notifyDataSetChanged();
+    }
+
+    public void setPosicionSeleccionada(int position) {
+        this.posicionSeleccionada = position;
         notifyDataSetChanged();
     }
 

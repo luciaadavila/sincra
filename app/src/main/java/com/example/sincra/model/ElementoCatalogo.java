@@ -23,7 +23,6 @@ public class ElementoCatalogo {
     private String tipo;
     @NonNull
     private String nome;
-    private String icona;
     private long userId;
 
     @Ignore
@@ -31,19 +30,11 @@ public class ElementoCatalogo {
 
     public ElementoCatalogo(){}
 
-    public ElementoCatalogo(@NonNull String tipo,@NonNull String nome, String icona, long userId){
-        this.tipo = tipo;
-        this.nome = nome;
-        this.icona = icona;
-        this.userId = userId;
-    }
-
-    public ElementoCatalogo(@NonNull String tipo, @NonNull String nome, long userId){
+    public ElementoCatalogo(@NonNull String tipo,@NonNull String nome, long userId){
         this.tipo = tipo;
         this.nome = nome;
         this.userId = userId;
     }
-
 
     // getters y setters
     public int getElementoId() {
@@ -74,14 +65,6 @@ public class ElementoCatalogo {
 
     public void setNome(@NonNull String nome) {
         this.nome = nome;
-    }
-
-    public String getIcona() {
-        return icona;
-    }
-
-    public void setIcona(String icona) {
-        this.icona = icona;
     }
 
     public long getUserId() {
