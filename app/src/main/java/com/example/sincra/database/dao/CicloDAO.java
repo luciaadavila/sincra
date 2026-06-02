@@ -60,6 +60,10 @@ public interface CicloDAO {
     @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio < :fechaInicio ORDER BY dataInizio DESC LIMIT 1")
     Ciclo getCicloAnteriorSync(Date fechaInicio, long userId);
 
+    // NUEVO: Encuentra el ciclo que corresponde a una fecha (el que empezó en o antes de esa fecha)
+    @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio <= :fecha ORDER BY dataInizio DESC LIMIT 1")
+    Ciclo getCicloPerDataSync(Date fecha, long userId);
+
     // NUEVO: Añadido para encontrar el ciclo posterior cuando insertamos un periodo en el pasado
     @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio > :fecha ORDER BY dataInizio ASC LIMIT 1")
     Ciclo getCicloPosteriorSync(Date fecha, long userId);

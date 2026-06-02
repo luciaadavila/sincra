@@ -28,4 +28,29 @@
         android:background="@color/red"
         android:text="DÍA 14\nFase lútea"
         android:textSize="24sp"/>
+
+    <TextView
+        android:id="@+id/stepsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Passi oggi: 0"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:gravity="center"
+        android:layout_marginTop="16dp" />
+
+    <LinearLayout
+        android:id="@+id/homeSintomiContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <LinearLayout
+        android:id="@+id/homeMoodContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp" />
+
 </LinearLayout>

@@ -58,13 +58,13 @@ public class CicloRepository {
         executor.execute(() -> {
             Date data = truncarFecha(dataInput);
             Registrazione regActual = daoRe.getRegistroByDate(data, getLocalId());
-            if (regActual == null) regActual = daoRe.getRegistroByDateDirect(data);
+            if (regActual == null) regActual = daoRe.getRegistroByDate(data, getLocalId());
 
             Registrazione regPrev = daoRe.getRegistroByDate(xDay(data, -1), getLocalId());
-            if (regPrev == null) regPrev = daoRe.getRegistroByDateDirect(xDay(data, -1));
+            if (regPrev == null) regPrev = daoRe.getRegistroByDate(xDay(data, -1), getLocalId());
 
             Registrazione regNext = daoRe.getRegistroByDate(xDay(data, 1), getLocalId());
-            if (regNext == null) regNext = daoRe.getRegistroByDateDirect(xDay(data, 1));
+            if (regNext == null) regNext = daoRe.getRegistroByDate(xDay(data, 1), getLocalId());
 
             if (regActual == null) {
                 // Si no existe, lo creamos temporalmente desvinculado (cicloId = null)
@@ -164,7 +164,7 @@ public class CicloRepository {
 
             Ciclo nuevoCiclo = new Ciclo(data, dataFineNuevo, 28, 1, getLocalId());
             if (dataFineNuevo != null) {
-                nuevoCiclo.setDurataTotale((int) difDays(data, dataFineNuevo));
+                nuevoCiclo.setDurataTotale(difDays(data, dataFineNuevo));
             }
 
             long nuevoCicloId = dao.insert(nuevoCiclo);
@@ -302,7 +302,7 @@ public class CicloRepository {
         int countPeriodo = 0;
         while (!dataEv.after(fechaFin)) {
             Registrazione reg = daoRe.getRegistroByDate(dataEv, getLocalId());
-            if (reg == null) reg = daoRe.getRegistroByDateDirect(dataEv);
+            if (reg == null) reg = daoRe.getRegistroByDate(dataEv, getLocalId());
 
             if (reg == null) {
                 reg = new Registrazione(dataEv, false, false, i, null, ciclo.getCicloId(), 0);
@@ -541,6 +541,10 @@ public class CicloRepository {
 
     public LiveData<CicloConRegistrazioni> getCicloActual(){ return dao.getCicloActualConRegistrazioni(getLocalId()); }
     public LiveData<CicloConRegistrazioni> getCicloByIdConRegistrazioni(int cicloId){ return dao.getCicloByIdConRegistrazioni(cicloId); }
+
+    public Ciclo getCicloPerData(Date data) {
+        return dao.getCicloPerDataSync(truncarFecha(data), getLocalId());
+    }
 
     public LiveData<List<Date>> getFechasConPeriodo() {
         return daoRe.getFechasConPeriodoByUserId(getLocalId());

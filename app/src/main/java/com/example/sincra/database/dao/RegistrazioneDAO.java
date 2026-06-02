@@ -49,15 +49,13 @@ public interface RegistrazioneDAO {
             "WHERE r.data = :date AND c.userId = :userId LIMIT 1")
     Registrazione getRegistroByDate(Date date, long userId);
 
-    @Query("SELECT * FROM registrazione WHERE data = :date LIMIT 1")
-    Registrazione getRegistroByDateDirect(Date date);
-
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +
             "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
             "WHERE c.userId = :userId " +
-            "ORDER BY r.data DESC")
+            "ORDER BY r.data ASC")
     LiveData<List<RegistrazioneConElementi>> getAllByUserId(long userId);
+
 
     @Transaction
     default void insertRegistroCompleto(Registrazione registro, List<Integer> elementoIds) {
