@@ -7,6 +7,10 @@
 
     <corners android:radius="18dp" />
 
+    <stroke
+        android:width="0.5dp"
+        android:color="#F1D5E0" />
+
     <padding
         android:left="8dp"
         android:top="8dp"

@@ -3,17 +3,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/ligh_pink"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:paddingStart="22dp"
+    android:paddingTop="22dp"
+    android:paddingEnd="22dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Info"
+        android:textColor="@color/dark_gray"
+        android:textSize="25sp"
         android:textStyle="bold"
-        android:textSize="24sp"
-        android:paddingBottom="16dp"/>
+        android:paddingBottom="20dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/infoRecycler"

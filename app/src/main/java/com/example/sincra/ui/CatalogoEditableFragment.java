@@ -1,10 +1,15 @@
 package com.example.sincra.ui;
 
+import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,6 +53,53 @@ public class CatalogoEditableFragment extends Fragment {
         Button addButton = view.findViewById(R.id.addButton);
         RecyclerView recycler = view.findViewById(R.id.catalogRecycler);
 
+        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            private final ColorDrawable background = new ColorDrawable(ContextCompat.getColor(requireContext(), R.color.red));
+            private final Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash);
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+
+                if (position != RecyclerView.NO_POSITION) {
+                    ElementoCatalogo item = adapter.getItem(position);
+                    viewModel.deleteItem(item);
+                }
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                View itemView = viewHolder.itemView;
+
+                if (dX < 0) {
+                    // Fondo rojo al deslizar hacia la izquierda
+                    background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                    background.draw(c);
+
+                    // Icono de papelera
+                    if (deleteIcon != null) {
+                        int iconMargin = 32;
+                        int iconSize = deleteIcon.getIntrinsicWidth();
+
+                        int top = itemView.getTop() + (itemView.getHeight() - iconSize) / 2;
+                        int bottom = top + iconSize;
+                        int right = itemView.getRight() - iconMargin;
+                        int left = right - iconSize;
+
+                        deleteIcon.setBounds(left, top, right, bottom);
+                        deleteIcon.draw(c);
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+
+        new ItemTouchHelper(swipeCallback).attachToRecyclerView(recycler);
         tipo = getArguments() != null ? getArguments().getString("tipo") : "mood";
         title.setText(tipo.equals("mood") ? "Stati d'animo" : "Sintomi");
 
@@ -58,12 +110,8 @@ public class CatalogoEditableFragment extends Fragment {
             public void onEdit(ElementoCatalogo e){
                 mostrarDialogEditar(e);
             }
-
-            @Override
-            public void onDelete(ElementoCatalogo e){
-                viewModel.deleteItem(e);
-            }
         });
+
         recycler.setAdapter(adapter);
 
         viewModel.getItems().observe(getViewLifecycleOwner(), data -> {
@@ -78,13 +126,10 @@ public class CatalogoEditableFragment extends Fragment {
         });
 
         input.setOnKeyListener((v, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_ENTER
-                    && event.getAction() == KeyEvent.ACTION_DOWN) {
-
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
                 addElemento(input);
                 return true;
             }
-
             return false;
         });
 

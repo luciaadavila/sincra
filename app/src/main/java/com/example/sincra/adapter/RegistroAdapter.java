@@ -46,12 +46,13 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
     }
 
     public static class RegistroViewHolder extends RecyclerView.ViewHolder {
-        TextView dayTitle, cycleDay, isCycleDay, moods, symptoms, phase;
+        TextView dayTitle, cycleDay, isCycleDay, moods, symptoms, phase, steps;
 
         public RegistroViewHolder(@NonNull View itemView) {
             super(itemView);
             dayTitle = itemView.findViewById(R.id.dayTitle);
             cycleDay = itemView.findViewById(R.id.cycleDay);
+            steps = itemView.findViewById(R.id.steps);
             isCycleDay = itemView.findViewById(R.id.isCycleDay);
             moods = itemView.findViewById(R.id.moods);
             symptoms = itemView.findViewById(R.id.symptoms);
@@ -116,6 +117,13 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
 
         String isCycle = holder.itemView.getContext().getString(registro.isPeriodo() ? R.string.si : R.string.no);
         holder.isCycleDay.setText(holder.itemView.getContext().getString(R.string.is_ciclo_giorno, isCycle));
+
+        int numPassi = registro.getPasos();
+        if (numPassi >= 0){
+            holder.steps.setText("Passi: " + numPassi);
+        } else {
+            holder.steps.setText("Passi: non disponibili");
+        }
 
         String moodsText = moodsList.isEmpty()
                 ? "—"

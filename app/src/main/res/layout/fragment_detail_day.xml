@@ -42,7 +42,7 @@
                                     android:gravity="center"
                                     android:text="DÍA 14"
                                     android:textColor="#444444"
-                                    android:textSize="21sp"
+                                    android:textSize="25sp"
                                     android:textStyle="bold" />
 
                         </com.google.android.material.card.MaterialCardView>
@@ -52,8 +52,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/stato_d_animo"
-                            android:textColor="#3F3F3F"
-                            android:textSize="19sp"
+                            android:textColor="@color/dark_gray"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -62,14 +62,14 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Come ti senti oggi?"
-                            android:textColor="#777777"
-                            android:textSize="14sp" />
+                            android:textColor="@color/gray"
+                            android:textSize="15sp" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/moodRecycler"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
+                            android:layout_marginTop="15dp"
                             android:minHeight="96dp"
                             android:nestedScrollingEnabled="false"
                             android:overScrollMode="never" />
@@ -78,7 +78,7 @@
                             android:id="@+id/btnAddMood"
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
-                            android:layout_marginTop="14dp"
+                            android:layout_marginTop="15dp"
                             android:text="+"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -91,8 +91,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="30dp"
                             android:text="@string/sintomi"
-                            android:textColor="#3F3F3F"
-                            android:textSize="19sp"
+                            android:textColor="@color/dark_gray"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -101,14 +101,14 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Aggiungi i sintomi che hai notato"
-                            android:textColor="#777777"
-                            android:textSize="14sp" />
+                            android:textColor="@color/gray"
+                            android:textSize="15sp" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/symptomRecycler"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
+                            android:layout_marginTop="15dp"
                             android:minHeight="96dp"
                             android:nestedScrollingEnabled="false"
                             android:overScrollMode="never" />

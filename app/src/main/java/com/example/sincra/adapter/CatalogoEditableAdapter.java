@@ -1,6 +1,5 @@
 package com.example.sincra.adapter;
 
-import android.location.GnssAntennaInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,60 +25,49 @@ public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditab
 
     public interface OnCatalogoClickListener {
         void onEdit(ElementoCatalogo item);
-        void onDelete(ElementoCatalogo item);
+
     }
 
     public static class CatalogoEditableViewHolder extends RecyclerView.ViewHolder {
 
         TextView nameText;
-        Button editButton, deleteButton;
 
         public CatalogoEditableViewHolder(View itemView) {
             super(itemView);
 
             nameText = itemView.findViewById(R.id.nameText);
-            editButton = itemView.findViewById(R.id.editButton);
-            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 
     @Override
     public CatalogoEditableViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_catalogo_editable,
-                        parent,
-                        false);
-
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_catalogo_editable, parent, false);
         return new CatalogoEditableViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(CatalogoEditableViewHolder holder, int position) {
-
         ElementoCatalogo item = items.get(position);
-
         holder.nameText.setText(item.getNome());
-        holder.deleteButton.setOnClickListener(v -> {
+
+        holder.itemView.setOnLongClickListener(v -> {
             int pos = holder.getAdapterPosition();
-
-            if (pos != RecyclerView.NO_POSITION) {
-                listener.onDelete(items.get(pos));
-            }
-        });
-
-        holder.editButton.setOnClickListener(v -> {
-            int pos = holder.getAdapterPosition();
-
-            if (pos != RecyclerView.NO_POSITION) {
+            if (pos != RecyclerView.NO_POSITION){
                 listener.onEdit(items.get(pos));
             }
+            return true;
         });
+
     }
 
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+
+    public ElementoCatalogo getItem(int position) {
+        return items.get(position);
     }
 
     public void updateList(List<ElementoCatalogo> data){

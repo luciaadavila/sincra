@@ -299,27 +299,41 @@ public class CicloRepository {
     private void updatePeriodDays(Ciclo ciclo) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(ciclo.getDataInizio());
+
         Date dataEv = truncarFecha(cal.getTime());
-        Date fechaFin = (ciclo.getDataFine() != null) ? truncarFecha(ciclo.getDataFine()) : truncarFecha(new Date());
+        Date hoy = truncarFecha(new Date());
+
+        Date fechaFin;
+        if (ciclo.getDataFine() != null) {
+            fechaFin = truncarFecha(ciclo.getDataFine());
+        } else {
+            Date inicio = truncarFecha(ciclo.getDataInizio());
+
+            if (inicio.after(hoy)) {
+                fechaFin = inicio;
+            } else {
+                fechaFin = hoy;
+            }
+        }
 
         int i = 1;
         int countPeriodo = 0;
+
         while (!dataEv.after(fechaFin)) {
             Registrazione reg = daoRe.getRegistroByDate(dataEv, getLocalId());
-            if (reg == null) reg = daoRe.getRegistroByDate(dataEv, getLocalId());
 
             if (reg == null) {
                 reg = new Registrazione(dataEv, false, false, i, null, ciclo.getCicloId(), 0);
             }
-            // Asegurarse de que el día pertenece a este ciclo antes de reescribir su giorno
+
             if (reg.getCicloId() == null || reg.getCicloId().equals(ciclo.getCicloId())) {
                 reg.setCicloId(ciclo.getCicloId());
                 reg.setGiornoCiclo(i);
                 daoRe.insertOrUpdate(reg);
-            }
 
-            if (reg.isPeriodo()) {
-                countPeriodo++;
+                if (reg.isPeriodo()) {
+                    countPeriodo++;
+                }
             }
 
             cal.add(Calendar.DAY_OF_MONTH, 1);
@@ -331,6 +345,7 @@ public class CicloRepository {
             ciclo.setDurataPeriodo(countPeriodo);
             dao.update(ciclo);
         }
+
     }
 
     private int calcoloMediaPeriodoUltimi4Cicli(){

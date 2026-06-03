@@ -3,36 +3,72 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/ligh_pink"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingStart="22dp"
+    android:paddingTop="22dp"
+    android:paddingEnd="22dp">
 
     <TextView
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Catálogo"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
+        android:textColor="@color/dark_gray"
+        android:textSize="25sp"
+        android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/inputNew"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Añadir nuevo"
-        android:layout_marginTop="16dp"/>
-
-    <Button
-        android:id="@+id/addButton"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/red"
-        android:text="Añadir" />
+        android:layout_marginTop="6dp"
+        android:text="Mantén pulsado para editar o desliza para eliminar"
+        android:textColor="#8F8792"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/bg_input"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="6dp">
+
+        <EditText
+            android:id="@+id/inputNew"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="Aggiungi un nuovo elemento"
+            android:singleLine="true"
+            android:textColor="#4A4A4A"
+            android:textColorHint="#A49CA6"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_add_button"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="0dp"
+            android:text="+"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/catalogRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="24dp"
+        android:clipToPadding="false"
+        android:paddingBottom="20dp" />
 
 </LinearLayout>

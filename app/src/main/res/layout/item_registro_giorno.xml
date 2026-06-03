@@ -17,7 +17,7 @@
         android:text="31/05/2026"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="#333333"
+        android:textColor="@color/black"
         android:layout_marginBottom="10dp" />
 
     <TextView
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:text="Giorno del ciclo: 3"
         android:textSize="14sp"
-        android:textColor="#555555"
+        android:textColor="@color/dark_gray"
         android:layout_marginBottom="6dp" />
 
     <TextView
@@ -45,8 +45,17 @@
         android:layout_height="wrap_content"
         android:text="Giorno di ciclo? No"
         android:textSize="14sp"
-        android:textColor="#555555"
+        android:textColor="@color/dark_gray"
         android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:id="@+id/steps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Passi: —"
+        android:textSize="14sp"
+        android:textColor="@color/dark_gray"
+        android:layout_marginBottom="10dp"/>
 
     <TextView
         android:id="@+id/moods"
@@ -54,7 +63,7 @@
         android:layout_height="wrap_content"
         android:text="Umore: —"
         android:textSize="14sp"
-        android:textColor="#555555"
+        android:textColor="@color/dark_gray"
         android:layout_marginBottom="6dp" />
 
     <TextView
@@ -63,6 +72,6 @@
         android:layout_height="wrap_content"
         android:text="Sintomi: —"
         android:textSize="14sp"
-        android:textColor="#555555" />
+        android:textColor="@color/dark_gray" />
 
 </LinearLayout>

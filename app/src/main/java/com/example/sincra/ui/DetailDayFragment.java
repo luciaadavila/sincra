@@ -1,8 +1,11 @@
 package com.example.sincra.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
@@ -10,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +28,7 @@ import com.example.sincra.viewModel.DetailDayViewModel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -40,6 +45,12 @@ public class DetailDayFragment extends Fragment {
 
     private List<ElementoCatalogo> currentMoodsFromDb = new ArrayList<>();
     private List<ElementoCatalogo> currentSymptomsFromDb = new ArrayList<>();
+
+    // swipe con dos dedos
+    private float startTwoFingerX;
+    private float startTwoFingerY;
+    private boolean twoFingerGestureActive = false;
+    private boolean twoFingerGestureDetected = false;
 
     public DetailDayFragment() {}
 
@@ -79,6 +90,12 @@ public class DetailDayFragment extends Fragment {
         symptomAdapter = new CatalogoAdapter(new ArrayList<>());
         moodRecycler.setAdapter(moodAdapter);
         symptomRecycler.setAdapter(symptomAdapter);
+
+        // configuramos gestos con dos dedos
+        configurarSwipeDosDedos(view);
+        configurarSwipeDosDedos(moodRecycler);
+        configurarSwipeDosDedos(symptomRecycler);
+
 
         viewModel = new ViewModelProvider(this).get(DetailDayViewModel.class);
 
@@ -200,4 +217,108 @@ public class DetailDayFragment extends Fragment {
 
         return dateToSave;
     }
+
+    // target view es la vista sobre la que queremos detectar gesto
+    @SuppressLint("ClickableViewAccessibility")
+    private void configurarSwipeDosDedos(View targetView) {
+        // definimos la distancia mínima para considerarlo swipe
+        int minSwipeDistance = ViewConfiguration.get(requireContext()).getScaledTouchSlop() * 8;
+
+        // cuando el usuario toca la vista, obtenemos información de MotionEvent
+        targetView.setOnTouchListener((v, event) -> {
+            switch (event.getActionMasked()) {
+                // se apoya el segundo dedo
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    if (event.getPointerCount() == 2) {
+                        // guardamos posición inicial media de los dedos
+                        startTwoFingerX = getMediaX(event);
+                        startTwoFingerY = getMediaY(event);
+
+                        // indicamos que se inicia gesto con dos dedos pero sin detectar gesto
+                        twoFingerGestureActive = true;
+                        twoFingerGestureDetected = false;
+                        return true;
+                    }
+                    break;
+                // los dedos se mueven
+                case MotionEvent.ACTION_MOVE:
+                    // si había dos dedos y siguen los dos dedos y todavía no se había detectado gesto
+                    if (twoFingerGestureActive && event.getPointerCount() == 2 && !twoFingerGestureDetected) {
+                        // calculamos la nueva posición de los dedos
+                        float currentX = getMediaX(event);
+                        float currentY = getMediaY(event);
+
+                        // calculamos la diferencia entre la posición actual y la anterior
+                        float diffX = currentX - startTwoFingerX;
+                        float diffY = currentY - startTwoFingerY;
+
+                        // comprobamos que el movimiento haya sido más horizontal que vertical
+                        boolean movimientoHorizontal = Math.abs(diffX) > Math.abs(diffY);
+                        // comprobamos que la distancia haya sido suficinete
+                        boolean distanciaSuficiente = Math.abs(diffX) > minSwipeDistance;
+
+                        // si se dan los dos casos => comprobamos si fue hacia izquierda o derecha
+                        if (movimientoHorizontal && distanciaSuficiente) {
+                            twoFingerGestureDetected = true;
+                            if (diffX < 0) {
+                                openNewDate(-1);
+                            } else {
+                                openNewDate(1);
+                            }
+                            return true;
+                        }
+                    }
+                    break;
+
+                case MotionEvent.ACTION_POINTER_UP: // se levanta un dedo
+                case MotionEvent.ACTION_UP: // se levanta el segundo dedo
+                case MotionEvent.ACTION_CANCEL: // android cancela el gesto
+                    twoFingerGestureActive = false;
+                    twoFingerGestureDetected = false;
+                    break;
+            }
+
+            return false;
+        });
+    }
+
+    private float getMediaX(MotionEvent event) {
+        float suma = 0;
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            suma += event.getX(i);
+        }
+        return suma / event.getPointerCount();
+    }
+
+    private float getMediaY(MotionEvent event) {
+        float suma = 0;
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            suma += event.getY(i);
+        }
+        return suma / event.getPointerCount();
+    }
+
+
+    private void openNewDate(int dias) {
+        Date fechaActual = stringToDate(currentDate);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(fechaActual);
+        calendar.add(Calendar.DAY_OF_MONTH, dias);
+
+        String nuevaFecha = dateFormat.format(calendar.getTime());
+        DetailDayFragment fragment = new DetailDayFragment();
+
+        Bundle args = new Bundle();
+        args.putString("date", nuevaFecha);
+        fragment.setArguments(args);
+
+        getParentFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+
 }

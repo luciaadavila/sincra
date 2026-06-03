@@ -25,8 +25,8 @@
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_gravity="center"
-        android:background="@color/red"
-        android:text="DÍA 14\nFase lútea"
+        android:background="@drawable/bg_add_button"
+        android:text="GIORNO 14\nFase lútea"
         android:textSize="24sp"/>
 
     <TextView
