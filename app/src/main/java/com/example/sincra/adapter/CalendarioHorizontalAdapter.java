@@ -24,8 +24,12 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
     private List<Date> listaFechas;
     private int posicionSeleccionada = -1; 
     private OnDateClickListener listener;
-    private List<String> fechasConPeriodo; // Formato "yyyy-MM-dd" que traeremos de Room
-    private List<String> diasProbables; // Formato "yyyy-MM-dd" que traeremos de Room
+    private List<String> fechasConPeriodo; // Formato "dd-MM-yyyy" que traeremos de Room
+    private List<String> diasProbables; // Formato "dd-MM-yyyy" que traeremos de Room
+
+    private final SimpleDateFormat numFormat = new SimpleDateFormat("dd", Locale.getDefault());
+    private final SimpleDateFormat textFormat = new SimpleDateFormat("EEE", Locale.getDefault()); // Ej: "lun", "mar"
+    private final SimpleDateFormat keyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
     public interface OnDateClickListener {
         void onDateClick(Date fechaSeleccionada);
@@ -69,13 +73,9 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
     public void onBindViewHolder(@NonNull CalendarViewHolder holder, int position) {
         Date fecha = listaFechas.get(position);
 
-        SimpleDateFormat numFormat = new SimpleDateFormat("dd", Locale.getDefault());
-        SimpleDateFormat textFormat = new SimpleDateFormat("EEE", Locale.getDefault()); // Ej: "lun", "mar"
-
         holder.dayLabel.setText(textFormat.format(fecha).toUpperCase());
         holder.dayNum.setText(numFormat.format(fecha));
 
-        SimpleDateFormat keyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String keyFecha = keyFormat.format(fecha);
 
         int actualPosition = holder.getBindingAdapterPosition();

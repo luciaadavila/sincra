@@ -32,7 +32,7 @@ public class HomeViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Date>> listaFechas = new MutableLiveData<>();
     private final MutableLiveData<List<String>> diasProbables = new MutableLiveData<>();
     private final MutableLiveData<FaseCiclo> faseSeleccionada = new MutableLiveData<>();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
     private final CicloRepository repo;
     private final RegistrazioneRepository repoReg;
 
@@ -103,11 +103,11 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void updateSelectedDate(Date data) {
-        new Thread(() -> {
+        repo.getExecutor().execute(() -> {
             Ciclo ciclo = repo.getCicloPerData(data);
             FaseCiclo fase = getFaseCiclo(data, ciclo);
             faseSeleccionada.postValue(fase);
-        }).start();
+        });
     }
 
     public LiveData<FaseCiclo> getFaseSeleccionada() {

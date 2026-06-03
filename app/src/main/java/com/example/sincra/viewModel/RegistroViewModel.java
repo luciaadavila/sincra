@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.sincra.database.repositorio.RegistrazioneRepository;
+import com.example.sincra.model.Registrazione;
 import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 
 import java.util.Date;
@@ -22,6 +23,10 @@ public class RegistroViewModel extends AndroidViewModel {
         super(application);
         repo = new RegistrazioneRepository(application);
         this.registroList = repo.getAll();
+    }
+
+    public void deleteRegistrazione(Registrazione registrazione){
+        repo.deleteRegistrazione(registrazione);
     }
 
     public LiveData<List<RegistrazioneConElementi>> getRegistri() {

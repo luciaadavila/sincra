@@ -58,12 +58,18 @@ public class RegistrazioneRepository {
     public LiveData<RegistrazioneConElementi> getByDate(String date) {
         Date data = null;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
             data = sdf.parse(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return dao.getByDateAndUser(data, getLocalId());
+    }
+
+    public void deleteRegistrazione(Registrazione registrazione) {
+        executor.execute(() -> {
+            dao.deleteRegistrazione(registrazione);
+        });
     }
 
     public void saveDay(Registrazione registro, List<ElementoCatalogo> elementos) {
@@ -88,7 +94,13 @@ public class RegistrazioneRepository {
             int giornoCalcolato = CicloRepository.difDays(c.getDataInizio(), dataReg);
             registro.setGiornoCiclo(giornoCalcolato);
 
-            dao.insert(registro);
+            List<Integer> elementoIds = new ArrayList<>();
+            if (elementos != null) {
+                for (ElementoCatalogo e : elementos) {
+                    elementoIds.add(e.getElementoId());
+                }
+            }
+            dao.insertRegistroCompleto(registro, elementoIds);
         });
     }
 

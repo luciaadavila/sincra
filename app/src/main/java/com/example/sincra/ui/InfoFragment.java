@@ -3,6 +3,7 @@ package com.example.sincra.ui;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,13 +59,14 @@ public class InfoFragment extends Fragment {
                     destino.setArguments(argsSintomi);
                     break;
                 case 3: // Configuración
-                    // destino = new ConfigurationFragment();
+                    destino = new ConfigurationFragment();
                     break;
             }
 
             // Si definiste un fragmento de destino, navegamos de forma segura
             if (destino != null) {
                 getParentFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .replace(R.id.fragment_container, destino)
                         .addToBackStack(null)
                         .commit();

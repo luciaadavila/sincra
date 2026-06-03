@@ -2,6 +2,7 @@ package com.example.sincra.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -86,4 +87,7 @@ public interface RegistrazioneDAO {
             "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
             "WHERE c.userId = :userId AND r.isPeriodo = 1")
     LiveData<List<Date>> getFechasConPeriodoByUserId(long userId);
+
+    @Delete
+    void deleteRegistrazione(Registrazione registrazione);
 }

@@ -43,6 +43,10 @@ public class CicloRepository {
                 .getLong("local_user_id", -1L);
     }
 
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
     public LiveData<List<CicloConRegistrazioni>> getCicliConRegistrazioni() {
         return dao.getCicliConRegistrazioni(getLocalId());
     }

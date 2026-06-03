@@ -41,6 +41,7 @@ public class AuthActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private CredentialManager credentialManager;
     private EditText etEmail, etPassword;
+    private final java.util.concurrent.ExecutorService databaseExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +113,7 @@ public class AuthActivity extends AppCompatActivity {
                 AuthActivity.this,
                 request,
                 new CancellationSignal(),
-                Executors.newSingleThreadExecutor(),
+                databaseExecutor,
                 new CredentialManagerCallback<>() {
                     @Override
                     public void onResult(GetCredentialResponse result) {
@@ -172,7 +173,7 @@ public class AuthActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser firebaseUser) {
         if (firebaseUser != null){
             // Sincronizar con base de datos local
-            Executors.newSingleThreadExecutor().execute(() -> {
+            databaseExecutor.execute(() -> {
                 com.example.sincra.database.AppDatabase db = com.example.sincra.database.AppDatabase.getDatabase(this);
                 com.example.sincra.model.User user = db.userDAO().getByFirebaseUid(firebaseUser.getUid());
                 long localId;

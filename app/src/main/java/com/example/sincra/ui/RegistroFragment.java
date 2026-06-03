@@ -2,19 +2,24 @@ package com.example.sincra.ui;
 
 import static com.example.sincra.database.repositorio.CicloRepository.truncarFecha;
 
+import android.content.ClipData;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.RegistroAdapter;
@@ -32,10 +37,11 @@ public class RegistroFragment extends Fragment {
     private RegistroAdapter adapter;
     private RegistroViewModel viewModel;
     private RecyclerView registroRecycler;
+    private View trashDropZone;
 
     private boolean primoScroll = false;
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
     public RegistroFragment() {
         // Required empty public constructor
@@ -56,6 +62,9 @@ public class RegistroFragment extends Fragment {
         registroRecycler = view.findViewById(R.id.registroRecycler);
         registroRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        trashDropZone = view.findViewById(R.id.trashDropZone);
+        configurarPapelera();
+
         // 2. configuramos adapter con el listener de navegación
         adapter = new RegistroAdapter(new ArrayList<>(), item -> {
             DetailDayFragment detailFragment = new DetailDayFragment();
@@ -64,10 +73,16 @@ public class RegistroFragment extends Fragment {
             detailFragment.setArguments(bundle);
 
             getParentFragmentManager().beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .replace(R.id.fragment_container, detailFragment)
                     .addToBackStack(null)
                     .commit();
-        });
+            },
+            (itemView, item) -> {
+                mostrarPapelera();
+                empezarArrastre(itemView, item);
+            }
+        );
         registroRecycler.setAdapter(adapter);
 
         // 3. inicializamos viewModel
@@ -83,6 +98,67 @@ public class RegistroFragment extends Fragment {
             }
 
         });
+    }
+
+    private void empezarArrastre(View itemView, RegistrazioneConElementi item) {
+        ClipData data = ClipData.newPlainText("", "");
+
+        View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(itemView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            itemView.startDragAndDrop(data, shadowBuilder, item, 0);
+        } else {
+            itemView.startDrag(data, shadowBuilder, item, 0);
+        }
+    }
+
+    private void configurarPapelera() {
+        trashDropZone.setOnDragListener((v, event) -> {
+            switch (event.getAction()) {
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    v.setAlpha(0.7f);
+                    return true;
+
+                case DragEvent.ACTION_DRAG_EXITED:
+                    v.setAlpha(1f);
+                    return true;
+
+                case DragEvent.ACTION_DROP:
+                    v.setAlpha(1f);
+
+                    Object localState = event.getLocalState();
+
+                    if (localState instanceof RegistrazioneConElementi) {
+                        RegistrazioneConElementi item = (RegistrazioneConElementi) localState;
+                        if (item.registrazione.isPeriodo()){
+                            Toast.makeText(getContext(), "Non poi eliminare un registro con Periodo", Toast.LENGTH_SHORT).show();
+                            ocultarPapelera();
+                            return true;
+                        }
+                        borrarRegistro(item);
+                        ocultarPapelera();
+                        Toast.makeText(getContext(), "Registro borrado", Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+
+                case DragEvent.ACTION_DRAG_ENDED:
+                    v.setAlpha(1f);
+                    ocultarPapelera();
+                    return true;
+            }
+            return true;
+        });
+    }
+
+    private void mostrarPapelera() {
+        trashDropZone.setVisibility(View.VISIBLE);
+    }
+
+    private void ocultarPapelera() {
+        trashDropZone.setVisibility(View.GONE);
+    }
+
+    private void borrarRegistro(RegistrazioneConElementi item) {
+        viewModel.deleteRegistrazione(item.registrazione);
     }
 
     private int findClosestPositionToToday(List<RegistrazioneConElementi> items) {
@@ -105,7 +181,6 @@ public class RegistroFragment extends Fragment {
                 bestPosition = i;
             }
         }
-
         return bestPosition;
     }
 }

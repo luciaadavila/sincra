@@ -35,7 +35,7 @@ public class DetailDayFragment extends Fragment {
     private DetailDayViewModel viewModel;
     private String currentDate = "";
     private Registrazione registrazione;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
 
     private List<ElementoCatalogo> currentMoodsFromDb = new ArrayList<>();

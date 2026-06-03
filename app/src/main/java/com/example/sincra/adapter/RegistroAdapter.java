@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ import java.util.Locale;
 public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.RegistroViewHolder> {
     private List<RegistrazioneConElementi> items;
     private final OnItemClickListener listener;
+    private final OnItemLongClickListener longListener;
     private final SimpleDateFormat titleDateFormat = new SimpleDateFormat("EEEE dd MMM yyy", Locale.ITALIAN);
 
 
@@ -33,9 +35,14 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
         void onItemClick(RegistrazioneConElementi item);
     }
 
-    public RegistroAdapter(List<RegistrazioneConElementi> items, OnItemClickListener listener) {
+    public interface OnItemLongClickListener {
+        void onItemLongClick(View itemView, RegistrazioneConElementi item);
+    }
+
+    public RegistroAdapter(List<RegistrazioneConElementi> items, OnItemClickListener listener, OnItemLongClickListener longListener) {
         this.items = items;
         this.listener = listener;
+        this.longListener = longListener;
     }
 
     public static class RegistroViewHolder extends RecyclerView.ViewHolder {
@@ -81,6 +88,13 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
             }
         });
 
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longListener != null){
+                longListener.onItemLongClick(v, item);
+            }
+            return true;
+        });
+
         addSpreadGesture(holder, item);
 
         holder.dayTitle.setText(titleDateFormat.format(registro.getDate()));
@@ -100,8 +114,7 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
             holder.phase.setText("Fase: —");
         }
 
-        String isCycle = holder.itemView.getContext().getString(registro.isGiornoProbabile() ? R.string.si : R.string.no);
-
+        String isCycle = holder.itemView.getContext().getString(registro.isPeriodo() ? R.string.si : R.string.no);
         holder.isCycleDay.setText(holder.itemView.getContext().getString(R.string.is_ciclo_giorno, isCycle));
 
         String moodsText = moodsList.isEmpty()

@@ -11,13 +11,12 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.activity.result.contract.ActivityResultContracts;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.CalendarioHorizontalAdapter;
@@ -54,8 +52,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     private LinearLayout homeSintomiContainer;
     private LinearLayout homeMoodContainer;
 
-    // para pedir permiso sobre el step counter
-    private ActivityResultLauncher<String> activityRecognitionPermissionLauncher;
+    // contador de pasos
     private TextView stepsTextView;
     private SensorManager sensorManager;
     private Sensor stepCounterSensor;
@@ -63,6 +60,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     private SharedPreferences stepPrefs;
     private int ultimiPassiOggi = 0;
     private boolean passiLettiDalSensore = false;
+
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
 
     public HomeFragment() {
@@ -79,36 +78,29 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
-        activityRecognitionPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
-                isGranted -> {
-                    if (isGranted){
-                        Toast.makeText(requireContext(), "Permesso passi concesso", Toast.LENGTH_SHORT).show();
-                        registerStepCounter();
-                    } else {
-                        Toast.makeText(requireContext(), "Permesso passi non concesso", Toast.LENGTH_SHORT).show();
-                    }
-        });
-
         dayButton = view.findViewById(R.id.dayButton);
         dayRecycler = view.findViewById(R.id.calendarRecyclerView);
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
-        checkActivityRecognitionPermission();
 
         homeSintomiContainer = view.findViewById(R.id.homeSintomiContainer);
         homeMoodContainer = view.findViewById(R.id.homeMoodContainer);
 
         stepsTextView = view.findViewById(R.id.stepsTextView);
         sensorManager = (SensorManager) requireContext().getSystemService(Context.SENSOR_SERVICE);
+
         if (sensorManager != null) {
             stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         }
-        if (stepCounterSensor == null) {
-            stepsTextView.setText("Sensore passi non disponibile");
-        }
+
 
         stepPrefs = requireContext().getSharedPreferences("step_counter_prefs", Context.MODE_PRIVATE);
+        int pasosGuardados = stepPrefs.getInt("passi_oggi", 0);
+        if (stepCounterSensor == null) {
+            stepsTextView.setText("Sensore passi non disponibile");
+        } else {
+            stepsTextView.setText("Passi oggi: " + pasosGuardados);
+        }
 
         fechaSeleccionada = new Date();
         viewModel.updateSelectedDate(fechaSeleccionada);
@@ -177,12 +169,11 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             args.putString("date", fechaSeleccionadaFormateada);
             detailFragment.setArguments(args);
             getParentFragmentManager().beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .replace(R.id.fragment_container, detailFragment)
                     .addToBackStack(null)
                     .commit();
         });
-
-
     }
 
     private void updateTextoBoton(FaseCiclo faseSeleccionadaPorViewModel){
@@ -247,28 +238,6 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     }
 
     /////////// PARA EL CONTADOR DE PASOS
-    // codice fatto da chatgpt
-    private void checkActivityRecognitionPermission() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
-            registerStepCounter();
-            return;
-        }
-
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACTIVITY_RECOGNITION
-        ) == PackageManager.PERMISSION_GRANTED) {
-            registerStepCounter();
-            Toast.makeText(
-                    requireContext(),
-                    "Permesso passi già concesso",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-        } else {
-            activityRecognitionPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION);
-        }
-    }
 
     // empezamos a escuchar el sensor
     private void registerStepCounter(){
@@ -280,7 +249,18 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     @Override
     public void onResume(){ //cuanto la pantalla está activa, se comprueba el permiso
         super.onResume();
-        if (stepCounterSensor != null) checkActivityRecognitionPermission();
+        if (hasActivityRecognitionPermission()) registerStepCounter();
+    }
+
+    private boolean hasActivityRecognitionPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return true;
+        }
+
+        return ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACTIVITY_RECOGNITION
+        ) == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -295,14 +275,14 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         if (event.sensor.getType() != Sensor.TYPE_STEP_COUNTER) return;
 
         int pasosSensor = Math.round(event.values[0]); // valor que manda el sensor
-        String oggi = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()); // obtiene el día actual
+        String oggi = dateFormat.format(new Date()); // obtiene el día actual
         // leemos lo que teníamos guardado en las share preferences
         String diaGuardado = stepPrefs.getString("giorno", null);
         int pasosBase = stepPrefs.getInt("pasos_base", -1);
 
         if (!oggi.equals(diaGuardado) || pasosBase < 0 || pasosSensor < pasosBase) {
             pasosBase = pasosSensor;
-            stepPrefs.edit().putString("giorno", oggi).putInt("pasos_base", pasosBase).apply();
+            stepPrefs.edit().putString("giorno", oggi).putInt("pasos_base", pasosBase).putInt("passi_oggi", 0).apply();
         }
 
         int pasosOggi = pasosSensor - pasosBase;
