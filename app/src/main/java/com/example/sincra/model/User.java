@@ -13,17 +13,17 @@ public class User {
     @NonNull
     private String firebaseUid;
     @NonNull
-    private String nombre;
-    private Date dataRegistro;
+    private String nome;
+    private Date dataRegistrazione;
     private int durataMediaCiclo;
     private int durataMediaPeriodo;
 
     public User(){}
 
-    public User(@NonNull String firebaseUid, @NonNull String nombre, Date dataRegistro, int durataMediaCiclo, int durataMediaPeriodo){
+    public User(@NonNull String firebaseUid, @NonNull String nome, Date dataRegistrazione, int durataMediaCiclo, int durataMediaPeriodo){
         this.firebaseUid = firebaseUid;
-        this.nombre = nombre;
-        this.dataRegistro = dataRegistro;
+        this.nome = nome;
+        this.dataRegistrazione = dataRegistrazione;
         this.durataMediaCiclo = durataMediaCiclo;
         this.durataMediaPeriodo = durataMediaPeriodo;
     }
@@ -31,8 +31,8 @@ public class User {
     public User(User other){
         this.userId = other.getUserId();
         this.firebaseUid = other.getFirebaseUid();
-        this.nombre = other.getNombre();
-        this.dataRegistro = other.getDataRegistro();
+        this.nome = other.getNome();
+        this.dataRegistrazione = other.getDataRegistrazione();
         this.durataMediaCiclo = other.getDurataMediaCiclo();
         this.durataMediaPeriodo = other.getDurataMediaPeriodo();
     }
@@ -57,20 +57,20 @@ public class User {
     }
 
     @NonNull
-    public String getNombre() {
-        return nombre;
+    public String getNome() {
+        return nome;
     }
 
-    public void setNombre(@NonNull String nombre) {
-        this.nombre = nombre;
+    public void setNome(@NonNull String nome) {
+        this.nome = nome;
     }
 
-    public Date getDataRegistro() {
-        return dataRegistro;
+    public Date getDataRegistrazione() {
+        return dataRegistrazione;
     }
 
-    public void setDataRegistro(Date dataRegistro) {
-        this.dataRegistro = dataRegistro;
+    public void setDataRegistrazione(Date dataRegistrazione) {
+        this.dataRegistrazione = dataRegistrazione;
     }
 
     public int getDurataMediaCiclo() {

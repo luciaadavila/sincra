@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.sincra.notifications.DailyReminderScheduler;
+import com.example.sincra.notifications.FlexibleReminderScheduler;
 import com.example.sincra.notifications.DailyReminderWorker;
 import com.example.sincra.notifications.ReminderNotificationHelper;
 import com.example.sincra.steps.StepCounterScheduler;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 );
 
         ReminderNotificationHelper.createNotificationChannel(this);
+        FlexibleReminderScheduler.startFlexibleReminder(this);
         DailyReminderScheduler.startDailyReminder(this);
         requestNotificationPermission();
 
@@ -134,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveAppOpenedToday() {
-        String oggi = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String oggi = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         SharedPreferences prefs = getSharedPreferences(DailyReminderWorker.PREFS_NAME, Context.MODE_PRIVATE);
 
         prefs.edit().putString(DailyReminderWorker.KEY_LAST_OPEN_DAY, oggi).apply();

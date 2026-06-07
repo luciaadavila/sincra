@@ -13,18 +13,22 @@
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Catálogo"
+        android:text="@string/catalogo"
         android:textColor="@color/dark_gray"
         android:textSize="25sp"
+        android:shadowColor="@color/white"
+        android:shadowDx="4"
+        android:shadowDy="4"
+        android:shadowRadius="1"
         android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:text="Mantén pulsado para editar o desliza para eliminar"
-        android:textColor="#8F8792"
-        android:textSize="15sp" />
+        android:text="@string/tocca_e_tieni_premuto_per_modificare_scorri_per_eliminare"
+        android:textColor="@color/gray"
+        android:textSize="14sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,9 +46,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:hint="Aggiungi un nuovo elemento"
+            android:hint="@string/aggiungi_un_nuovo_elemento"
             android:singleLine="true"
-            android:textColor="#4A4A4A"
+            android:textColor="@color/ligh_gray"
             android:textColorHint="#A49CA6"
             android:textSize="15sp" />
 
@@ -56,8 +60,8 @@
             android:minWidth="0dp"
             android:minHeight="0dp"
             android:padding="0dp"
-            android:text="+"
-            android:textColor="@android:color/white"
+            android:text="@string/aggiunge"
+            android:textColor="@color/white"
             android:textSize="22sp"
             android:textStyle="bold" />
 

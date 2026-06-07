@@ -12,9 +12,14 @@
         android:id="@+id/titleHistorial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Historial de ciclos"
-        android:textSize="22sp"
+        android:text="@string/storico_dei_cicli"
+        android:textSize="25sp"
         android:textStyle="bold"
+        android:textColor="@color/dark_gray"
+        android:shadowColor="@color/white"
+        android:shadowDx="4"
+        android:shadowDy="4"
+        android:shadowRadius="1"
         android:paddingBottom="12dp"/>
 
     <!-- Lista de ciclos -->

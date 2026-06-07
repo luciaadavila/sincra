@@ -72,7 +72,7 @@ public class CicloRepository {
 
             if (regActual == null) {
                 // Si no existe, lo creamos temporalmente desvinculado (cicloId = null)
-                regActual = new Registrazione(data, false, false, 1, null, null, 0);
+                regActual = new Registrazione(data, false, 1, null, 0);
             }
 
             boolean isPeriodoActualmente = regActual.isPeriodo();
@@ -323,7 +323,7 @@ public class CicloRepository {
             Registrazione reg = daoRe.getRegistroByDate(dataEv, getLocalId());
 
             if (reg == null) {
-                reg = new Registrazione(dataEv, false, false, i, null, ciclo.getCicloId(), 0);
+                reg = new Registrazione(dataEv, false, i, ciclo.getCicloId(), 0);
             }
 
             if (reg.getCicloId() == null || reg.getCicloId().equals(ciclo.getCicloId())) {

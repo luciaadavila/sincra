@@ -212,8 +212,8 @@ public class StatisticheCalculator {
         public void addRegistrazione(Registrazione reg) {
             if (reg == null) return;
             numeroRegistrazioni++;
-            if (reg.getPasos() > 0) {
-                totalePassi += reg.getPasos();
+            if (reg.getPassi() > 0) {
+                totalePassi += reg.getPassi();
                 registrazioniConPassi++;
             }
         }

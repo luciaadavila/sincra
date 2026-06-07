@@ -17,13 +17,14 @@ public class StepCounterScheduler {
 
         Constraints constraints = new Constraints.Builder().setRequiresStorageNotLow(true).build();
 
+        // 1 volta ogni 4 ore
         PeriodicWorkRequest stepRequest =
-                new PeriodicWorkRequest.Builder(StepCounterWorker.class, 4, TimeUnit.HOURS).setConstraints(constraints).build();
+                new PeriodicWorkRequest.Builder(StepCounterWorker.class, 4, TimeUnit.HOURS, 1, TimeUnit.HOURS).setConstraints(constraints).build();
 
         // CON ENEQUEUE hacemos que solo se cree un worker
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 WORK_NAME,
-                ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 stepRequest
         );
     }

@@ -13,28 +13,28 @@
         android:id="@+id/faseTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fase mestruale"
+        android:text="@string/fase_mestruale"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#333333" />
+        android:textColor="@color/red" />
 
     <TextView
         android:id="@+id/faseSubtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Registros: 5 · Pasos medios: 4000"
+        android:text="@string/registros_5_pasos_medios_4000"
         android:textSize="13sp"
-        android:textColor="#666666"
+        android:textColor="@color/gray"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="12dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sintomi più comuni"
+        android:text="@string/sintomi_pi_comuni"
         android:textSize="15sp"
         android:textStyle="bold"
-        android:textColor="#444444"
+        android:textColor="@color/dark_gray"
         android:layout_marginTop="4dp" />
 
     <LinearLayout
@@ -47,10 +47,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Stati d'animo più comuni"
+        android:text="@string/stati_d_animo_pi_comuni"
         android:textSize="15sp"
         android:textStyle="bold"
-        android:textColor="#444444"
+        android:textColor="@color/dark_gray"
         android:layout_marginTop="14dp" />
 
     <LinearLayout

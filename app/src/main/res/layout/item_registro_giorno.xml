@@ -14,7 +14,7 @@
         android:id="@+id/dayTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="31/05/2026"
+        android:text="@string/_31_05_2026"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -24,7 +24,7 @@
         android:id="@+id/cycleDay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Giorno del ciclo: 3"
+        android:text="@string/giorno_del_ciclo_3"
         android:textSize="14sp"
         android:textColor="@color/dark_gray"
         android:layout_marginBottom="6dp" />
@@ -33,7 +33,7 @@
         android:id="@+id/phase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fase: Fase mestruale"
+        android:text="@string/fase_fase_mestruale"
         android:textSize="14sp"
         android:textStyle="bold"
         android:textColor="#E91E63"
@@ -43,7 +43,7 @@
         android:id="@+id/isCycleDay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Giorno di ciclo? No"
+        android:text="@string/giorno_di_ciclo_no"
         android:textSize="14sp"
         android:textColor="@color/dark_gray"
         android:layout_marginBottom="10dp" />
@@ -52,7 +52,7 @@
         android:id="@+id/steps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Passi: —"
+        android:text="@string/passi"
         android:textSize="14sp"
         android:textColor="@color/dark_gray"
         android:layout_marginBottom="10dp"/>
@@ -61,7 +61,7 @@
         android:id="@+id/moods"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Umore: —"
+        android:text="@string/umore"
         android:textSize="14sp"
         android:textColor="@color/dark_gray"
         android:layout_marginBottom="6dp" />
@@ -70,7 +70,7 @@
         android:id="@+id/symptoms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sintomi: —"
+        android:text="@string/sintomi__"
         android:textSize="14sp"
         android:textColor="@color/dark_gray" />
 

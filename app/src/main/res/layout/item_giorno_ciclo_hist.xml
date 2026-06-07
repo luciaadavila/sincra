@@ -7,4 +7,5 @@
     android:layout_margin="4dp"
     android:gravity="center"
     android:textSize="12sp"
+    android:radius="18dp"
     android:includeFontPadding="false" />

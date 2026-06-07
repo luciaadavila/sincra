@@ -108,7 +108,7 @@ public class CatalogoEditableFragment extends Fragment {
         adapter = new CatalogoEditableAdapter(new ArrayList<>(), new CatalogoEditableAdapter.OnCatalogoClickListener(){
             @Override
             public void onEdit(ElementoCatalogo e){
-                mostrarDialogEditar(e);
+                mostraDialogModifica(e);
             }
         });
 
@@ -146,7 +146,7 @@ public class CatalogoEditableFragment extends Fragment {
         }
     }
 
-    private void mostrarDialogEditar(ElementoCatalogo item) {
+    private void mostraDialogModifica(ElementoCatalogo item) {
         EditText editText = new EditText(requireContext());
         editText.setText(item.getNome());
         editText.setSelection(editText.getText().length());

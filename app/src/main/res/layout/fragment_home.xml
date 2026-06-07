@@ -14,43 +14,67 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#FFFFFF"
+        android:background="@color/white"
         android:elevation="4dp"
         android:padding="8dp"
         android:layout_marginBottom="24dp"/>
 
-    <!-- botón central -->
-    <Button
-        android:id="@+id/dayButton"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_gravity="center"
-        android:background="@drawable/bg_add_button"
-        android:text="GIORNO 14\nFase lútea"
-        android:textSize="24sp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/stepsTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Passi oggi: 0"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        android:gravity="center"
-        android:layout_marginTop="16dp" />
+            <!-- botón central -->
+            <Button
+                android:id="@+id/dayButton"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_add_button"
+                android:text=""
+                android:textSize="24sp"/>
 
-    <LinearLayout
-        android:id="@+id/homeSintomiContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
+            <TextView
+                android:id="@+id/stepsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/passi_oggi"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/dark_gray"
+                android:gravity="center"
+                android:layout_marginTop="16dp" />
 
-    <LinearLayout
-        android:id="@+id/homeMoodContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="8dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_catalogo_item"
+                android:padding="12dp"
+                android:layout_marginTop="24dp">
 
+                <LinearLayout
+                    android:id="@+id/homeSintomiContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_catalogo_item"
+                android:padding="12dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:id="@+id/homeMoodContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+        </LinearLayout>
 </LinearLayout>

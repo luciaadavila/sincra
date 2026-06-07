@@ -26,12 +26,12 @@ import java.util.concurrent.TimeUnit;
 // sottoclasse de worker
 public class StepCounterWorker extends Worker implements SensorEventListener {
     private CountDownLatch latch;
-    private Integer pasosSensorActuales = null;
+    private Integer passiSensoreAttuali = null;
 
     private static final String PREFS_NAME = "step_counter_prefs";
     private static final String KEY_DIA = "giorno";
-    private static final String KEY_PASOS_BASE = "pasos_base";
-    private static final String KEY_PASOS_HOY = "passi_oggi";
+    private static final String KEY_PASSI_BASE = "passi_base";
+    private static final String KEY_PASSI_HOY = "passi_oggi";
 
     public StepCounterWorker(@NonNull Context context, @NonNull WorkerParameters workerParameters){
         super(context, workerParameters);
@@ -60,22 +60,21 @@ public class StepCounterWorker extends Worker implements SensorEventListener {
         Handler handler = new Handler(handlerThread.getLooper());
         sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL, handler);
 
+        boolean eventoRicevuto;
         try {
-            latch.await(10, TimeUnit.SECONDS);
+            eventoRicevuto = latch.await(15, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
+            return Result.retry();
+        } finally {
             sensorManager.unregisterListener(this);
             handlerThread.quitSafely();
-            return Result.retry();
         }
 
-        sensorManager.unregisterListener(this);
-        handlerThread.quitSafely();
-
-        if (pasosSensorActuales == null) {
-            return Result.retry();
+        if (!eventoRicevuto || passiSensoreAttuali == null) {
+            return Result.success();
         }
 
-        guardarPasos(context, pasosSensorActuales);
+        salvaPassi(context, passiSensoreAttuali);
 
         return Result.success();
     }
@@ -85,32 +84,32 @@ public class StepCounterWorker extends Worker implements SensorEventListener {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void guardarPasos(Context context, int pasosSensor) {
+    private void salvaPassi(Context context, int passiSensore) {
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        String hoy = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String hoy = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
         String diaGuardado = prefs.getString(KEY_DIA, null);
-        int pasosBase = prefs.getInt(KEY_PASOS_BASE, -1);
+        int passiBase = prefs.getInt(KEY_PASSI_BASE, -1);
 
-        if (!hoy.equals(diaGuardado) || pasosBase < 0 || pasosSensor < pasosBase) {
-            pasosBase = pasosSensor;
-            prefs.edit().putString(KEY_DIA, hoy).putInt(KEY_PASOS_BASE, pasosBase).putInt(KEY_PASOS_HOY, 0).apply();
+        if (!hoy.equals(diaGuardado) || passiBase < 0 || passiSensore < passiBase) {
+            passiBase = passiSensore;
+            prefs.edit().putString(KEY_DIA, hoy).putInt(KEY_PASSI_BASE, passiBase).putInt(KEY_PASSI_HOY, 0).apply();
             return;
         }
 
-        int pasosHoy = pasosSensor - pasosBase;
-        if (pasosHoy < 0) pasosHoy = 0;
+        int passiOggi = passiSensore - passiBase;
+        if (passiOggi < 0) passiOggi = 0;
 
-        prefs.edit().putString(KEY_DIA, hoy).putInt(KEY_PASOS_HOY, pasosHoy).apply();
+        prefs.edit().putString(KEY_DIA, hoy).putInt(KEY_PASSI_HOY, passiOggi).apply();
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() != Sensor.TYPE_STEP_COUNTER) return;
 
-        pasosSensorActuales = Math.round(event.values[0]);
+        passiSensoreAttuali = Math.round(event.values[0]);
         if (latch != null) latch.countDown();
     }
 

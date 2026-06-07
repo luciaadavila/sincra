@@ -118,7 +118,7 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
         String isCycle = holder.itemView.getContext().getString(registro.isPeriodo() ? R.string.si : R.string.no);
         holder.isCycleDay.setText(holder.itemView.getContext().getString(R.string.is_ciclo_giorno, isCycle));
 
-        int numPassi = registro.getPasos();
+        int numPassi = registro.getPassi();
         if (numPassi >= 0){
             holder.steps.setText("Passi: " + numPassi);
         } else {

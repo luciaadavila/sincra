@@ -7,7 +7,6 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity(tableName = "ciclo",
         foreignKeys = @ForeignKey(
@@ -39,8 +38,6 @@ public class Ciclo {
         this.userId = userId;
     }
 
-
-    // getters y setter
     public int getCicloId() {
         return cicloId;
     }
@@ -48,7 +45,6 @@ public class Ciclo {
     public void setCicloId(int cicloId) {
         this.cicloId = cicloId;
     }
-
 
     @NonNull
     public Date getDataInizio() {
@@ -90,20 +86,4 @@ public class Ciclo {
     public void setUserId(long userId) {
         this.userId = userId;
     }
-
-/*
-    public List<String> getSintomiComuni() {
-        return sintomiComuni;
-    }
-
-    public void setSintomiComuni(List<String> sintomiComuni) {
-        this.sintomiComuni = sintomiComuni;
-    }
-
-
-    public Registrazione getRegistrazione(int i) {
-        return this.registrazioni.get(i);
-    }
-    */
-
 }

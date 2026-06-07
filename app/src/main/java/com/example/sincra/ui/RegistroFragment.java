@@ -58,14 +58,14 @@ public class RegistroFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. configuramos vistas
+        // 1. configuriamo viste
         registroRecycler = view.findViewById(R.id.registroRecycler);
         registroRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         trashDropZone = view.findViewById(R.id.trashDropZone);
-        configurarPapelera();
+        configuraCestino();
 
-        // 2. configuramos adapter con el listener de navegación
+        // 2. configuriamo adapter con il listener di navigazione
         adapter = new RegistroAdapter(new ArrayList<>(), item -> {
             DetailDayFragment detailFragment = new DetailDayFragment();
             Bundle bundle = new Bundle();
@@ -79,28 +79,28 @@ public class RegistroFragment extends Fragment {
                     .commit();
             },
             (itemView, item) -> {
-                mostrarPapelera();
-                empezarArrastre(itemView, item);
+                mostraCestino();
+                iniziaTrascinamento(itemView, item);
             }
         );
         registroRecycler.setAdapter(adapter);
 
-        // 3. inicializamos viewModel
+        // 3. inizializziamo viewModel
         viewModel = new ViewModelProvider(this).get(RegistroViewModel.class);
         viewModel.getRegistri().observe(getViewLifecycleOwner(), data -> {
             if (data == null) return;
             adapter.setRegistrazioni(data);
 
             if (!primoScroll && !data.isEmpty()) {
-                int posicionInicial = findClosestPositionToToday(data);
-                registroRecycler.scrollToPosition(posicionInicial);
+                int posizioneIniziale = trovaPosizionePiuVicinaAggi(data);
+                registroRecycler.scrollToPosition(posizioneIniziale);
                 primoScroll = true;
             }
 
         });
     }
 
-    private void empezarArrastre(View itemView, RegistrazioneConElementi item) {
+    private void iniziaTrascinamento(View itemView, RegistrazioneConElementi item) {
         ClipData data = ClipData.newPlainText("", "");
 
         View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(itemView);
@@ -111,7 +111,7 @@ public class RegistroFragment extends Fragment {
         }
     }
 
-    private void configurarPapelera() {
+    private void configuraCestino() {
         trashDropZone.setOnDragListener((v, event) -> {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_ENTERED:
@@ -130,57 +130,57 @@ public class RegistroFragment extends Fragment {
                     if (localState instanceof RegistrazioneConElementi) {
                         RegistrazioneConElementi item = (RegistrazioneConElementi) localState;
                         if (item.registrazione.isPeriodo()){
-                            Toast.makeText(getContext(), "Non poi eliminare un registro con Periodo", Toast.LENGTH_SHORT).show();
-                            ocultarPapelera();
+                            Toast.makeText(getContext(), "Non puoi eliminare un registro con Periodo", Toast.LENGTH_SHORT).show();
+                            nascondiCestino();
                             return true;
                         }
-                        borrarRegistro(item);
-                        ocultarPapelera();
-                        Toast.makeText(getContext(), "Registro borrado", Toast.LENGTH_SHORT).show();
+                        eliminaRegistro(item);
+                        nascondiCestino();
+                        Toast.makeText(getContext(), "Registro eliminato", Toast.LENGTH_SHORT).show();
                     }
                     return true;
 
                 case DragEvent.ACTION_DRAG_ENDED:
                     v.setAlpha(1f);
-                    ocultarPapelera();
+                    nascondiCestino();
                     return true;
             }
             return true;
         });
     }
 
-    private void mostrarPapelera() {
+    private void mostraCestino() {
         trashDropZone.setVisibility(View.VISIBLE);
     }
 
-    private void ocultarPapelera() {
+    private void nascondiCestino() {
         trashDropZone.setVisibility(View.GONE);
     }
 
-    private void borrarRegistro(RegistrazioneConElementi item) {
+    private void eliminaRegistro(RegistrazioneConElementi item) {
         viewModel.deleteRegistrazione(item.registrazione);
     }
 
-    private int findClosestPositionToToday(List<RegistrazioneConElementi> items) {
-        Date today = truncarFecha(new Date());
+    private int trovaPosizionePiuVicinaAggi(List<RegistrazioneConElementi> items) {
+        Date oggi = truncarFecha(new Date());
 
-        int bestPosition = 0;
-        long bestDistance = Long.MAX_VALUE;
+        int migliorPosizione = 0;
+        long migliorDistanza = Long.MAX_VALUE;
 
         for (int i = 0; i < items.size(); i++) {
-            Date itemDate = items.get(i).registrazione.getDate();
+            Date dataItem = items.get(i).registrazione.getDate();
 
-            if (itemDate == null) continue;
+            if (dataItem == null) continue;
 
-            Date itemDateTruncada = truncarFecha(itemDate);
+            Date dataItemTroncata = truncarFecha(dataItem);
 
-            long distance = Math.abs(itemDateTruncada.getTime() - today.getTime());
+            long distanza = Math.abs(dataItemTroncata.getTime() - oggi.getTime());
 
-            if (distance < bestDistance) {
-                bestDistance = distance;
-                bestPosition = i;
+            if (distanza < migliorDistanza) {
+                migliorDistanza = distanza;
+                migliorPosizione = i;
             }
         }
-        return bestPosition;
+        return migliorPosizione;
     }
 }

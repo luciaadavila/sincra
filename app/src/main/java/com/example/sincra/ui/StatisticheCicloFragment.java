@@ -1,5 +1,6 @@
 package com.example.sincra.ui;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -99,17 +100,19 @@ public class StatisticheCicloFragment extends Fragment {
         generateTable(ultimoCicloConRegistrazioni, ultimeRegistrazioniConElementi);
     }
 
-    private void generateTable(CicloConRegistrazioni datosCiclo, List<RegistrazioneConElementi> registrazioniConElementi) {
-        Ciclo ciclo = datosCiclo.getCiclo();
+    private void generateTable(CicloConRegistrazioni datiCiclo, List<RegistrazioneConElementi> registrazioniConElementi) {
+        Ciclo ciclo = datiCiclo.getCiclo();
+        if (ciclo == null) return;
+
         int totalDays = ciclo.getDurataTotale();
 
-        List<Registrazione> registrazioni = datosCiclo.getRegistrazioni() != null
-                ? datosCiclo.getRegistrazioni()
+        List<Registrazione> registrazioni = datiCiclo.getRegistrazioni() != null
+                ? datiCiclo.getRegistrazioni()
                 : new ArrayList<>();
 
-        Map<String, Registrazione> registrosPorFecha = crearMapaRegistrosPorFecha(registrazioni);
+        Map<String, Registrazione> registriPerData = creaMappaRegistriPerData(registrazioni);
 
-        addRow("Giorno", totalDays, i -> String.valueOf(i + 1));
+        addRow("Giorno", totalDays, i -> String.valueOf(i + 1), true);
 
         addRow("Fase", totalDays, i -> {
             int giornoCiclo = i + 1;
@@ -121,91 +124,71 @@ public class StatisticheCicloFragment extends Fragment {
             );
 
             return getSiglaFase(fase);
-        });
+        }, false);
 
         addRow("Periodo", totalDays, i -> {
-            java.util.Date fechaColumna = CicloRepository.xDay(ciclo.getDataInizio(), i);
-            String key = formatDateKey(fechaColumna);
-            Registrazione reg = registrosPorFecha.get(key);
+            java.util.Date dataColonna = CicloRepository.xDay(ciclo.getDataInizio(), i);
+            String key = formattaChiaveData(dataColonna);
+            Registrazione reg = registriPerData.get(key);
             return (reg != null && reg.isPeriodo()) ? "🔴" : "";
-        });
-
-        addRow("Nota", totalDays, i -> {
-            java.util.Date fechaColumna = CicloRepository.xDay(ciclo.getDataInizio(), i);
-            String key = formatDateKey(fechaColumna);
-            Registrazione reg = registrosPorFecha.get(key);
-
-            if (reg != null && reg.getNotas() != null && !reg.getNotas().trim().isEmpty()) {
-                return "✕";
-            }
-            return "";
-        });
+        }, false);
 
         addRow("Passi", totalDays, i -> {
-            java.util.Date fechaColumna = CicloRepository.xDay(ciclo.getDataInizio(), i);
-            String key = formatDateKey(fechaColumna);
-            Registrazione reg = registrosPorFecha.get(key);
+            java.util.Date dataColonna = CicloRepository.xDay(ciclo.getDataInizio(), i);
+            String key = formattaChiaveData(dataColonna);
+            Registrazione reg = registriPerData.get(key);
 
-            if (reg != null && reg.getPasos() > 0) {
-                return String.valueOf(reg.getPasos());
+            if (reg != null && reg.getPassi() > 0) {
+                return String.valueOf(reg.getPassi());
             }
             return "";
-        });
+        }, false);
 
-        List<ElementoCatalogo> elementosUnicos = obtenerElementosUnicos(registrazioniConElementi);
+        List<ElementoCatalogo> elementiUnici = ottieniElementiUnici(registrazioniConElementi);
 
-        for (ElementoCatalogo elemento : elementosUnicos) {
+        for (ElementoCatalogo elemento : elementiUnici) {
             addRow(elemento.getNome(), totalDays, i -> {
-                java.util.Date fechaColumna = CicloRepository.xDay(ciclo.getDataInizio(), i);
+                java.util.Date dataColonna = CicloRepository.xDay(ciclo.getDataInizio(), i);
 
-                boolean aparece = existeElementoEnDia(
+                boolean appare = esisteElementoNelGiorno(
                         registrazioniConElementi,
                         elemento.getElementoId(),
-                        fechaColumna
+                        dataColonna
                 );
 
-                return aparece ? "✕" : "";
-            });
+                return appare ? "✕" : "";
+            }, false);
         }
     }
 
-    private Registrazione buscarRegistroPorDiaCiclo(List<Registrazione> lista, int numeroDiaCiclo) {
-        for (Registrazione r : lista) {
-            if (r.getGiornoCiclo() == numeroDiaCiclo) {
-                return r;
-            }
-        }
-        return null; // Si el usuario no registró ese día, devolvemos null de forma segura sin romper la app
-    }
-
-    private Map<String, Registrazione> crearMapaRegistrosPorFecha(List<Registrazione> registrazioni) {
-        Map<String, Registrazione> mapa = new LinkedHashMap<>();
+    private Map<String, Registrazione> creaMappaRegistriPerData(List<Registrazione> registrazioni) {
+        Map<String, Registrazione> mappa = new LinkedHashMap<>();
         for (Registrazione reg : registrazioni) {
-            mapa.put(formatDateKey(reg.getData()), reg);
+            mappa.put(formattaChiaveData(reg.getData()), reg);
         }
-        return mapa;
+        return mappa;
     }
 
-    private String formatDateKey(java.util.Date fecha) {
-        if (fecha == null) return "";
+    private String formattaChiaveData(java.util.Date data) {
+        if (data == null) return "";
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault());
-        return sdf.format(fecha);
+        return sdf.format(data);
     }
 
-    private boolean existeElementoEnDia(
-            List<RegistrazioneConElementi> registros,
+    private boolean esisteElementoNelGiorno(
+            List<RegistrazioneConElementi> registri,
             int elementoId,
-            java.util.Date fecha
+            java.util.Date data
     ) {
-        if (registros == null) return false;
+        if (registri == null) return false;
 
-        java.util.Date fechaTruncada = CicloRepository.truncarFecha(fecha);
+        java.util.Date dataTroncata = CicloRepository.truncarFecha(data);
 
-        for (RegistrazioneConElementi rce : registros) {
+        for (RegistrazioneConElementi rce : registri) {
             if (rce.registrazione == null) continue;
 
-            java.util.Date regFecha = CicloRepository.truncarFecha(rce.registrazione.getData());
-            if (!regFecha.equals(fechaTruncada)) {
+            java.util.Date regData = CicloRepository.truncarFecha(rce.registrazione.getData());
+            if (!regData.equals(dataTroncata)) {
                 continue;
             }
 
@@ -239,34 +222,35 @@ public class StatisticheCicloFragment extends Fragment {
     }
 
 
-    private List<ElementoCatalogo> obtenerElementosUnicos(List<RegistrazioneConElementi> registros) {
-        Map<Integer, ElementoCatalogo> mapa = new LinkedHashMap<>();
+    private List<ElementoCatalogo> ottieniElementiUnici(List<RegistrazioneConElementi> registri) {
+        Map<Integer, ElementoCatalogo> mappa = new LinkedHashMap<>();
 
-        if (registros == null) {
+        if (registri == null) {
             return new ArrayList<>();
         }
 
-        for (RegistrazioneConElementi rce : registros) {
+        for (RegistrazioneConElementi rce : registri) {
             if (rce.elementiCatalogo == null) continue;
 
             for (ElementoCatalogo elemento : rce.elementiCatalogo) {
-                mapa.put(elemento.getElementoId(), elemento);
+                mappa.put(elemento.getElementoId(), elemento);
             }
         }
 
-        return new ArrayList<>(mapa.values());
+        return new ArrayList<>(mappa.values());
     }
 
-    private void addRow(String label, int totalDays, Function<Integer, String> cellProvider) {
+    private void addRow(String label, int totalDays, Function<Integer, String> cellProvider, boolean isBoldRow) {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
 
-        // Nombre de la fila
+        // Nome della riga
         TextView labelView = new TextView(getContext());
         labelView.setText(label);
         labelView.setGravity(Gravity.CENTER_VERTICAL);
         labelView.setTextSize(13);
         labelView.setSingleLine(true);
+        labelView.setTypeface(null, Typeface.BOLD); // Etichette di riga sempre in grassetto
         LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
                 dp(LABEL_WIDTH_DP),
                 dp(CELL_HEIGHT_DP)
@@ -274,13 +258,17 @@ public class StatisticheCicloFragment extends Fragment {
         labelView.setLayoutParams(labelParams);
         row.addView(labelView);
 
-        // Celdas dinámicas
+        // Celle dinamiche
         for (int i = 0; i < totalDays; i++) {
             TextView cell = new TextView(getContext());
             cell.setText(cellProvider.apply(i));
             cell.setGravity(Gravity.CENTER);
             cell.setTextSize(13);
             cell.setSingleLine(true);
+
+            if (isBoldRow) {
+                cell.setTypeface(null, Typeface.BOLD); // Etichette di colonna (giorni) in grassetto
+            }
 
             LinearLayout.LayoutParams cellParams = new LinearLayout.LayoutParams(
                     dp(CELL_WIDTH_DP),

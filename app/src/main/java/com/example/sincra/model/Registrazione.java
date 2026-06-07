@@ -7,9 +7,7 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity(tableName = "registrazione",
         foreignKeys = @ForeignKey(
@@ -20,8 +18,6 @@ import java.util.List;
         ),
         indices = @Index(value = "cicloId")
 )
-
-
 public class Registrazione {
 
     @PrimaryKey(autoGenerate = true)
@@ -31,16 +27,10 @@ public class Registrazione {
     @NonNull
     private Date data;
 
-    private int pasos;
+    private int passi;
 
-    private boolean isGiornoProbabile;
     private boolean isPeriodo;
     private int giornoCiclo;
-
-    //private List<ElementoCatalogo> statiAnimo;
-    //private List<ElementoCatalogo> sintomi;
-
-    private String notas;
 
     @Ignore
     public Registrazione(@NonNull Date data) {
@@ -49,19 +39,15 @@ public class Registrazione {
 
     public Registrazione(@NonNull Date data,
                          boolean isPeriodo,
-                         boolean isGiornoProbabile,
                          int giornoCiclo,
-                         String notas,
-                         Integer cicloId, int pasos) {
+                         Integer cicloId, 
+                         int passi) {
 
         this.data = data;
         this.isPeriodo = isPeriodo;
-        this.isGiornoProbabile = isGiornoProbabile;
         this.giornoCiclo = giornoCiclo;
         this.cicloId = cicloId;
-        this.pasos = pasos;
-
-        this.notas = notas;
+        this.passi = passi;
     }
 
     @NonNull
@@ -89,34 +75,8 @@ public class Registrazione {
         this.giornoCiclo = giornoCiclo;
     }
 
-
     public void setRegistroId(int registroId) {
         this.registroId = registroId;
-    }
-
-    /*
-    public List<ElementoCatalogo> getStatiAnimo() {
-        return statiAnimo;
-    }
-
-    public void setStatiAnimo(List<ElementoCatalogo> statiAnimo) {
-        this.statiAnimo = statiAnimo;
-    }*/
-
-    /*public List<ElementoCatalogo> getSintomi(){
-        return sintomi;
-    }*/
-
-    /*public void setSintomi(List<ElementoCatalogo> sintomo){
-        this.sintomi = sintomo;
-    }*/
-
-    public String getNotas() {
-        return notas;
-    }
-
-    public void setNotas(String notas) {
-        this.notas = notas;
     }
 
     public boolean isPeriodo() {
@@ -125,14 +85,6 @@ public class Registrazione {
 
     public void setPeriodo(boolean periodo) {
         isPeriodo = periodo;
-    }
-
-    public boolean isGiornoProbabile() {
-        return isGiornoProbabile;
-    }
-
-    public void setGiornoProbabile(boolean giornoProbabile) {
-        isGiornoProbabile = giornoProbabile;
     }
 
     public Integer getCicloId() {
@@ -147,14 +99,11 @@ public class Registrazione {
         return registroId;
     }
 
-
-    public int getPasos() {
-        return pasos;
+    public int getPassi() {
+        return passi;
     }
 
-    public void setPasos(int pasos) {
-        this.pasos = pasos;
+    public void setPassi(int passi) {
+        this.passi = passi;
     }
-
-
 }

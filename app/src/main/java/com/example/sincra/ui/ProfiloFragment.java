@@ -68,8 +68,8 @@ public class ProfiloFragment extends Fragment {
         viewModel.getUserProfilo().observe(getViewLifecycleOwner(), userFromDb -> {
             if (userFromDb != null) {
                 this.user = userFromDb;
-                // Cada vez que el usuario cambie en la BD, se actualizará la UI automáticamente
-                name.setText(userFromDb.getNombre());
+                // Ogni volta che l'utente cambia nel DB, la UI si aggiornerà automaticamente
+                name.setText(userFromDb.getNome());
                 cycle.setText(String.valueOf(userFromDb.getDurataMediaCiclo()));
                 period.setText(String.valueOf(userFromDb.getDurataMediaPeriodo()));
             }
@@ -78,7 +78,7 @@ public class ProfiloFragment extends Fragment {
         ricalcolareButton.setOnClickListener(v -> {
             v.setEnabled(false);
             viewModel.updateDurataMedia();
-            Toast.makeText(getContext(), "Recalculando medias...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Ricalcolando le medie...", Toast.LENGTH_SHORT).show();
             v.postDelayed(() -> v.setEnabled(true), 1000);
         });
 
@@ -90,7 +90,7 @@ public class ProfiloFragment extends Fragment {
             String periodInput = period.getText().toString().trim();
 
             User userUpdated = new User(user);
-            if (!nameInput.isEmpty()) userUpdated.setNombre(nameInput);
+            if (!nameInput.isEmpty()) userUpdated.setNome(nameInput);
             if (!cycleInput.isEmpty()) userUpdated.setDurataMediaCiclo(Integer.parseInt(cycleInput));
             if (!periodInput.isEmpty()) userUpdated.setDurataMediaPeriodo(Integer.parseInt(periodInput));
             viewModel.updateUserProfilo(userUpdated);
@@ -103,7 +103,7 @@ public class ProfiloFragment extends Fragment {
 
     }
 
-    // esta clase fue sacada de la misma página que sigin
+    // metodo per uscire dall'account
     private void signOut() {
         // Firebase sign out
         mAuth.signOut();

@@ -12,25 +12,53 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:text="Configurazione"
+        android:text="@string/configurazione"
         android:textColor="@color/dark_gray"
+        android:shadowColor="@color/white"
+        android:shadowDx="4"
+        android:shadowDy="4"
+        android:shadowRadius="1"
         android:textSize="25sp"
         android:textStyle="bold" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/notificationSwitch"
+        android:id="@+id/dailyNotificationSwitch"
         android:layout_width="match_parent"
+        android:background="@color/white"
         android:layout_height="wrap_content"
-        android:text="Attivare notifiche giornaliere"
+        android:text="@string/attivare_notifiche_giornaliere"
+        android:textStyle="bold"
         android:textSize="16sp"
         android:padding="12dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sincra ti ricorderà di registrare i dati se non hai ancora aperto l'app."
+        android:background="@color/white"
+        android:text="@string/sincra_ti_ricorder_di_registrare_i_dati_se_non_hai_ancora_aperto_l_app"
         android:textSize="14sp"
-        android:textColor="#666666"
+        android:textColor="@color/gray"
+        android:padding="10dp"
+        android:layout_marginBottom="24dp" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/flexibleNotificationSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="@string/attivare_notifiche_generale"
+        android:background="@color/white"
+        android:textSize="16sp"
+        android:padding="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/syncra_ti_invier_messaggi_interessanti"
+        android:textSize="14sp"
+        android:background="@color/white"
+        android:textColor="@color/gray"
+        android:padding="10dp"
         android:layout_marginBottom="24dp" />
 
 
@@ -38,15 +66,19 @@
         android:id="@+id/stepsSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Attivare contatore passi"
+        android:text="@string/attivare_contatore_passi"
+        android:textStyle="bold"
+        android:background="@color/white"
         android:textSize="16sp"
         android:padding="12dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Permette a Sincra di aggiornare i passi del giorno in background."
+        android:background="@color/white"
+        android:text="@string/permette_a_sincra_di_aggiornare_i_passi_del_giorno_in_background"
         android:textSize="14sp"
-        android:textColor="#666666" />
+        android:padding="10dp"
+        android:textColor="@color/gray" />
 
 </LinearLayout>

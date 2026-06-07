@@ -125,12 +125,12 @@ public class RegistrazioneRepository {
                 }
 
                 int giornoCiclo = CicloRepository.difDays(c.getDataInizio(), dataTrunc);
-                registrazione = new Registrazione(dataTrunc, false, false, giornoCiclo, null, c.getCicloId(), passi);
+                registrazione = new Registrazione(dataTrunc, false, giornoCiclo, c.getCicloId(), passi);
                 dao.insert(registrazione);
             } else {
-                // Si ya existe, actualizamos los pasos
-                int pasosActuales = registrazione.getPasos();
-                registrazione.setPasos(Math.max(pasosActuales, passi));
+                // Si ya existe, actualizamos los passi
+                int passiAttuali = registrazione.getPassi();
+                registrazione.setPassi(Math.max(passiAttuali, passi));
 
                 // Por seguridad, si los datos del ciclo son inválidos, los recalculamos
                 if (registrazione.getGiornoCiclo() <= 0 || registrazione.getCicloId() == null) {

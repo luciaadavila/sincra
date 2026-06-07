@@ -18,8 +18,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="triste"
-        android:textColor="#4A4A4A"
+        android:text="@string/a"
+        android:textColor="@color/gray"
         android:textSize="17sp" />
 
 </LinearLayout>

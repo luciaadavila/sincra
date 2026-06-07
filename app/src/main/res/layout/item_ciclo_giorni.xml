@@ -5,4 +5,4 @@
     android:layout_margin="4dp"
     android:gravity="center"
     android:text="1"
-    android:background="#DDDDDD"/>
+    android:background="@color/ligh_gray"/>

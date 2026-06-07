@@ -23,7 +23,7 @@ import com.example.sincra.model.User;
             Ciclo.class,
             User.class,
             RegistroCatalogoRel.class},
-        version = 9)
+        version = 10)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract ElementoCatalogoDAO elementoCatalogoDAO();
@@ -39,6 +39,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "sincra_db")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

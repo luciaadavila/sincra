@@ -5,14 +5,15 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
+    android:radius="18dp"
     android:layout_marginBottom="16dp"
-    android:background="#FFFFFF">
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/rangeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ciclo 1&#10;06 Jun - 26 Jun"
+        android:text="@string/ciclo_1_10_06_jun_26_jun"
         android:textStyle="bold"
         android:textSize="18sp" />
 

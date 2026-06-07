@@ -21,7 +21,7 @@ import java.util.Locale;
 public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHolder>{
     private List<Object> items;
     private final OnCicloClickListener clickListener;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
     public interface OnCicloClickListener {
         void onCicloClick(Object item);

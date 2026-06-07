@@ -64,16 +64,16 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
         return listaCatalogo.size();
     }
 
-    public List<ElementoCatalogo> getSeleccionados() {
-        List<ElementoCatalogo> seleccionados = new ArrayList<>();
+    public List<ElementoCatalogo> getSelezionati() {
+        List<ElementoCatalogo> selezionati = new ArrayList<>();
         if (listaCatalogo != null) {
             for (ElementoCatalogo e : listaCatalogo) {
                 if (e.isSelected()) {
-                    seleccionados.add(e);
+                    selezionati.add(e);
                 }
             }
         }
-        return seleccionados;
+        return selezionati;
     }
 
     public void updateList(List<ElementoCatalogo> data){

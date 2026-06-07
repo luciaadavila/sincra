@@ -1,11 +1,8 @@
 package com.example.sincra.ui;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,6 +20,7 @@ import com.example.sincra.adapter.CatalogoAdapter;
 import com.example.sincra.database.repositorio.CicloRepository; // IMPORTANTE: Añadido para truncar
 import com.example.sincra.model.ElementoCatalogo;
 import com.example.sincra.model.Registrazione;
+import com.example.sincra.utils.SwipeDueDitaHelper;
 import com.example.sincra.viewModel.DetailDayViewModel;
 
 import java.text.ParseException;
@@ -46,11 +44,6 @@ public class DetailDayFragment extends Fragment {
     private List<ElementoCatalogo> currentMoodsFromDb = new ArrayList<>();
     private List<ElementoCatalogo> currentSymptomsFromDb = new ArrayList<>();
 
-    // swipe con dos dedos
-    private float startTwoFingerX;
-    private float startTwoFingerY;
-    private boolean twoFingerGestureActive = false;
-    private boolean twoFingerGestureDetected = false;
 
     public DetailDayFragment() {}
 
@@ -64,25 +57,25 @@ public class DetailDayFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
-        // inicializamos la fecha pasada por argumentos y creamos una registrazione con ella
+        // inizializziamo la data passata per argomenti e creiamo una registrazione con essa
         if (getArguments() != null) {
             currentDate = getArguments().getString("date");
         }
 
-        // La fecha ahora está estrictamente truncada a las 00:00:00
+        // La data ora è strettamente troncata alle 00:00:00
         registrazione = new Registrazione(stringToDate(currentDate));
 
 
         TextView textDate = view.findViewById(R.id.todayBar);
         RecyclerView moodRecycler = view.findViewById(R.id.moodRecycler);
         RecyclerView symptomRecycler = view.findViewById(R.id.symptomRecycler);
-        Button btnGuardar = view.findViewById(R.id.btnGuardar);
+        Button btnSalva = view.findViewById(R.id.btnGuardar);
         Button btnAddMood = view.findViewById(R.id.btnAddMood);
         Button btnAddSintomi = view.findViewById(R.id.btnAddSymptom);
 
         textDate.setText(currentDate);
 
-        // 2. Configurar la disposición visual en cuadrículas (3 columnas)
+        // 2. Configurare la disposizione visuale in griglie (3 colonne)
         moodRecycler.setLayoutManager(new GridLayoutManager(getContext(), 3));
         symptomRecycler.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
@@ -91,40 +84,56 @@ public class DetailDayFragment extends Fragment {
         moodRecycler.setAdapter(moodAdapter);
         symptomRecycler.setAdapter(symptomAdapter);
 
-        // configuramos gestos con dos dedos
-        configurarSwipeDosDedos(view);
-        configurarSwipeDosDedos(moodRecycler);
-        configurarSwipeDosDedos(symptomRecycler);
+        // configuriamo i gesti con due dita
+        SwipeDueDitaHelper swipeDueDitaHelper =
+                new SwipeDueDitaHelper(
+                        requireContext(),
+                        new SwipeDueDitaHelper.OnDuaDitaSwipeListener() {
+                            @Override
+                            public void onSwipeLeft() {
+                                openNewDate(-1);
+                            }
+
+                            @Override
+                            public void onSwipeRight() {
+                                openNewDate(1);
+                            }
+                        }
+                );
+
+        swipeDueDitaHelper.configuraSwipeDueDita(view);
+        swipeDueDitaHelper.configuraSwipeDueDita(moodRecycler);
+        swipeDueDitaHelper.configuraSwipeDueDita(symptomRecycler);
 
 
         viewModel = new ViewModelProvider(this).get(DetailDayViewModel.class);
 
-        // 5. Observar todos los estados de ánimo disponibles para el usuario
+        // 5. Osservare tutti gli stati d'animo disponibili per l'utente
         viewModel.getAllMoods().observe(getViewLifecycleOwner(), moods -> {
             if (moods != null) {
                 currentMoodsFromDb = moods;
-                sincronizarElementosSeleccionados();
+                sincronizzaElementiSelezionati();
             }
         });
 
-        // 6. Observar todos los síntomas disponibles para el usuario
+        // 6. Osservare tutti i sintomi disponibili per l'utente
         viewModel.getAllSymptoms().observe(getViewLifecycleOwner(), symptoms -> {
             if (symptoms != null) {
                 currentSymptomsFromDb = symptoms;
-                sincronizarElementosSeleccionados();
+                sincronizzaElementiSelezionati();
             }
         });
 
-        // miramos si el dia ya contaba con registros seleccionados
+        // controlliamo se il giorno aveva già dei record selezionati
         viewModel.getRegistro().observe(getViewLifecycleOwner(), registroConElementi -> {
             if (registroConElementi != null) {
-                // Al cargar de la DB, ya trae su cicloId asociado (si tiene) o 0 si estaba huérfano
+                // Al caricamento dal DB, porta già il suo cicloId associato (se presente) o 0 se orfano
                 registrazione = registroConElementi.registrazione;
                 if (registroConElementi.elementiCatalogo != null) {
-                    marcarElementosComoSeleccionados(registroConElementi.elementiCatalogo);
+                    marcaElementiComeSelezionati(registroConElementi.elementiCatalogo);
                 }
             }
-            sincronizarElementosSeleccionados();
+            sincronizzaElementiSelezionati();
         });
 
         if (getArguments() != null) {
@@ -134,7 +143,7 @@ public class DetailDayFragment extends Fragment {
             }
         }
 
-        btnGuardar.setOnClickListener(v -> guardarRegistroDelDia());
+        btnSalva.setOnClickListener(v -> salvaRegistroDelGiorno());
         btnAddMood.setOnClickListener(v -> {
             CatalogoEditableFragment fragment = new CatalogoEditableFragment();
             Bundle argsMood = new Bundle();
@@ -162,8 +171,8 @@ public class DetailDayFragment extends Fragment {
     }
 
 
-    private void marcarElementosComoSeleccionados(List<ElementoCatalogo> guardados) {
-        for (ElementoCatalogo g : guardados) {
+    private void marcaElementiComeSelezionati(List<ElementoCatalogo> salvati) {
+        for (ElementoCatalogo g : salvati) {
             for (ElementoCatalogo m : currentMoodsFromDb) {
                 if (m.getElementoId() == g.getElementoId()) {
                     m.setSelected(true);
@@ -177,125 +186,45 @@ public class DetailDayFragment extends Fragment {
         }
     }
 
-    private void sincronizarElementosSeleccionados() {
+    private void sincronizzaElementiSelezionati() {
         moodAdapter.updateList(new ArrayList<>(currentMoodsFromDb));
         symptomAdapter.updateList(new ArrayList<>(currentSymptomsFromDb));
     }
 
-    private void guardarRegistroDelDia() {
-        List<ElementoCatalogo> seleccionados = new ArrayList<>();
+    private void salvaRegistroDelGiorno() {
+        List<ElementoCatalogo> selezionati = new ArrayList<>();
 
-        // Extraemos de forma limpia lo seleccionado en la UI
-        seleccionados.addAll(moodAdapter.getSeleccionados());
-        seleccionados.addAll(symptomAdapter.getSeleccionados());
+        // Estraiamo in modo pulito ciò che è selezionato nella UI
+        selezionati.addAll(moodAdapter.getSelezionati());
+        selezionati.addAll(symptomAdapter.getSelezionati());
 
-        // Envío asíncrono al repositorio.
-        // Si registrazione se creó nueva arriba, su cicloId será 0 (huérfano).
-        viewModel.save(registrazione, seleccionados);
+        // Invio asincrono al repository.
+        // Se registrazione è stata creata nuova sopra, il suo cicloId sarà 0 (orfano).
+        viewModel.save(registrazione, selezionati);
 
-        // Finalizar y remover el fragment de la pila de navegación
+        // Finire e rimuovere il fragment dalla pila di navigazione
         if (getActivity() != null) {
             getActivity().getSupportFragmentManager().popBackStack();
         }
     }
 
-    // APLICAMOS EL TRUNCADO ESTRICTO AQUÍ
+    // APPLICHIAMO IL TRONCAMENTO RIGOROSO QUI
     public Date stringToDate(String dateString){
         Date dateToSave;
         if (dateString != null) {
             try {
-                // parse() ya trunca horas porque el formato solo tiene año-mes-día
+                // parse() tronca già le ore perché il formato ha solo giorno-mese-anno
                 dateToSave = dateFormat.parse(dateString);
             } catch (ParseException e) {
-                // Si falla, truncamos el Date actual
+                // Se fallisce, tronchiamo il Date attuale
                 dateToSave = CicloRepository.truncarFecha(new Date());
             }
         } else {
-            // Si llega nulo, truncamos el Date actual
+            // Se arriva nullo, tronchiamo il Date attuale
             dateToSave = CicloRepository.truncarFecha(new Date());
         }
 
         return dateToSave;
-    }
-
-    // target view es la vista sobre la que queremos detectar gesto
-    @SuppressLint("ClickableViewAccessibility")
-    private void configurarSwipeDosDedos(View targetView) {
-        // definimos la distancia mínima para considerarlo swipe
-        int minSwipeDistance = ViewConfiguration.get(requireContext()).getScaledTouchSlop() * 8;
-
-        // cuando el usuario toca la vista, obtenemos información de MotionEvent
-        targetView.setOnTouchListener((v, event) -> {
-            switch (event.getActionMasked()) {
-                // se apoya el segundo dedo
-                case MotionEvent.ACTION_POINTER_DOWN:
-                    if (event.getPointerCount() == 2) {
-                        // guardamos posición inicial media de los dedos
-                        startTwoFingerX = getMediaX(event);
-                        startTwoFingerY = getMediaY(event);
-
-                        // indicamos que se inicia gesto con dos dedos pero sin detectar gesto
-                        twoFingerGestureActive = true;
-                        twoFingerGestureDetected = false;
-                        return true;
-                    }
-                    break;
-                // los dedos se mueven
-                case MotionEvent.ACTION_MOVE:
-                    // si había dos dedos y siguen los dos dedos y todavía no se había detectado gesto
-                    if (twoFingerGestureActive && event.getPointerCount() == 2 && !twoFingerGestureDetected) {
-                        // calculamos la nueva posición de los dedos
-                        float currentX = getMediaX(event);
-                        float currentY = getMediaY(event);
-
-                        // calculamos la diferencia entre la posición actual y la anterior
-                        float diffX = currentX - startTwoFingerX;
-                        float diffY = currentY - startTwoFingerY;
-
-                        // comprobamos que el movimiento haya sido más horizontal que vertical
-                        boolean movimientoHorizontal = Math.abs(diffX) > Math.abs(diffY);
-                        // comprobamos que la distancia haya sido suficinete
-                        boolean distanciaSuficiente = Math.abs(diffX) > minSwipeDistance;
-
-                        // si se dan los dos casos => comprobamos si fue hacia izquierda o derecha
-                        if (movimientoHorizontal && distanciaSuficiente) {
-                            twoFingerGestureDetected = true;
-                            if (diffX < 0) {
-                                openNewDate(-1);
-                            } else {
-                                openNewDate(1);
-                            }
-                            return true;
-                        }
-                    }
-                    break;
-
-                case MotionEvent.ACTION_POINTER_UP: // se levanta un dedo
-                case MotionEvent.ACTION_UP: // se levanta el segundo dedo
-                case MotionEvent.ACTION_CANCEL: // android cancela el gesto
-                    twoFingerGestureActive = false;
-                    twoFingerGestureDetected = false;
-                    break;
-            }
-
-            return false;
-        });
-    }
-
-    private float getMediaX(MotionEvent event) {
-        float suma = 0;
-        for (int i = 0; i < event.getPointerCount(); i++) {
-            suma += event.getX(i);
-        }
-        return suma / event.getPointerCount();
-    }
-
-    private float getMediaY(MotionEvent event) {
-        float suma = 0;
-        for (int i = 0; i < event.getPointerCount(); i++) {
-            suma += event.getY(i);
-        }
-        return suma / event.getPointerCount();
     }
 
 

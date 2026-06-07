@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">sincra</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="stato_d_animo">Umore</string>
     <string name="aggiungere">+</string>
     <string name="sintomi">Sintomi</string>
@@ -23,4 +22,40 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="storico_dei_cicli">Storico dei cicli</string>
+    <string name="catalogo">Catalogo</string>
+    <string name="tocca_e_tieni_premuto_per_modificare_scorri_per_eliminare">Tocca e tieni premuto per modificare, scorri per eliminare</string>
+    <string name="aggiungi_un_nuovo_elemento">Aggiungi un nuovo elemento</string>
+    <string name="aggiunge">+</string>
+    <string name="configurazione">Configurazione</string>
+    <string name="attivare_notifiche_giornaliere">Attivare notifiche giornaliere</string>
+    <string name="sincra_ti_ricorder_di_registrare_i_dati_se_non_hai_ancora_aperto_l_app">Sincra ti ricorderà di registrare i dati se non hai ancora aperto l\'app.</string>
+    <string name="attivare_notifiche_generale">Attivare notifiche generale</string>
+    <string name="syncra_ti_invier_messaggi_interessanti">Syncra ti invierà messaggi interessanti.</string>
+    <string name="attivare_contatore_passi">Attivare contatore passi</string>
+    <string name="permette_a_sincra_di_aggiornare_i_passi_del_giorno_in_background">Permette a Sincra di aggiornare i passi del giorno in background.</string>
+    <string name="passi_oggi">Passi oggi</string>
+    <string name="informazioni">Informazioni</string>
+    <string name="previsioni">Previsioni</string>
+    <string name="il_tuo_profilo">Il tuo profilo</string>
+    <string name="nome_utente">Nome utente</string>
+    <string name="durata_media_del_ciclo_giorni">Durata media del ciclo (giorni)</string>
+    <string name="durata_media_del_periodo_giorni">Durata media del periodo (giorni)</string>
+    <string name="ricalcolare_dati">Ricalcolare dati</string>
+    <string name="salva_profilo">Salva profilo</string>
+    <string name="statistiche_per_fase">Statistiche per fase</string>
+    <string name="a">a</string>
+    <string name="ciclo_1_10_06_jun_26_jun">Ciclo 1\n06 Jun - 26 Jun</string>
+    <string name="_31_05_2026">31/05/2026</string>
+    <string name="giorno_del_ciclo_3">Giorno del ciclo: 3</string>
+    <string name="fase_fase_mestruale">Fase: Fase mestruale</string>
+    <string name="giorno_di_ciclo_no">Giorno di ciclo? No</string>
+    <string name="passi">Passi: —</string>
+    <string name="umore">Umore: —</string>
+    <string name="sintomi__">Sintomi: —</string>
+    <string name="fase_mestruale">Fase mestruale</string>
+    <string name="registros_5_pasos_medios_4000">Registri: 5 · Passi medi: 4000</string>
+    <string name="sintomi_pi_comuni">Sintomi più comuni</string>
+    <string name="stati_d_animo_pi_comuni">Stati d\'animo più comuni</string>
+    <string name="chiudere_sessione">Chiudere sessione</string>
 </resources>

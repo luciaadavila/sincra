@@ -1,6 +1,7 @@
 package com.example.sincra.ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -32,6 +33,7 @@ import com.example.sincra.R;
 import com.example.sincra.adapter.CalendarioHorizontalAdapter;
 import com.example.sincra.utils.FaseCiclo;
 import com.example.sincra.utils.StatisticheCalculator;
+import com.example.sincra.utils.SwipeDueDitaHelper;
 import com.example.sincra.viewModel.HomeViewModel;
 
 import java.text.SimpleDateFormat;
@@ -44,10 +46,10 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
     private CalendarioHorizontalAdapter adapter;
     private Button dayButton;
-    private String fechaSeleccionadaFormateada;
+    private String dataSelezionataFormattata;
     private HomeViewModel viewModel;
     private RecyclerView dayRecycler;
-    private Date fechaSeleccionada;
+    private Date dataSelezionata;
 
     private LinearLayout homeSintomiContainer;
     private LinearLayout homeMoodContainer;
@@ -95,27 +97,27 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
 
         stepPrefs = requireContext().getSharedPreferences("step_counter_prefs", Context.MODE_PRIVATE);
-        int pasosGuardados = stepPrefs.getInt("passi_oggi", 0);
+        int passiSalvati = stepPrefs.getInt("passi_oggi", 0);
         if (stepCounterSensor == null) {
             stepsTextView.setText("Sensore passi non disponibile");
         } else {
-            stepsTextView.setText("Passi oggi: " + pasosGuardados);
+            stepsTextView.setText("Passi oggi: " + passiSalvati);
         }
 
-        fechaSeleccionada = new Date();
-        viewModel.updateSelectedDate(fechaSeleccionada);
+        dataSelezionata = new Date();
+        viewModel.updateSelectedDate(dataSelezionata);
 
         adapter = new CalendarioHorizontalAdapter(new ArrayList<>(), new CalendarioHorizontalAdapter.OnDateClickListener() {
             @Override
-            public void onDateClick(Date fechaSelec) {
-                fechaSeleccionada = fechaSelec;
-                viewModel.updateSelectedDate(fechaSelec);
-                updateTextoBoton(null);
+            public void onDateClick(Date dataSelez) {
+                dataSelezionata = dataSelez;
+                viewModel.updateSelectedDate(dataSelez);
+                aggiornaTestoBottone(null);
             }
 
             @Override
-            public void onDateDoubleClick(Date fechaSeleccionada) {
-                viewModel.addOrDeletePeriodDay(fechaSeleccionada);
+            public void onDateDoubleClick(Date dataSelezionata) {
+                viewModel.addOrDeletePeriodDay(dataSelezionata);
             }
         });
 
@@ -126,7 +128,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         viewModel.getCicloActual().observe(getViewLifecycleOwner(), cicloConReg -> {
             if (cicloConReg != null) {
                 viewModel.calcoloPredict(cicloConReg.getCiclo().getDataInizio());
-                viewModel.updateSelectedDate(fechaSeleccionada);
+                viewModel.updateSelectedDate(dataSelezionata);
             }
         });
 
@@ -157,7 +159,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             if (diasProbables != null) adapter.setDiasProbables(diasProbables);
         });
 
-        viewModel.getFaseSeleccionada().observe(getViewLifecycleOwner(), this::updateTextoBoton);
+        viewModel.getFaseSeleccionada().observe(getViewLifecycleOwner(), this::aggiornaTestoBottone);
 
         viewModel.getStatisticheFaseSelezionata().observe(getViewLifecycleOwner(), stats -> {
             mostraStatisticheFase(stats);
@@ -166,7 +168,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         dayButton.setOnClickListener(v -> {
             DetailDayFragment detailFragment = new DetailDayFragment();
             Bundle args = new Bundle();
-            args.putString("date", fechaSeleccionadaFormateada);
+            args.putString("date", dataSelezionataFormattata);
             detailFragment.setArguments(args);
             getParentFragmentManager().beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -174,16 +176,34 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                     .addToBackStack(null)
                     .commit();
         });
+
+        SwipeDueDitaHelper swipeDueDitaHelper =
+                new SwipeDueDitaHelper(
+                        requireContext(),
+                        new SwipeDueDitaHelper.OnDuaDitaSwipeListener() {
+                            @Override
+                            public void onSwipeLeft() {
+                                cambiaDataSelezionata(-1);
+                            }
+
+                            @Override
+                            public void onSwipeRight() {
+                                cambiaDataSelezionata(1);
+                            }
+                        }
+                );
+        swipeDueDitaHelper.configuraSwipeDueDita(view);
     }
 
-    private void updateTextoBoton(FaseCiclo faseSeleccionadaPorViewModel){
-        if (fechaSeleccionada == null) return;
-        fechaSeleccionadaFormateada = viewModel.formatDate(fechaSeleccionada);
 
-        if (faseSeleccionadaPorViewModel == null){
-            dayButton.setText(fechaSeleccionadaFormateada);
+    private void aggiornaTestoBottone(FaseCiclo faseSelezionataDalViewModel){
+        if (dataSelezionata == null) return;
+        dataSelezionataFormattata = viewModel.formatDate(dataSelezionata);
+
+        if (faseSelezionataDalViewModel == null){
+            dayButton.setText(dataSelezionataFormattata);
         } else {
-            dayButton.setText(fechaSeleccionadaFormateada + "\n" + faseSeleccionadaPorViewModel.getLabel());
+            dayButton.setText(dataSelezionataFormattata + "\n" + faseSelezionataDalViewModel.getLabel());
         }
     }
 
@@ -237,6 +257,23 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         container.addView(tv);
     }
 
+
+    private void cambiaDataSelezionata(int giorni) {
+        if (dataSelezionata == null) {
+            dataSelezionata = new Date();
+        }
+
+        java.util.Calendar calendario = java.util.Calendar.getInstance();
+        calendario.setTime(dataSelezionata);
+        calendario.add(java.util.Calendar.DAY_OF_MONTH, giorni);
+
+        Date nuovaData = calendario.getTime();
+
+        dataSelezionata = nuovaData;
+        viewModel.updateSelectedDate(nuovaData);
+        aggiornaTestoBottone(null);
+    }
+
     /////////// PARA EL CONTADOR DE PASOS
 
     // empezamos a escuchar el sensor
@@ -274,23 +311,23 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     public void onSensorChanged(@NonNull SensorEvent event) {
         if (event.sensor.getType() != Sensor.TYPE_STEP_COUNTER) return;
 
-        int pasosSensor = Math.round(event.values[0]); // valor que manda el sensor
+        int passiSensore = Math.round(event.values[0]); // valor que manda el sensor
         String oggi = dateFormat.format(new Date()); // obtiene el día actual
         // leemos lo que teníamos guardado en las share preferences
         String diaGuardado = stepPrefs.getString("giorno", null);
-        int pasosBase = stepPrefs.getInt("pasos_base", -1);
+        int passiBase = stepPrefs.getInt("passi_base", -1);
 
-        if (!oggi.equals(diaGuardado) || pasosBase < 0 || pasosSensor < pasosBase) {
-            pasosBase = pasosSensor;
-            stepPrefs.edit().putString("giorno", oggi).putInt("pasos_base", pasosBase).putInt("passi_oggi", 0).apply();
+        if (!oggi.equals(diaGuardado) || passiBase < 0 || passiSensore < passiBase) {
+            passiBase = passiSensore;
+            stepPrefs.edit().putString("giorno", oggi).putInt("passi_base", passiBase).putInt("passi_oggi", 0).apply();
         }
 
-        int pasosOggi = pasosSensor - pasosBase;
-        if (pasosOggi < 0) pasosOggi = 0;
+        int passiOggi = passiSensore - passiBase;
+        if (passiOggi < 0) passiOggi = 0;
 
-        ultimiPassiOggi = pasosOggi;
+        ultimiPassiOggi = passiOggi;
         passiLettiDalSensore = true;
-        stepsTextView.setText("Passi oggi: " + pasosOggi);
+        stepsTextView.setText("Passi oggi: " + passiOggi);
     }
 
     @Override

@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/title"
-        android:text=""
+        android:text="@string/a"
         android:textStyle="bold"
         android:textSize="18sp"
         android:layout_width="wrap_content"
