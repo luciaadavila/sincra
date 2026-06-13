@@ -61,9 +61,11 @@ public class ReminderNotificationHelper {
 
         createNotificationChannel(context);
 
+        String contentText = "Non dimenticare di registrare i dati di oggi!";
         NotificationCompat.Builder builder = creaBuilderBase(context)
                 .setContentTitle("Sincra")
-                .setContentText("Non dimenticare di registrare i dati di oggi!");
+                .setContentText(contentText)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText));
 
         // creamos la notificación
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_DAILY, builder.build());
@@ -78,9 +80,11 @@ public class ReminderNotificationHelper {
 
         createNotificationChannel(context);
 
+        String contentText = "Apri Sincra e controlla come sta andando il tuo monitoraggio.";
         NotificationCompat.Builder builder = creaBuilderBase(context)
                 .setContentTitle("Sincra")
-                .setContentText("Apri Sincra e controlla come sta andando il tuo monitoraggio.");
+                .setContentText(contentText)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText));
 
         // creamos la notificación
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_FLEXIBLE, builder.build());
