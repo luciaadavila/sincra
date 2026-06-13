@@ -1,7 +1,6 @@
 package com.example.sincra.ui;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -161,9 +160,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
         viewModel.getFaseSeleccionada().observe(getViewLifecycleOwner(), this::aggiornaTestoBottone);
 
-        viewModel.getStatisticheFaseSelezionata().observe(getViewLifecycleOwner(), stats -> {
-            mostraStatisticheFase(stats);
-        });
+        viewModel.getStatisticheFaseSelezionata().observe(getViewLifecycleOwner(), this::mostraStatisticheFase);
 
         dayButton.setOnClickListener(v -> {
             DetailDayFragment detailFragment = new DetailDayFragment();
@@ -323,7 +320,6 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         }
 
         int passiOggi = passiSensore - passiBase;
-        if (passiOggi < 0) passiOggi = 0;
 
         ultimiPassiOggi = passiOggi;
         passiLettiDalSensore = true;

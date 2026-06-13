@@ -1,7 +1,7 @@
 package com.example.sincra.model;
 
 public class GiornoItem {
-    private int numGiorno;
+    private final int numGiorno;
     private boolean selected;
 
     public GiornoItem(int numGiorno, boolean selected) {

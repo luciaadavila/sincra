@@ -67,9 +67,7 @@ public class RegistrazioneRepository {
     }
 
     public void deleteRegistrazione(Registrazione registrazione) {
-        executor.execute(() -> {
-            dao.deleteRegistrazione(registrazione);
-        });
+        executor.execute(() -> dao.deleteRegistrazione(registrazione));
     }
 
     public void saveDay(Registrazione registro, List<ElementoCatalogo> elementos) {

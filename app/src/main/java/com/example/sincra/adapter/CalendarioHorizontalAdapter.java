@@ -1,7 +1,6 @@
 package com.example.sincra.adapter;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,7 +22,7 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
 
     private List<Date> listaFechas;
     private int posicionSeleccionada = -1; 
-    private OnDateClickListener listener;
+    private final OnDateClickListener listener;
     private List<String> fechasConPeriodo; // Formato "dd-MM-yyyy" que traeremos de Room
     private List<String> diasProbables; // Formato "dd-MM-yyyy" que traeremos de Room
 
@@ -47,19 +46,25 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
     }
 
     public void setPosicionSeleccionada(int position) {
+        int posicionAnterior = this.posicionSeleccionada;
         this.posicionSeleccionada = position;
-        notifyDataSetChanged();
+
+        if (posicionAnterior != -1) {
+            notifyItemChanged(posicionAnterior);
+        }
+        if (this.posicionSeleccionada != -1) {
+            notifyItemChanged(this.posicionSeleccionada);
+        }
     }
 
     public void setFechasConPeriodo(List<String> fechasConPeriodo) {
         this.fechasConPeriodo = fechasConPeriodo;
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     public void setDiasProbables(List<String> diasProbables){
         this.diasProbables = diasProbables;
-        notifyDataSetChanged();
-
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     @NonNull
@@ -120,8 +125,9 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
     }
 
     public static class CalendarViewHolder extends RecyclerView.ViewHolder {
-        TextView dayLabel, dayNum;
-        GestureDetector gestureDetector;
+        final TextView dayLabel;
+        final TextView dayNum;
+        final GestureDetector gestureDetector;
 
         @SuppressLint("ClickableViewAccessibility")
         public CalendarViewHolder(@NonNull View itemView, OnDateClickListener externalListener, CalendarioHorizontalAdapter adapter) {

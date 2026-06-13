@@ -84,7 +84,7 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
 
 
     public static class CatalogoViewHolder extends RecyclerView.ViewHolder {
-        private TextView text;
+        private final TextView text;
 
         public CatalogoViewHolder(@NonNull View itemView) {
             super(itemView);

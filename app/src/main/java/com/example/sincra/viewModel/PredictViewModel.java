@@ -8,13 +8,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.sincra.database.repositorio.CicloRepository;
-import com.example.sincra.database.repositorio.UserRepository;
 import com.example.sincra.model.PredictSettimana;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 public class PredictViewModel extends AndroidViewModel {
 
@@ -35,8 +31,6 @@ public class PredictViewModel extends AndroidViewModel {
     }
 
     public void loadPredictions() {
-        repo.generatePredictions(predictions -> {
-            proxCicli.postValue(predictions);
-        });
+        repo.generatePredictions(proxCicli::postValue);
     }
 }

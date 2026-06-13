@@ -28,12 +28,10 @@ public class StatisticheCicloViewModel extends AndroidViewModel {
         repoCiclo = new CicloRepository(application);
         repoReg = new RegistrazioneRepository(application);
 
-        cicloConRegistrazioni = Transformations.switchMap(cicloIdInput, id ->
-            repoCiclo.getCicloByIdConRegistrazioni(id)
+        cicloConRegistrazioni = Transformations.switchMap(cicloIdInput, repoCiclo::getCicloByIdConRegistrazioni
         );
 
-        registrazioniConElementi = Transformations.switchMap(cicloIdInput, id ->
-            repoReg.getRegistrazioniConElementiByCiclo(id)
+        registrazioniConElementi = Transformations.switchMap(cicloIdInput, repoReg::getRegistrazioniConElementiByCiclo
         );
     }
 

@@ -9,8 +9,6 @@ import androidx.room.Update;
 
 import com.example.sincra.model.User;
 
-import java.util.List;
-
 @Dao
 public interface UserDAO {
     @Insert

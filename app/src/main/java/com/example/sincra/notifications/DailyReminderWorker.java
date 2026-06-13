@@ -1,7 +1,6 @@
 package com.example.sincra.notifications;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;

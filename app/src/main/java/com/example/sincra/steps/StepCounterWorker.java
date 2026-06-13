@@ -100,7 +100,6 @@ public class StepCounterWorker extends Worker implements SensorEventListener {
         }
 
         int passiOggi = passiSensore - passiBase;
-        if (passiOggi < 0) passiOggi = 0;
 
         prefs.edit().putString(KEY_DIA, hoy).putInt(KEY_PASSI_HOY, passiOggi).apply();
     }

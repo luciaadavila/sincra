@@ -3,9 +3,9 @@ package com.example.sincra.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
@@ -16,7 +16,7 @@ import java.util.List;
 public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditableAdapter.CatalogoEditableViewHolder> {
 
     private List<ElementoCatalogo> items;
-    private OnCatalogoClickListener listener;
+    private final OnCatalogoClickListener listener;
 
     public CatalogoEditableAdapter(List<ElementoCatalogo> items, OnCatalogoClickListener listener) {
         this.items = items;
@@ -30,7 +30,7 @@ public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditab
 
     public static class CatalogoEditableViewHolder extends RecyclerView.ViewHolder {
 
-        TextView nameText;
+        final TextView nameText;
 
         public CatalogoEditableViewHolder(View itemView) {
             super(itemView);
@@ -39,6 +39,7 @@ public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditab
         }
     }
 
+    @NonNull
     @Override
     public CatalogoEditableViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_catalogo_editable, parent, false);
@@ -51,7 +52,7 @@ public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditab
         holder.nameText.setText(item.getNome());
 
         holder.itemView.setOnLongClickListener(v -> {
-            int pos = holder.getAdapterPosition();
+            int pos = holder.getBindingAdapterPosition();
             if (pos != RecyclerView.NO_POSITION){
                 listener.onEdit(items.get(pos));
             }

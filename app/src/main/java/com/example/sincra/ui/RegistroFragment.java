@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.DragEvent;
@@ -104,11 +103,7 @@ public class RegistroFragment extends Fragment {
         ClipData data = ClipData.newPlainText("", "");
 
         View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(itemView);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            itemView.startDragAndDrop(data, shadowBuilder, item, 0);
-        } else {
-            itemView.startDrag(data, shadowBuilder, item, 0);
-        }
+        itemView.startDragAndDrop(data, shadowBuilder, item, 0);
     }
 
     private void configuraCestino() {

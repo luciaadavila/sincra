@@ -34,8 +34,6 @@ public class UserRepository {
     }
 
     public void updateUserProfilo(User user){
-        executor.execute(() -> {
-            dao.update(user);
-        });
+        executor.execute(() -> dao.update(user));
     }
 }

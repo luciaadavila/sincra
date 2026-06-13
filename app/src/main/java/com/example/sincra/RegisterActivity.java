@@ -6,19 +6,13 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.sincra.model.Registrazione;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.concurrent.Executors;
+import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -27,8 +21,6 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputEditText etEmail;
     private TextInputEditText etPassword;
     private TextInputEditText etConfirmPassword;
-    private Button btnRegister;
-    private ProgressBar progressRegister;
     private final java.util.concurrent.ExecutorService databaseExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
 
     @Override
@@ -40,17 +32,13 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etRegisterEmail);
         etPassword = findViewById(R.id.etRegisterPassword);
         etConfirmPassword = findViewById(R.id.etRegisterConfirmPassword);
-        btnRegister = findViewById(R.id.btnRegister);
-        progressRegister = findViewById(R.id.progressRegister);
+        Button btnRegister = findViewById(R.id.btnRegister);
+        ProgressBar progressRegister = findViewById(R.id.progressRegister);
 
 
-        btnRegister.setOnClickListener(v -> {
-            validateAndRegister();
-        });
+        btnRegister.setOnClickListener(v -> validateAndRegister());
 
-        findViewById(R.id.tvGoToLogin).setOnClickListener(v -> {
-            finish();
-        });
+        findViewById(R.id.tvGoToLogin).setOnClickListener(v -> finish());
     }
 
     private void validateAndRegister() {
@@ -93,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
                         // Registro exitoso, pasamos al flujo principal
                         updateUI(mAuth.getCurrentUser());
                     } else {
-                        Toast.makeText(this, "Registro fallido: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Registro fallido: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

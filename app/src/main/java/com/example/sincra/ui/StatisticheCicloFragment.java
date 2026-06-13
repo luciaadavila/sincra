@@ -35,7 +35,6 @@ public class StatisticheCicloFragment extends Fragment {
 
     private LinearLayout tableContainer;
     private int cicloId;
-    private StatisticheCicloViewModel viewModel;
     private CicloConRegistrazioni ultimoCicloConRegistrazioni;
     private List<RegistrazioneConElementi> ultimeRegistrazioniConElementi = new ArrayList<>();
     private static final int LABEL_WIDTH_DP = 90;
@@ -75,7 +74,7 @@ public class StatisticheCicloFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(StatisticheCicloViewModel.class);
+        StatisticheCicloViewModel viewModel = new ViewModelProvider(this).get(StatisticheCicloViewModel.class);
         viewModel.setCicloId(cicloId);
 
         viewModel.getCicloConRegistrazioni().observe(getViewLifecycleOwner(), cicloConRegistrazioni -> {
@@ -207,18 +206,13 @@ public class StatisticheCicloFragment extends Fragment {
     private String getSiglaFase(FaseCiclo fase) {
         if (fase == null) return "";
 
-        switch (fase) {
-            case MESTRUALE:
-                return "M";
-            case FOLLICOLARE:
-                return "F";
-            case OVULATORIA:
-                return "O";
-            case LUTEALE:
-                return "L";
-            default:
-                return "";
-        }
+        return switch (fase) {
+            case MESTRUALE -> "M";
+            case FOLLICOLARE -> "F";
+            case OVULATORIA -> "O";
+            case LUTEALE -> "L";
+            default -> "";
+        };
     }
 
 

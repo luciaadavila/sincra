@@ -1,7 +1,6 @@
 package com.example.sincra.adapter;
 
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +24,8 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
 
 
     public static class PredictionViewHolder extends RecyclerView.ViewHolder {
-        TextView rangeText;
-        GridLayout daysContainer;
+        final TextView rangeText;
+        final GridLayout daysContainer;
 
         public PredictionViewHolder(View itemView) {
             super(itemView);

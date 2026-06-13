@@ -11,9 +11,9 @@ public class User {
     @PrimaryKey(autoGenerate = true)
     private long userId;
     @NonNull
-    private String firebaseUid;
+    private String firebaseUid="";
     @NonNull
-    private String nome;
+    private String nome="";
     private Date dataRegistrazione;
     private int durataMediaCiclo;
     private int durataMediaPeriodo;

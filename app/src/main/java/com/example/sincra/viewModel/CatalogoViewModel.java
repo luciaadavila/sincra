@@ -10,8 +10,6 @@ import androidx.lifecycle.Transformations;
 
 import com.example.sincra.database.repositorio.ElementoCatalogoRepository;
 import com.example.sincra.model.ElementoCatalogo;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -24,9 +22,7 @@ public class CatalogoViewModel extends AndroidViewModel {
     public CatalogoViewModel(@NonNull Application application) {
         super(application);
         repo = new ElementoCatalogoRepository(application);
-        items = Transformations.switchMap(tipoInput, tipo -> {
-            return repo.getByType(tipo);
-        });
+        items = Transformations.switchMap(tipoInput, repo::getByType);
     }
 
 

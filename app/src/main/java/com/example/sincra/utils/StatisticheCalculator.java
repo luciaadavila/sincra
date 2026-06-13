@@ -86,7 +86,6 @@ public class StatisticheCalculator {
     }
 
     private static Ciclo trovaCicloPerData(Registrazione reg, Map<Integer, Ciclo> cicloById) {
-        if (reg.getData() == null) return null;
         long time = CicloRepository.truncarFecha(reg.getData()).getTime();
 
         Ciclo migliorMatch = null;
@@ -111,7 +110,7 @@ public class StatisticheCalculator {
     }
 
     private static FaseCiclo calcolaFaseRegistrazione(Registrazione reg, Ciclo ciclo) {
-        if (reg == null || ciclo == null || reg.getData() == null || ciclo.getDataInizio() == null) return null;
+        if (reg == null || ciclo == null) return null;
 
         int giornoCiclo = CicloRepository.difDays(ciclo.getDataInizio(), reg.getData());
         if (giornoCiclo <= 0) return null;
@@ -127,8 +126,7 @@ public class StatisticheCalculator {
 
     private static void incrementa(Map<String, Integer> map, String key) {
         if (key == null || key.trim().isEmpty()) return;
-        Integer value = map.get(key);
-        map.put(key, (value == null) ? 1 : value + 1);
+        map.compute(key, (k, value) -> (value == null) ? 1 : value + 1);
     }
 
     private static List<ElementoStat> toSortedList(Map<String, Integer> map) {
@@ -136,7 +134,7 @@ public class StatisticheCalculator {
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
             list.add(new ElementoStat(entry.getKey(), entry.getValue()));
         }
-        Collections.sort(list, (a, b) -> Integer.compare(b.getCount(), a.getCount()));
+        list.sort((a, b) -> Integer.compare(b.getCount(), a.getCount()));
         return list;
     }
 
@@ -184,7 +182,7 @@ public class StatisticheCalculator {
             for (int durata : durateCicli) {
                 sommaDeviazioni += Math.abs(durata - durataMediaCiclo);
             }
-            variazioneMediaCiclo = Math.round((float) sommaDeviazioni / durateCicli.size());
+            variazioneMediaCiclo = Math.round(sommaDeviazioni / durateCicli.size());
         }
 
         public StatisticheFase getStatsFase(FaseCiclo fase) {

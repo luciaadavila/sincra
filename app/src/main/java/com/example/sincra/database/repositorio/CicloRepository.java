@@ -1,7 +1,6 @@
 package com.example.sincra.database.repositorio;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -24,10 +23,10 @@ import java.util.concurrent.Executors;
 
 public class CicloRepository {
 
-    private CicloDAO dao;
-    private RegistrazioneDAO daoRe;
-    private UserDAO daoUser;
-    private ExecutorService executor;
+    private final CicloDAO dao;
+    private final RegistrazioneDAO daoRe;
+    private final UserDAO daoUser;
+    private final ExecutorService executor;
     private final Context context;
 
     public CicloRepository(Context context){
@@ -108,7 +107,7 @@ public class CicloRepository {
                 // Unimos el ciclo siguiente dentro del anterior
                 cicloAnterior.setDurataPeriodo(cicloAnterior.getDurataPeriodo() + cicloSiguiente.getDurataPeriodo() + 1);
                 cicloAnterior.setDataFine(cicloSiguiente.getDataFine());
-                cicloAnterior.setDurataTotale((int) difDays(cicloAnterior.getDataInizio(), cicloAnterior.getDataFine()));
+                cicloAnterior.setDurataTotale(difDays(cicloAnterior.getDataInizio(), cicloAnterior.getDataFine()));
                 dao.update(cicloAnterior);
 
                 // Reasignar todos los registros del ciclo siguiente al ciclo anterior
@@ -139,7 +138,7 @@ public class CicloRepository {
                 cicloSiguiente.setDataInizio(data); // Movemos el inicio hacia atrás
                 cicloSiguiente.setDurataPeriodo(cicloSiguiente.getDurataPeriodo() + 1);
                 if (cicloSiguiente.getDataFine() != null) {
-                    cicloSiguiente.setDurataTotale((int) difDays(data, cicloSiguiente.getDataFine()));
+                    cicloSiguiente.setDurataTotale(difDays(data, cicloSiguiente.getDataFine()));
                 }
                 dao.update(cicloSiguiente);
 
@@ -149,7 +148,7 @@ public class CicloRepository {
             }
         }
         // 3. AÑADIR AL FINAL (Append): Seleccionamos un día justo después del final del sangrado
-        else if (prevHuboRegla && !nextHuboRegla) {
+        else if (prevHuboRegla) {
             Ciclo cicloAnterior = dao.getByIdSync(regPrev.getCicloId());
             if (cicloAnterior != null) {
                 cicloAnterior.setDurataPeriodo(cicloAnterior.getDurataPeriodo() + 1);
@@ -215,7 +214,7 @@ public class CicloRepository {
                 Date nuevaDataFine = cicloActual.getDataFine();
                 cicloAnterior.setDataFine(nuevaDataFine);
                 if (nuevaDataFine != null) {
-                    cicloAnterior.setDurataTotale((int) difDays(cicloAnterior.getDataInizio(), nuevaDataFine));
+                    cicloAnterior.setDurataTotale(difDays(cicloAnterior.getDataInizio(), nuevaDataFine));
                 }
                 dao.update(cicloAnterior);
                 dao.delete(cicloActual);
@@ -238,7 +237,7 @@ public class CicloRepository {
             Date nuevaDataInizio = xDay(data, 1);
             cicloActual.setDataInizio(nuevaDataInizio);
             if (cicloActual.getDataFine() != null) {
-                cicloActual.setDurataTotale((int) difDays(nuevaDataInizio, cicloActual.getDataFine()));
+                cicloActual.setDurataTotale(difDays(nuevaDataInizio, cicloActual.getDataFine()));
             }
             dao.update(cicloActual);
 
@@ -247,7 +246,7 @@ public class CicloRepository {
             if (cicloAnterior != null) {
                 regActual.setCicloId(cicloAnterior.getCicloId());
                 cicloAnterior.setDataFine(data);
-                cicloAnterior.setDurataTotale((int) difDays(cicloAnterior.getDataInizio(), data));
+                cicloAnterior.setDurataTotale(difDays(cicloAnterior.getDataInizio(), data));
                 dao.update(cicloAnterior);
             } else {
                 regActual.setCicloId(null);
@@ -261,7 +260,7 @@ public class CicloRepository {
             dao.update(cicloActual);
         }
         // 4. PARTIR (Split): Hemos quitado un día en medio de un sangrado
-        else if (prevHuboRegla && nextHuboRegla) {
+        else if (prevHuboRegla) {
             // Nota: Para simplificar y evitar fallos críticos, muchas apps
             // no permiten "huecos" en el sangrado, o simplemente asumen que todo es el mismo ciclo.
             // Si quieres permitir partirlo, crearías un nuevo ciclo a partir de 'nextDay'.
@@ -276,7 +275,7 @@ public class CicloRepository {
     public void closePrevCiclo(Ciclo ciclo, Date dataFine){
         Date fechaFinTruncada = truncarFecha(dataFine);
         ciclo.setDataFine(fechaFinTruncada);
-        ciclo.setDurataTotale((int) difDays(ciclo.getDataInizio(), fechaFinTruncada));
+        ciclo.setDurataTotale(difDays(ciclo.getDataInizio(), fechaFinTruncada));
         dao.update(ciclo);
         updatePeriodDays(ciclo);
         updateDurataMedia();
@@ -424,13 +423,13 @@ public class CicloRepository {
             Ciclo ciclo = dao.getCurrentCiclo(getLocalId());
             List<PredictSettimana> risultato = new ArrayList<>();
 
-            if (user == null || ciclo == null || ciclo.getDataInizio() == null) {
+            if (user == null || ciclo == null) {
                 callback.onPredictionsGenerated(risultato);
                 return;
             }
 
             List<Date> giorni = calcoloGiorniProbabileSync(ciclo.getDataInizio(), user, 4);
-            if (giorni == null || giorni.isEmpty()) {
+            if (giorni.isEmpty()) {
                 callback.onPredictionsGenerated(risultato);
                 return;
             }

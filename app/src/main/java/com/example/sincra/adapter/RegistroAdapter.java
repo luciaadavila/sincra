@@ -6,7 +6,6 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,7 +45,13 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
     }
 
     public static class RegistroViewHolder extends RecyclerView.ViewHolder {
-        TextView dayTitle, cycleDay, isCycleDay, moods, symptoms, phase, steps;
+        final TextView dayTitle;
+        final TextView cycleDay;
+        final TextView isCycleDay;
+        final TextView moods;
+        final TextView symptoms;
+        final TextView phase;
+        final TextView steps;
 
         public RegistroViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -147,7 +152,7 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
                     holder.itemView.getContext(),
                     new ScaleGestureDetector.SimpleOnScaleGestureListener() {
                         @Override
-                        public boolean onScale(ScaleGestureDetector detector) {
+                        public boolean onScale(@NonNull ScaleGestureDetector detector) {
                             scale *= detector.getScaleFactor();
                             if (scale > 1.15f) {
                                 spreadDetectado = true;

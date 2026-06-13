@@ -15,14 +15,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.credentials.ClearCredentialStateRequest;
 import androidx.credentials.Credential;
 import androidx.credentials.CredentialManager;
 import androidx.credentials.CredentialManagerCallback;
 import androidx.credentials.CustomCredential;
 import androidx.credentials.GetCredentialRequest;
 import androidx.credentials.GetCredentialResponse;
-import androidx.credentials.exceptions.ClearCredentialException;
 import androidx.credentials.exceptions.GetCredentialException;
 
 import com.google.android.gms.common.SignInButton;
@@ -33,7 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.util.concurrent.Executors;
+import java.util.Objects;
 
 public class AuthActivity extends AppCompatActivity {
 
@@ -65,9 +63,7 @@ public class AuthActivity extends AppCompatActivity {
 
         // Declaramos el botón
         SignInButton btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
-        btnGoogleLogin.setOnClickListener(v -> {
-            launchCredentialManager();
-        });
+        btnGoogleLogin.setOnClickListener(v -> launchCredentialManager());
 
         findViewById(R.id.tvRegisterLink).setOnClickListener(v -> {
             // Lanza tu nueva pantalla de Registro
@@ -91,7 +87,7 @@ public class AuthActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         updateUI(mAuth.getCurrentUser());
                     } else {
-                        Toast.makeText(this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -122,7 +118,7 @@ public class AuthActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onError(GetCredentialException e) {
+                    public void onError(@NonNull GetCredentialException e) {
                         String errorMsg = "Error: " + e.getMessage();
                         if (e.getMessage() != null && e.getMessage().contains("No credentials available")) {
                             errorMsg = "No hay cuentas de Google vinculadas o error de configuración (SHA-1/Package Name).";

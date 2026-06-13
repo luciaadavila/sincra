@@ -7,7 +7,6 @@
     android:background="@color/ligh_pink">
 
         <androidx.core.widget.NestedScrollView
-            android:id="@+id/homeScroll"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:fillViewport="true"
@@ -48,7 +47,6 @@
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
-                            android:id="@+id/tvMoodTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/stato_d_animo"
@@ -57,7 +55,6 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvMoodSubtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
@@ -86,7 +83,6 @@
                             app:cornerRadius="18dp" />
 
                         <TextView
-                            android:id="@+id/tvSymptomsTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="30dp"
@@ -96,7 +92,6 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvSymptomsSubtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"

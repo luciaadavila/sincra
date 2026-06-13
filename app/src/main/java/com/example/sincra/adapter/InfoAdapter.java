@@ -14,8 +14,8 @@ import com.example.sincra.model.InfoOption;
 import java.util.List;
 
 public class InfoAdapter extends RecyclerView.Adapter<InfoAdapter.InfoViewHolder> {
-    private List<InfoOption> options;
-    private OnOptionClickListener listener;
+    private final List<InfoOption> options;
+    private final OnOptionClickListener listener;
 
     public interface OnOptionClickListener {
         void onOptionClick(InfoOption option, int position);
@@ -27,7 +27,7 @@ public class InfoAdapter extends RecyclerView.Adapter<InfoAdapter.InfoViewHolder
     }
 
     public static class InfoViewHolder extends RecyclerView.ViewHolder {
-        TextView optionTitle;
+        final TextView optionTitle;
 
         public InfoViewHolder(@NonNull View itemView) {
             super(itemView);

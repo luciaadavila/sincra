@@ -24,15 +24,12 @@ import com.example.sincra.viewModel.StatisticheViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class StatisticheFragment extends Fragment {
 
-    private StatisticheViewModel viewModel;
     private StatisticheFaseAdapter adapter;
 
     private LinearLayout summaryContainer;
-    private RecyclerView fasiRecycler;
 
     public StatisticheFragment() {
     }
@@ -54,7 +51,7 @@ public class StatisticheFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         summaryContainer = view.findViewById(R.id.summaryContainer);
-        fasiRecycler = view.findViewById(R.id.fasiRecycler);
+        RecyclerView fasiRecycler = view.findViewById(R.id.fasiRecycler);
 
         adapter = new StatisticheFaseAdapter();
 
@@ -63,7 +60,7 @@ public class StatisticheFragment extends Fragment {
         fasiRecycler.setNestedScrollingEnabled(false); // Refuerzo por código
         fasiRecycler.setHasFixedSize(false);
 
-        viewModel = new ViewModelProvider(this).get(StatisticheViewModel.class);
+        StatisticheViewModel viewModel = new ViewModelProvider(this).get(StatisticheViewModel.class);
 
         viewModel.getStatistiche().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;

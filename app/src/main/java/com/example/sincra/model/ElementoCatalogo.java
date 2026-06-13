@@ -20,9 +20,9 @@ public class ElementoCatalogo {
     @PrimaryKey(autoGenerate = true)
     private int elementoId;
     @NonNull
-    private String tipo;
+    private String tipo="";
     @NonNull
-    private String nome;
+    private String nome="";
     private long userId;
 
     @Ignore

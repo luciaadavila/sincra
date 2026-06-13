@@ -5,9 +5,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,13 +23,11 @@ import android.widget.TextView;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.CatalogoEditableAdapter;
-import com.example.sincra.database.AppDatabase;
-import com.example.sincra.database.dao.ElementoCatalogoDAO;
 import com.example.sincra.model.ElementoCatalogo;
 import com.example.sincra.viewModel.CatalogoViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 
 public class CatalogoEditableFragment extends Fragment {
@@ -58,13 +56,13 @@ public class CatalogoEditableFragment extends Fragment {
             private final Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash);
 
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
+                int position = viewHolder.getBindingAdapterPosition();
 
                 if (position != RecyclerView.NO_POSITION) {
                     ElementoCatalogo item = adapter.getItem(position);
@@ -73,7 +71,7 @@ public class CatalogoEditableFragment extends Fragment {
             }
 
             @Override
-            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 View itemView = viewHolder.itemView;
 
                 if (dX < 0) {
@@ -101,29 +99,20 @@ public class CatalogoEditableFragment extends Fragment {
 
         new ItemTouchHelper(swipeCallback).attachToRecyclerView(recycler);
         tipo = getArguments() != null ? getArguments().getString("tipo") : "mood";
-        title.setText(tipo.equals("mood") ? "Stati d'animo" : "Sintomi");
+        title.setText(Objects.requireNonNull(tipo).equals("mood") ? "Stati d'animo" : "Sintomi");
 
         viewModel = new ViewModelProvider(this).get(CatalogoViewModel.class);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CatalogoEditableAdapter(new ArrayList<>(), new CatalogoEditableAdapter.OnCatalogoClickListener(){
-            @Override
-            public void onEdit(ElementoCatalogo e){
-                mostraDialogModifica(e);
-            }
-        });
+        adapter = new CatalogoEditableAdapter(new ArrayList<>(), e -> mostraDialogModifica(e));
 
         recycler.setAdapter(adapter);
 
-        viewModel.getItems().observe(getViewLifecycleOwner(), data -> {
-            adapter.updateList(data);
-        });
+        viewModel.getItems().observe(getViewLifecycleOwner(), data -> adapter.updateList(data));
 
         viewModel.loadByType(tipo);
 
 
-        addButton.setOnClickListener(v -> {
-            addElemento(input);
-        });
+        addButton.setOnClickListener(v -> addElemento(input));
 
         input.setOnKeyListener((v, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {

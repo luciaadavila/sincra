@@ -17,17 +17,13 @@ import android.view.ViewGroup;
 import com.example.sincra.R;
 import com.example.sincra.adapter.CicloAdapter;
 import com.example.sincra.model.Ciclo;
-import com.example.sincra.model.relazioni.CicloConRegistrazioni;
 import com.example.sincra.viewModel.HistorialViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class HistorialFragment extends Fragment {
 
-    private RecyclerView cicloRecycler;
     private CicloAdapter adapter;
-    private HistorialViewModel viewModel;
 
     public HistorialFragment() {
         // Required empty public constructor
@@ -45,7 +41,7 @@ public class HistorialFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // 1. inicializar vistas
-        cicloRecycler = view.findViewById(R.id.historialRecycler);
+        RecyclerView cicloRecycler = view.findViewById(R.id.historialRecycler);
         cicloRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // 2. inicializamos el adapter
@@ -66,7 +62,7 @@ public class HistorialFragment extends Fragment {
         cicloRecycler.setAdapter(adapter);
 
         // 3. inicializamos el viewModel correctamente
-        viewModel = new ViewModelProvider(this).get(HistorialViewModel.class);
+        HistorialViewModel viewModel = new ViewModelProvider(this).get(HistorialViewModel.class);
 
         // 4. Observamos el liveData de forma activa
         viewModel.getHistorialCicli().observe(getViewLifecycleOwner(), cicli -> {

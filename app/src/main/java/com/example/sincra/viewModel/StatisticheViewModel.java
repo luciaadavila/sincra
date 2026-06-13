@@ -1,7 +1,6 @@
 package com.example.sincra.viewModel;
 
 import android.app.Application;
-import android.media.ApplicationMediaCapabilities;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -17,8 +16,6 @@ import com.example.sincra.utils.StatisticheCalculator;
 import java.util.List;
 
 public class StatisticheViewModel extends AndroidViewModel {
-    private final CicloRepository cicloRepository;
-    private final RegistrazioneRepository registrazioneRepository;
 
     private final MediatorLiveData<StatisticheCalculator.StatisticheResult> statistiche = new MediatorLiveData<>();
 
@@ -28,8 +25,8 @@ public class StatisticheViewModel extends AndroidViewModel {
     public StatisticheViewModel(@NonNull Application application){
         super(application);
 
-        cicloRepository = new CicloRepository(application);
-        registrazioneRepository = new RegistrazioneRepository(application);
+        CicloRepository cicloRepository = new CicloRepository(application);
+        RegistrazioneRepository registrazioneRepository = new RegistrazioneRepository(application);
 
         LiveData<List<CicloConRegistrazioni>> cicliSource = cicloRepository.getCicliConRegistrazioni();
         LiveData<List<RegistrazioneConElementi>> registrazioniSource = registrazioneRepository.getAll();

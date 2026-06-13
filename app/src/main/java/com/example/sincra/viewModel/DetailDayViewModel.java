@@ -20,7 +20,6 @@ import java.util.List;
 public class DetailDayViewModel extends AndroidViewModel {
 
     private final RegistrazioneRepository repo;
-    private final CicloRepository cicloRepo;
     // para la fecha seleccionada
     private final MutableLiveData<String> dateInput = new MutableLiveData<>();
     private final LiveData<RegistrazioneConElementi> registro;
@@ -32,7 +31,7 @@ public class DetailDayViewModel extends AndroidViewModel {
     public DetailDayViewModel(@NonNull Application application) {
         super(application);
         repo = new RegistrazioneRepository(application);
-        cicloRepo = new CicloRepository(application);
+        CicloRepository cicloRepo = new CicloRepository(application);
         // cada vez que se cambia la fecha con setDate() se relanza la consulta de forma reactiva
         registro = Transformations.switchMap(dateInput, repo::getByDate);
 

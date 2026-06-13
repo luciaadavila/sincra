@@ -7,14 +7,10 @@ import androidx.lifecycle.LiveData;
 import com.example.sincra.database.AppDatabase;
 import com.example.sincra.database.dao.ElementoCatalogoDAO;
 import com.example.sincra.model.ElementoCatalogo;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.security.auth.callback.Callback;
 
 public class ElementoCatalogoRepository {
     private final ElementoCatalogoDAO dao;
@@ -40,17 +36,13 @@ public class ElementoCatalogoRepository {
 
 
     public void deleteItem(ElementoCatalogo item) {
-        executor.execute(() -> {
-            dao.delete(item);
-        });
+        executor.execute(() -> dao.delete(item));
     }
 
     public void updateItem(ElementoCatalogo item, String nuovoNome) {
         item.setNome(nuovoNome);
 
-        executor.execute(() -> {
-            dao.update(item);
-        });
+        executor.execute(() -> dao.update(item));
     }
 
     public LiveData<List<ElementoCatalogo>> getByType(String tipo){

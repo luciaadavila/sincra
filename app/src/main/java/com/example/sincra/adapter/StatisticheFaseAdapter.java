@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
-import com.example.sincra.utils.FaseCiclo;
 import com.example.sincra.utils.StatisticheCalculator;
 
 import java.util.ArrayList;
@@ -168,10 +167,10 @@ public class StatisticheFaseAdapter extends RecyclerView.Adapter<StatisticheFase
     }
 
     public static class FaseViewHolder extends RecyclerView.ViewHolder {
-        TextView faseTitle;
-        TextView faseSubtitle;
-        LinearLayout sintomiContainer;
-        LinearLayout moodContainer;
+        final TextView faseTitle;
+        final TextView faseSubtitle;
+        final LinearLayout sintomiContainer;
+        final LinearLayout moodContainer;
 
         public FaseViewHolder(@NonNull View itemView) {
             super(itemView);

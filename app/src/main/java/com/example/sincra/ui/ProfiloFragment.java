@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.CancellationSignal;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +26,7 @@ import com.example.sincra.viewModel.ProfiloViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 
@@ -85,9 +85,9 @@ public class ProfiloFragment extends Fragment {
         saveButton.setOnClickListener(v -> {
             if (user == null) return;
 
-            String nameInput = name.getText().toString().trim();
-            String cycleInput = cycle.getText().toString().trim();
-            String periodInput = period.getText().toString().trim();
+            String nameInput = Objects.requireNonNull(name.getText()).toString().trim();
+            String cycleInput = Objects.requireNonNull(cycle.getText()).toString().trim();
+            String periodInput = Objects.requireNonNull(period.getText()).toString().trim();
 
             User userUpdated = new User(user);
             if (!nameInput.isEmpty()) userUpdated.setNome(nameInput);
@@ -96,9 +96,7 @@ public class ProfiloFragment extends Fragment {
             viewModel.updateUserProfilo(userUpdated);
         });
 
-        logoutButton.setOnClickListener(v -> {
-            signOut();
-        });
+        logoutButton.setOnClickListener(v -> signOut());
 
 
     }
@@ -115,16 +113,12 @@ public class ProfiloFragment extends Fragment {
             new CredentialManagerCallback<>() {
                 @Override
                 public void onResult(@NonNull Void result) {
-                    requireActivity().runOnUiThread(() -> {
-                        goToLogin();
-                    });
+                    requireActivity().runOnUiThread(() -> goToLogin());
                 }
 
                 @Override
                 public void onError(@NonNull ClearCredentialException e) {
-                    requireActivity().runOnUiThread(() -> {
-                        goToLogin();
-                    });
+                    requireActivity().runOnUiThread(() -> goToLogin());
                 }
             });
     }

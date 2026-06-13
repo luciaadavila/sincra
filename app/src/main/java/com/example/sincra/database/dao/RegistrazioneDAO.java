@@ -23,7 +23,7 @@ public interface RegistrazioneDAO {
     long insert(Registrazione registro);
 
     @Insert
-    long insertRel(RegistroCatalogoRel rel);
+    void insertRel(RegistroCatalogoRel rel);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertOrUpdate(Registrazione registrazione);

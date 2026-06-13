@@ -21,7 +21,7 @@ public class Ciclo {
     @PrimaryKey(autoGenerate = true)
     private int cicloId;
     @NonNull
-    private Date dataInizio;
+    private Date dataInizio=new Date();
     private Date dataFine;
     private int durataTotale;
     private int durataPeriodo;

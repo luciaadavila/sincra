@@ -5,13 +5,11 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.sincra.database.repositorio.RegistrazioneRepository;
 import com.example.sincra.model.Registrazione;
 import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 
-import java.util.Date;
 import java.util.List;
 
 public class RegistroViewModel extends AndroidViewModel {

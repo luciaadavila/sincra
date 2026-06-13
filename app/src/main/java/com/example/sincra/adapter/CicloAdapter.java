@@ -11,10 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
 import com.example.sincra.model.Ciclo;
-import com.example.sincra.model.relazioni.CicloConRegistrazioni;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -81,8 +79,9 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
     }
 
     public static class CicloViewHolder extends RecyclerView.ViewHolder {
-        TextView title, subtitle;
-        RecyclerView daysRecycler;
+        final TextView title;
+        final TextView subtitle;
+        final RecyclerView daysRecycler;
 
         public CicloViewHolder(@NonNull View itemView) {
             super(itemView);
