@@ -115,9 +115,9 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
         FaseCiclo fase = FaseCicloUtils.calcoloFase(registro.getGiornoCiclo(), 5, 28);
 
         if (fase != null) {
-            holder.phase.setText("Fase: " + fase.getLabel());
+            holder.phase.setText(holder.itemView.getContext().getString(R.string.fase_label, fase.getLabel()));
         } else {
-            holder.phase.setText("Fase: —");
+            holder.phase.setText(R.string.fase_vuota);
         }
 
         String isCycle = holder.itemView.getContext().getString(registro.isPeriodo() ? R.string.si : R.string.no);
@@ -125,9 +125,9 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
 
         int numPassi = registro.getPassi();
         if (numPassi >= 0){
-            holder.steps.setText("Passi: " + numPassi);
+            holder.steps.setText(holder.itemView.getContext().getString(R.string.passi_label, numPassi));
         } else {
-            holder.steps.setText("Passi: non disponibili");
+            holder.steps.setText(R.string.passi_non_disponibili);
         }
 
         String moodsText = moodsList.isEmpty()
@@ -138,8 +138,8 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
                 ? "—"
                 : TextUtils.join(", ", symptomsList);
 
-        holder.moods.setText("Umore: " + moodsText);
-        holder.symptoms.setText("Sintomi: " + symptomsText);
+        holder.moods.setText(holder.itemView.getContext().getString(R.string.umore_label, moodsText));
+        holder.symptoms.setText(holder.itemView.getContext().getString(R.string.sintomi_label, symptomsText));
     }
 
     private void addSpreadGesture(RegistroViewHolder holder, RegistrazioneConElementi item){

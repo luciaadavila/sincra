@@ -125,13 +125,13 @@ public class RegistroFragment extends Fragment {
                     if (localState instanceof RegistrazioneConElementi) {
                         RegistrazioneConElementi item = (RegistrazioneConElementi) localState;
                         if (item.registrazione.isPeriodo()){
-                            Toast.makeText(getContext(), "Non puoi eliminare un registro con Periodo", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.errore_elimina_registro_periodo, Toast.LENGTH_SHORT).show();
                             nascondiCestino();
                             return true;
                         }
                         eliminaRegistro(item);
                         nascondiCestino();
-                        Toast.makeText(getContext(), "Registro eliminato", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.registro_eliminato, Toast.LENGTH_SHORT).show();
                     }
                     return true;
 

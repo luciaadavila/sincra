@@ -78,7 +78,7 @@ public class ProfiloFragment extends Fragment {
         ricalcolareButton.setOnClickListener(v -> {
             v.setEnabled(false);
             viewModel.updateDurataMedia();
-            Toast.makeText(getContext(), "Ricalcolando le medie...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.ricalcolo_medie, Toast.LENGTH_SHORT).show();
             v.postDelayed(() -> v.setEnabled(true), 1000);
         });
 

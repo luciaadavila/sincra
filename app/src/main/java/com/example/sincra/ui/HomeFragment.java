@@ -1,6 +1,7 @@
 package com.example.sincra.ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -75,6 +76,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
@@ -98,9 +100,9 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         stepPrefs = requireContext().getSharedPreferences("step_counter_prefs", Context.MODE_PRIVATE);
         int passiSalvati = stepPrefs.getInt("passi_oggi", 0);
         if (stepCounterSensor == null) {
-            stepsTextView.setText("Sensore passi non disponibile");
+            stepsTextView.setText(R.string.sensore_passi_non_disponibile);
         } else {
-            stepsTextView.setText("Passi oggi: " + passiSalvati);
+            stepsTextView.setText(getString(R.string.passi_oggi) + ": " + passiSalvati);
         }
 
         dataSelezionata = new Date();
@@ -209,15 +211,15 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         homeMoodContainer.removeAllViews();
 
         if (stats == null) {
-            addTextRow(homeSintomiContainer, "Sintomi: nessun dato");
-            addTextRow(homeMoodContainer, "Stati d'animo: nessun dato");
+            addTextRow(homeSintomiContainer, getString(R.string.sintomi) + ": " + getString(R.string.nessun_dato));
+            addTextRow(homeMoodContainer, getString(R.string.umore) + ": " + getString(R.string.nessun_dato));
             return;
         }
 
-        addSectionTitle(homeSintomiContainer, "Sintomi più comuni");
+        addSectionTitle(homeSintomiContainer, getString(R.string.sintomi_pi_comuni));
         addElementiSemplici(homeSintomiContainer, stats.getTopSintomi(2));
 
-        addSectionTitle(homeMoodContainer, "Stati d'animo più comuni");
+        addSectionTitle(homeMoodContainer, getString(R.string.stati_d_animo_pi_comuni));
         addElementiSemplici(homeMoodContainer, stats.getTopMood(2));
     }
 
@@ -226,7 +228,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             List<StatisticheCalculator.ElementoStat> elementi
     ) {
         if (elementi == null || elementi.isEmpty()) {
-            addTextRow(container, "Nessun dato");
+            addTextRow(container, getString(R.string.nessun_dato));
             return;
         }
 
@@ -268,6 +270,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
         dataSelezionata = nuovaData;
         viewModel.updateSelectedDate(nuovaData);
+
         aggiornaTestoBottone(null);
     }
 
@@ -323,7 +326,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
         ultimiPassiOggi = passiOggi;
         passiLettiDalSensore = true;
-        stepsTextView.setText("Passi oggi: " + passiOggi);
+        stepsTextView.setText(getString(R.string.passi_oggi) + ": " + passiOggi);
     }
 
     @Override

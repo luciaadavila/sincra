@@ -87,7 +87,7 @@ public class AuthActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         updateUI(mAuth.getCurrentUser());
                     } else {
-                        Toast.makeText(this, "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.errore_generico, Objects.requireNonNull(task.getException()).getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -119,9 +119,9 @@ public class AuthActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(@NonNull GetCredentialException e) {
-                        String errorMsg = "Error: " + e.getMessage();
+                        String errorMsg = getString(R.string.errore_generico, e.getMessage());
                         if (e.getMessage() != null && e.getMessage().contains("No credentials available")) {
-                            errorMsg = "No hay cuentas de Google vinculadas o error de configuración (SHA-1/Package Name).";
+                            errorMsg = getString(R.string.errore_google_auth);
                         }
                         final String finalErrorMsg = errorMsg;
                         runOnUiThread(() -> Toast.makeText(AuthActivity.this, finalErrorMsg, Toast.LENGTH_LONG).show());
@@ -175,7 +175,7 @@ public class AuthActivity extends AppCompatActivity {
                 long localId;
                 if (user == null) {
                     user = new com.example.sincra.model.User(firebaseUser.getUid(), 
-                            firebaseUser.getDisplayName() != null ? firebaseUser.getDisplayName() : "Usuario", 
+                            firebaseUser.getDisplayName() != null ? firebaseUser.getDisplayName() : "Utente",
                             new java.util.Date(), 28, 5);
                     db.userDAO().insert(user);
                     localId = db.userDAO().getLocalIdByFirebaseUid(firebaseUser.getUid());

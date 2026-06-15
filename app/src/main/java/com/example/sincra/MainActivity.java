@@ -47,13 +47,13 @@ public class MainActivity extends AppCompatActivity {
                 registerForActivityResult(new ActivityResultContracts.RequestPermission(),
                         isGranted -> {
                             if (isGranted) {
-                                Toast.makeText(this, "Permesso passi concesso", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, R.string.permesso_passi_concesso, Toast.LENGTH_SHORT).show();
 
                                 // Aquí arrancas el contador en segundo plano
                                 StepCounterScheduler.startStepCounter(this);
 
                             } else {
-                                Toast.makeText(this, "Permesso passi non concesso", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, R.string.permesso_passi_negato, Toast.LENGTH_SHORT).show();
                             }
                         }
                 );
@@ -65,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
                         new ActivityResultContracts.RequestPermission(),
                         isGranted -> {
                             if (isGranted) {
-                                Toast.makeText(this, "Permesso notifiche concesso", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, R.string.permesso_notifiche_concesso, Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(this, "Permesso notifiche non concesso", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, R.string.permesso_notifiche_negato, Toast.LENGTH_SHORT).show();
                             }
                         }
                 );

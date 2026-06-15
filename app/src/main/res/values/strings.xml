@@ -44,5 +44,50 @@
     <string name="registros_5_pasos_medios_4000">Registri: 5 · Passi medi: 4000</string>
     <string name="sintomi_pi_comuni">Sintomi più comuni</string>
     <string name="stati_d_animo_pi_comuni">Stati d\'animo più comuni</string>
-    <string name="chiudere_sessione">Chiudere sessione</string>
+    <string name="chiudere_sessione">Disconnetti</string>
+    <string name="sensore_passi_non_disponibile">Sensore passi non disponibile</string>
+    <string name="accedi">Accedi</string>
+    <string name="bentornata_su_sincra">Bentornata su Sincra</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="non_hai_un_account_registrati">Non hai un account? Registrati</string>
+    <string name="oppure">oppure</string>
+    <string name="registrati">Registrati</string>
+    <string name="conferma_password">Conferma Password</string>
+    <string name="vai_al_login">Vai al login</string>
+
+    <!-- Messaggi di errore e Toast -->
+    <string name="inserisci_email">Inserisci un\'email</string>
+    <string name="email_non_valida">Email non valida</string>
+    <string name="inserisci_password">Inserisci una password</string>
+    <string name="password_corta">La password deve avere almeno 6 caratteri</string>
+    <string name="password_non_corrispondono">Le password non corrispondono</string>
+    <string name="registrazione_fallita">Registrazione fallita: %1$s</string>
+    <string name="errore_generico">Errore: %1$s</string>
+    <string name="errore_google_auth">Non ci sono account Google collegati o errore di configurazione.</string>
+    <string name="permesso_passi_concesso">Permesso passi concesso</string>
+    <string name="permesso_passi_negato">Permesso passi non concesso</string>
+    <string name="permesso_notifiche_concesso">Permesso notifiche concesso</string>
+    <string name="permesso_notifiche_negato">Permesso notifiche non concesso</string>
+    <string name="ricalcolo_medie">Ricalcolando le medie...</string>
+    <string name="errore_elimina_registro_periodo">Non puoi eliminare un registro con Periodo</string>
+    <string name="registro_eliminato">Registro eliminato</string>
+    <string name="dati_non_disponibili">Dati non disponibili</string>
+    <string name="nessun_dato">Nessun dato</string>
+    <string name="modifica">Modifica</string>
+
+    <!-- Etichette dinamiche -->
+    <string name="fase_label">Fase: %1$s</string>
+    <string name="fase_vuota">Fase: —</string>
+    <string name="passi_label">Passi: %1$d</string>
+    <string name="passi_non_disponibili">Passi: non disponibili</string>
+    <string name="umore_label">Umore: %1$s</string>
+    <string name="sintomi_label">Sintomi: %1$s</string>
+    <string name="home">Home</string>
+    <string name="registro">Registro</string>
+    <string name="storico">Storico</string>
+    <string name="prediction">Predizione</string>
+    <string name="historial">Storico\n</string>
+    <string name="stats">Statistiche\n</string>
+    <string name="info">Info\n</string>
 </resources>

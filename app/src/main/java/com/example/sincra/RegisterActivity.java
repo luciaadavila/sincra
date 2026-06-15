@@ -47,27 +47,27 @@ public class RegisterActivity extends AppCompatActivity {
         String confirmPassword = etConfirmPassword.getText() != null ? etConfirmPassword.getText().toString().trim() : "";
 
         if (email.isEmpty()) {
-            etEmail.setError("Introduce un email");
+            etEmail.setError(getString(R.string.inserisci_email));
             return;
         }
 
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError("Email no válido");
+            etEmail.setError(getString(R.string.email_non_valida));
             return;
         }
 
         if (password.isEmpty()) {
-            etPassword.setError("Introduce una contraseña");
+            etPassword.setError(getString(R.string.inserisci_password));
             return;
         }
 
         if (password.length() < 6) {
-            etPassword.setError("La contraseña debe tener al menos 6 caracteres");
+            etPassword.setError(getString(R.string.password_corta));
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            etConfirmPassword.setError("Las contraseñas no coinciden");
+            etConfirmPassword.setError(getString(R.string.password_non_corrispondono));
             return;
         }
 
@@ -81,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
                         // Registro exitoso, pasamos al flujo principal
                         updateUI(mAuth.getCurrentUser());
                     } else {
-                        Toast.makeText(this, "Registro fallido: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.registrazione_fallita, Objects.requireNonNull(task.getException()).getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -95,7 +95,7 @@ public class RegisterActivity extends AppCompatActivity {
                 long localId;
                 if (user == null) {
                     user = new com.example.sincra.model.User(firebaseUser.getUid(),
-                            firebaseUser.getDisplayName() != null ? firebaseUser.getDisplayName() : "Usuario",
+                            firebaseUser.getDisplayName() != null ? firebaseUser.getDisplayName() : "Utente",
                             new java.util.Date(), 28, 5);
                     db.userDAO().insert(user);
                     localId = db.userDAO().getLocalIdByFirebaseUid(firebaseUser.getUid());

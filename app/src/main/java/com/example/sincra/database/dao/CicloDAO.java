@@ -22,7 +22,6 @@ public interface CicloDAO {
     @Update
     void update(Ciclo ciclo);
 
-    // Añadido para poder eliminar ciclos redundantes/huérfanos
     @Delete
     void delete(Ciclo ciclo);
 
@@ -43,11 +42,9 @@ public interface CicloDAO {
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC")
     LiveData<List<Ciclo>> getHistorialCicli(long userId);
 
-    // una sin liveData para consultas asincronas
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC")
     List<Ciclo> getHistorialCicliSync(long userId);
 
-    // conseguimos el ciclo actual
     @Transaction
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC LIMIT 1")
     LiveData<CicloConRegistrazioni> getCicloActualConRegistrazioni(long userId);
@@ -56,15 +53,12 @@ public interface CicloDAO {
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC LIMIT 1")
     Ciclo getCurrentCiclo(long userId);
 
-    // Añadido para encontrar el ciclo previo en el historial y absorber días al unificar
     @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio < :fechaInicio ORDER BY dataInizio DESC LIMIT 1")
     Ciclo getCicloAnteriorSync(Date fechaInicio, long userId);
 
-    // NUEVO: Encuentra el ciclo que corresponde a una fecha (el que empezó en o antes de esa fecha)
     @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio <= :fecha ORDER BY dataInizio DESC LIMIT 1")
     Ciclo getCicloPerDataSync(Date fecha, long userId);
 
-    // NUEVO: Añadido para encontrar el ciclo posterior cuando insertamos un periodo en el pasado
     @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio > :fecha ORDER BY dataInizio ASC LIMIT 1")
     Ciclo getCicloPosteriorSync(Date fecha, long userId);
 
