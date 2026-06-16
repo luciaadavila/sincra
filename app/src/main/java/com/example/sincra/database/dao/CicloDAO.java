@@ -26,9 +26,6 @@ public interface CicloDAO {
     void delete(Ciclo ciclo);
 
     @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
-    LiveData<Ciclo> getById(Integer cicloId);
-
-    @Query("SELECT * FROM ciclo WHERE cicloId = :cicloId LIMIT 1")
     Ciclo getByIdSync(Integer cicloId);
 
     @Transaction
@@ -42,16 +39,12 @@ public interface CicloDAO {
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC")
     LiveData<List<Ciclo>> getHistorialCicli(long userId);
 
-    @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC")
-    List<Ciclo> getHistorialCicliSync(long userId);
-
     @Transaction
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC LIMIT 1")
     LiveData<CicloConRegistrazioni> getCicloActualConRegistrazioni(long userId);
 
-    // ciclo actual
     @Query("SELECT * FROM ciclo WHERE userId = :userId ORDER BY dataInizio DESC LIMIT 1")
-    Ciclo getCurrentCiclo(long userId);
+    Ciclo getCurrentCicloSync(long userId);
 
     @Query("SELECT * FROM ciclo WHERE userId = :userId AND dataInizio < :fechaInicio ORDER BY dataInizio DESC LIMIT 1")
     Ciclo getCicloAnteriorSync(Date fechaInicio, long userId);

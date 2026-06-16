@@ -48,7 +48,7 @@ public interface RegistrazioneDAO {
     @Query("SELECT r.* FROM registrazione r " +
             "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +
             "WHERE r.data = :date AND c.userId = :userId LIMIT 1")
-    Registrazione getRegistroByDate(Date date, long userId);
+    Registrazione getRegistroByDateSync(Date date, long userId);
 
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +
@@ -75,7 +75,6 @@ public interface RegistrazioneDAO {
         }
     }
 
-    // Adaptado con r.data para mantener coherencia con tus otras queries de Room
     @Transaction
     @Query("SELECT r.* FROM registrazione r " +
             "INNER JOIN ciclo c ON r.cicloId = c.cicloId " +

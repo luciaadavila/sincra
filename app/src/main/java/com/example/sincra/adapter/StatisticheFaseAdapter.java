@@ -40,23 +40,26 @@ public class StatisticheFaseAdapter extends RecyclerView.Adapter<StatisticheFase
     public void onBindViewHolder(@NonNull FaseViewHolder holder, int position) {
         StatisticheCalculator.StatisticheFase faseStats = items.get(position);
 
-        // Eliminamos el GONE preventivo para asegurar que el RecyclerView siempre pinte la celda
+        holder.sintomiContainer.removeAllViews();
+        holder.moodContainer.removeAllViews();
+
         holder.itemView.setVisibility(View.VISIBLE);
         
         if (faseStats == null || faseStats.getFase() == null) {
-            holder.faseTitle.setText("Dati non disponibili");
+            holder.faseTitle.setText(R.string.dati_non_disponibili);
+            holder.faseSubtitle.setText("");
             return;
         }
 
-        holder.faseTitle.setText(faseStats.getFase().getLabel());
+        holder.faseTitle.setText(faseStats.getFase().getResId());
 
         holder.faseSubtitle.setText(
-                "Registrazioni: " + faseStats.getNumeroRegistrazioni()
-                        + " · Passi medi: " + faseStats.getMediaPassi()
+                holder.itemView.getContext().getString(
+                        R.string.stats_fase_subtitle,
+                        faseStats.getNumeroRegistrazioni(),
+                        faseStats.getMediaPassi()
+                )
         );
-
-        holder.sintomiContainer.removeAllViews();
-        holder.moodContainer.removeAllViews();
 
         addTopElementos(
                 holder.sintomiContainer,
@@ -75,7 +78,7 @@ public class StatisticheFaseAdapter extends RecyclerView.Adapter<StatisticheFase
     ) {
         if (elementos == null || elementos.isEmpty()) {
             TextView empty = new TextView(container.getContext());
-            empty.setText("Nessun dato");
+            empty.setText(R.string.nessun_dato);
             empty.setTextSize(13);
             empty.setTextColor(0xFF999999);
             container.addView(empty);

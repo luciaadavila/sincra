@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sincra.R;
 import com.example.sincra.model.PredictSettimana;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.PredictionViewHolder> {
@@ -20,19 +21,6 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
 
     public PredictionAdapter(List<PredictSettimana> items) {
         this.items = items;
-    }
-
-
-    public static class PredictionViewHolder extends RecyclerView.ViewHolder {
-        final TextView rangeText;
-        final GridLayout daysContainer;
-
-        public PredictionViewHolder(View itemView) {
-            super(itemView);
-
-            rangeText = itemView.findViewById(R.id.rangeText);
-            daysContainer = itemView.findViewById(R.id.daysContainer);
-        }
     }
 
     @NonNull
@@ -59,7 +47,8 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
 
             TextView dayCircle = (TextView) LayoutInflater
                     .from(holder.daysContainer.getContext())
-                    .inflate(R.layout.item_giorno_circle_predict, holder.daysContainer, false);            dayCircle.setText(String.valueOf(number));
+                    .inflate(R.layout.item_giorno_circle_predict, holder.daysContainer, false);
+
             dayCircle.setText(String.valueOf(number));
 
             if (isPeriod) {
@@ -75,13 +64,25 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
     }
 
     public void updateList(List<PredictSettimana> newItems){
-        this.items = newItems;
+        this.items = newItems != null ? newItems : new ArrayList<>();
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public static class PredictionViewHolder extends RecyclerView.ViewHolder {
+        final TextView rangeText;
+        final GridLayout daysContainer;
+
+        public PredictionViewHolder(View itemView) {
+            super(itemView);
+
+            rangeText = itemView.findViewById(R.id.rangeText);
+            daysContainer = itemView.findViewById(R.id.daysContainer);
+        }
     }
 
 }

@@ -2,6 +2,8 @@ package com.example.sincra.ui;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,41 +31,46 @@ public class InfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_info, container, false);
+        return inflater.inflate(R.layout.fragment_info, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
+
         RecyclerView recycler = view.findViewById(R.id.infoRecycler);
 
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         List<InfoOption> options = new ArrayList<>();
-        options.add(new InfoOption("Profilo"));
-        options.add(new InfoOption("Stato d'animo"));
-        options.add(new InfoOption("Sintomi"));
-        options.add(new InfoOption("Configurazione"));
+        options.add(new InfoOption(getString(R.string.profilo)));
+        options.add(new InfoOption(getString(R.string.stati_d_animo)));
+        options.add(new InfoOption(getString(R.string.sintomi)));
+        options.add(new InfoOption(getString(R.string.configurazione)));
 
         InfoAdapter adapter = new InfoAdapter(options, (option, position) -> {
             Fragment destino = null;
 
             switch (position) {
-                case 0: // Perfil
+                case 0: // Profilo
                     destino = new ProfiloFragment();
                     break;
                 case 1: // Stato d'animo
                     destino = new CatalogoEditableFragment();
                     Bundle argsMood = new Bundle();
-                    argsMood.putString("tipo", "mood"); // Indicamos que es para estados de ánimo
+                    argsMood.putString("tipo", "mood");
                     destino.setArguments(argsMood);
                     break;
                 case 2: // Sintomi
                     destino = new CatalogoEditableFragment();
                     Bundle argsSintomi = new Bundle();
-                    argsSintomi.putString("tipo", "symptom"); // O el string exacto que use tu base de datos
+                    argsSintomi.putString("tipo", "symptom");
                     destino.setArguments(argsSintomi);
                     break;
-                case 3: // Configuración
+                case 3: // Configurazione
                     destino = new ConfigurationFragment();
                     break;
             }
 
-            // Si definiste un fragmento de destino, navegamos de forma segura
             if (destino != null) {
                 getParentFragmentManager().beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -73,7 +80,5 @@ public class InfoFragment extends Fragment {
             }
         });
         recycler.setAdapter(adapter);
-
-        return view;
     }
 }

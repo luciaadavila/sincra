@@ -12,9 +12,6 @@ import java.util.Locale;
 // broadcastReceiver => riceve l'evento che avvia l'allarma
 public class DailyReminderReceiver extends BroadcastReceiver {
 
-    private static final String SETTINGS_PREFS_NAME = "settings_prefs";
-    private static final String KEY_NOTIFICHE_ABILITATE = "notifications_enabled";
-
     // metodo che viene eseguito quando scatta l'allarme
     @Override
     public void onReceive(Context context, Intent intent) {

@@ -24,11 +24,11 @@ public interface UserDAO {
     LiveData<User> getById(long userId);
 
     @Query("SELECT * FROM users WHERE userId = :userId")
-    User getByIdAsync(long userId);
+    User getByIdSync(long userId);
 
     @Query("SELECT * FROM users WHERE firebaseUid = :uid LIMIT 1")
-    User getByFirebaseUid(String uid);
+    User getByFirebaseUidSync(String uid);
 
     @Query("SELECT userId FROM users WHERE firebaseUid = :uid LIMIT 1")
-    long getLocalIdByFirebaseUid(String uid);
+    long getLocalIdByFirebaseUidSync(String uid);
 }

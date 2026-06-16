@@ -8,10 +8,10 @@ import android.content.Intent;
 import java.util.Calendar;
 
 public class DailyReminderScheduler {
-    // questo identificarò il pending intent della allarma
+    // questo identificherà il pending intent dell'allarme
     private static final int REQUEST_CODE_PROMEMORIA = 400;
 
-    // metodo programma la allarma diaria (li chiamamo da mainActivity)
+    // metodo che programma l'allarme giornaliero (lo chiamiamo da MainActivity)
     public static void startDailyReminder(Context context) {
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -26,7 +26,7 @@ public class DailyReminderScheduler {
         calendario.set(Calendar.SECOND, 0);
         calendario.set(Calendar.MILLISECOND, 0);
 
-        // evitiamo una allarma passata
+        // evitiamo un allarme passato
         if (calendario.getTimeInMillis() <= System.currentTimeMillis()) {
             calendario.add(Calendar.DAY_OF_YEAR, 1);
         }
@@ -47,11 +47,11 @@ public class DailyReminderScheduler {
         alarmManager.cancel(creaPendingIntent(context));
     }
 
-    // creiamo il pending intent della allarma
+    // creiamo il pending intent dell'allarme
     private static PendingIntent creaPendingIntent(Context context) {
 
         Intent intent = new Intent(context, DailyReminderReceiver.class);
-        // il pending intent sta pensato per lanzare un service (broadcast)
+        // il pending intent è pensato per lanciare un broadcast
         return PendingIntent.getBroadcast(
                 context,
                 REQUEST_CODE_PROMEMORIA,

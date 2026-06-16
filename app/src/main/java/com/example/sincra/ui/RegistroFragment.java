@@ -3,7 +3,6 @@ package com.example.sincra.ui;
 import static com.example.sincra.database.repositorio.CicloRepository.truncarFecha;
 
 import android.content.ClipData;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,18 +17,23 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.RegistroAdapter;
+import com.example.sincra.model.Ciclo;
+import com.example.sincra.model.relazioni.CicloConRegistrazioni;
 import com.example.sincra.model.relazioni.RegistrazioneConElementi;
 import com.example.sincra.viewModel.RegistroViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class RegistroFragment extends Fragment {
 
@@ -37,6 +41,7 @@ public class RegistroFragment extends Fragment {
     private RegistroViewModel viewModel;
     private RecyclerView registroRecycler;
     private View trashDropZone;
+    private TextView emptyRegistroText;
 
     private boolean primoScroll = false;
 
@@ -57,14 +62,17 @@ public class RegistroFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. configuriamo viste
+        emptyRegistroText = view.findViewById(R.id.emptyRegistroText);
+
+        // 1. configuriamo le viste
         registroRecycler = view.findViewById(R.id.registroRecycler);
         registroRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         trashDropZone = view.findViewById(R.id.trashDropZone);
+        nascondiCestino();
         configuraCestino();
 
-        // 2. configuriamo adapter con il listener di navigazione
+        // 2. configuriamo l'adapter con il listener di navigazione
         adapter = new RegistroAdapter(new ArrayList<>(), item -> {
             DetailDayFragment detailFragment = new DetailDayFragment();
             Bundle bundle = new Bundle();
@@ -84,18 +92,35 @@ public class RegistroFragment extends Fragment {
         );
         registroRecycler.setAdapter(adapter);
 
-        // 3. inizializziamo viewModel
+        // 3. inizializziamo il viewModel
         viewModel = new ViewModelProvider(this).get(RegistroViewModel.class);
         viewModel.getRegistri().observe(getViewLifecycleOwner(), data -> {
             if (data == null) return;
             adapter.setRegistrazioni(data);
 
+            boolean listaVuota = data.isEmpty();
+            emptyRegistroText.setVisibility(listaVuota ? View.VISIBLE : View.GONE);
+            registroRecycler.setVisibility(listaVuota ? View.GONE : View.VISIBLE);
+
             if (!primoScroll && !data.isEmpty()) {
-                int posizioneIniziale = trovaPosizionePiuVicinaAggi(data);
+                int posizioneIniziale = trovaPosizionePiuVicinaOggi(data);
                 registroRecycler.scrollToPosition(posizioneIniziale);
                 primoScroll = true;
             }
+        });
 
+        viewModel.getCicliConRegistrazioni().observe(getViewLifecycleOwner(), cicli -> {
+            if (cicli == null) return;
+            Map<Integer, Ciclo> cicliPerId = new HashMap<>();
+
+            for (CicloConRegistrazioni cicloConRegistrazioni : cicli){
+                Ciclo ciclo = cicloConRegistrazioni.getCiclo();
+                if (ciclo != null){
+                    cicliPerId.put(ciclo.getCicloId(), ciclo);
+                }
+            }
+
+            adapter.setCicliPerId(cicliPerId);
         });
     }
 
@@ -124,15 +149,10 @@ public class RegistroFragment extends Fragment {
 
                     if (localState instanceof RegistrazioneConElementi) {
                         RegistrazioneConElementi item = (RegistrazioneConElementi) localState;
-                        if (item.registrazione.isPeriodo()){
-                            Toast.makeText(getContext(), R.string.errore_elimina_registro_periodo, Toast.LENGTH_SHORT).show();
-                            nascondiCestino();
-                            return true;
-                        }
                         eliminaRegistro(item);
-                        nascondiCestino();
-                        Toast.makeText(getContext(), R.string.registro_eliminato, Toast.LENGTH_SHORT).show();
                     }
+
+                    nascondiCestino();
                     return true;
 
                 case DragEvent.ACTION_DRAG_ENDED:
@@ -153,10 +173,15 @@ public class RegistroFragment extends Fragment {
     }
 
     private void eliminaRegistro(RegistrazioneConElementi item) {
-        viewModel.deleteRegistrazione(item.registrazione);
+        boolean eliminato = viewModel.deleteRegistrazione(item.registrazione);
+        if (eliminato){
+            Toast.makeText(requireContext(), R.string.registro_eliminato_correttamente, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(requireContext(), R.string.impossibile_eliminare_registro, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private int trovaPosizionePiuVicinaAggi(List<RegistrazioneConElementi> items) {
+    private int trovaPosizionePiuVicinaOggi(List<RegistrazioneConElementi> items) {
         Date oggi = truncarFecha(new Date());
 
         int migliorPosizione = 0;

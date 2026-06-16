@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
                         isGranted -> {
                             if (isGranted) {
                                 Toast.makeText(this, R.string.permesso_passi_concesso, Toast.LENGTH_SHORT).show();
-
-                                // Aquí arrancas el contador en segundo plano
                                 StepCounterScheduler.startStepCounter(this);
 
                             } else {
@@ -116,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
-            // Ya tiene permiso, pero NO mostramos Toast
             StepCounterScheduler.startStepCounter(this);
 
         } else {

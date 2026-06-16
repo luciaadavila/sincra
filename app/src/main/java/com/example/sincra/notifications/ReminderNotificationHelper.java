@@ -18,10 +18,11 @@ import androidx.core.content.ContextCompat;
 import com.example.sincra.MainActivity;
 import com.example.sincra.R;
 
-// crea el canal de notificaciones
-// comprueba si se pueden mostrar notificaciones
-// construye la notificación
-// muestra la notificación
+// crea il canale delle notifiche
+// controlla se le notifiche possono essere mostrate
+// costruisce la notifica
+// mostra la notifica
+
 public class ReminderNotificationHelper {
     public static final String CHANNEL_ID = "sincra_daily_reminder_channel";
     private static final String CHANNEL_NAME = "Promemoria Sincra";
@@ -30,7 +31,7 @@ public class ReminderNotificationHelper {
     private static final String SETTINGS_PREFS_NAME = "settings_prefs";
     private static final String KEY_NOTIFICHE_ABILITATE = "notifications_enabled";
 
-    // para diferenciar las notificaciones
+    // per differenziare le notifiche
     private static final int NOTIFICATION_ID_DAILY = 300;
     private static final int NOTIFICATION_ID_FLEXIBLE = 301;
 
@@ -54,7 +55,7 @@ public class ReminderNotificationHelper {
 
     @SuppressLint("MissingPermission")
     public static void showDailyReminder(Context context) {
-        // si no tiene permiso salimos
+        // se non ha il permesso usciamo
         if (!notificheDisponibili(context)) {
             return;
         }
@@ -67,13 +68,13 @@ public class ReminderNotificationHelper {
                 .setContentText(contentText)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText));
 
-        // creamos la notificación
+        // creiamo la notifica
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_DAILY, builder.build());
     }
 
     @SuppressLint("MissingPermission")
     public static void showFlexibleReminder(Context context) {
-        // si no tiene permiso salimos
+        // se non ha il permesso usciamo
         if (!notificheDisponibili(context)) {
             return;
         }
@@ -86,11 +87,11 @@ public class ReminderNotificationHelper {
                 .setContentText(contentText)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText));
 
-        // creamos la notificación
+        // creiamo la notifica
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_FLEXIBLE, builder.build());
     }
 
-    // metodo comun para crear la base de la notificación
+    // metodo comune per creare la base della notifica
     private static NotificationCompat.Builder creaBuilderBase(Context context) {
 
         Intent intent = new Intent(context, MainActivity.class);

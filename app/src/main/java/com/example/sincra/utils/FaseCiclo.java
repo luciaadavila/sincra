@@ -1,18 +1,20 @@
 package com.example.sincra.utils;
 
+import com.example.sincra.R;
+
 public enum FaseCiclo {
-    MESTRUALE("Fase mestruale"),
-    FOLLICOLARE("Fase follicolare"),
-    OVULATORIA("Fase ovulatoria"),
-    LUTEALE("Fase luteale");
+    MESTRUALE(R.string.fase_mestruale),
+    FOLLICOLARE(R.string.fase_follicolare),
+    OVULATORIA(R.string.fase_ovulatoria),
+    LUTEALE(R.string.fase_luteale);
 
-    private final String label;
+    private final int resId;
 
-    FaseCiclo(String label){
-        this.label = label;
+    FaseCiclo(int resId){
+        this.resId = resId;
     }
 
-    public String getLabel(){
-        return label;
+    public int getResId(){
+        return resId;
     }
 }

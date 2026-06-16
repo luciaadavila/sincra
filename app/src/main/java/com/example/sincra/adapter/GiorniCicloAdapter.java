@@ -22,14 +22,7 @@ public class GiorniCicloAdapter extends RecyclerView.Adapter<GiorniCicloAdapter.
         this.ciclo = ciclo;
     }
 
-    public static class GiorniCicloViewHolder extends RecyclerView.ViewHolder {
-        final TextView dayCircle;
 
-        public GiorniCicloViewHolder(@NonNull View itemView) {
-            super(itemView);
-            dayCircle = itemView.findViewById(R.id.dayCircle);
-        }
-    }
 
     @NonNull
     @Override
@@ -65,5 +58,14 @@ public class GiorniCicloAdapter extends RecyclerView.Adapter<GiorniCicloAdapter.
     public int getItemCount() {
         if (ciclo == null) return 0;
         return ciclo.getDurataTotale();
+    }
+
+    public static class GiorniCicloViewHolder extends RecyclerView.ViewHolder {
+        final TextView dayCircle;
+
+        public GiorniCicloViewHolder(@NonNull View itemView) {
+            super(itemView);
+            dayCircle = itemView.findViewById(R.id.dayCircle);
+        }
     }
 }

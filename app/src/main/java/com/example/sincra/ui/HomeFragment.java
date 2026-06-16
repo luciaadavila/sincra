@@ -54,7 +54,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     private LinearLayout homeSintomiContainer;
     private LinearLayout homeMoodContainer;
 
-    // contador de pasos
+    // contatore passi
     private TextView stepsTextView;
     private SensorManager sensorManager;
     private Sensor stepCounterSensor;
@@ -62,6 +62,8 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     private SharedPreferences stepPrefs;
     private int ultimiPassiOggi = 0;
     private boolean passiLettiDalSensore = false;
+
+    private boolean scrollInizialeCalendario = false;
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
@@ -85,6 +87,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         dayRecycler = view.findViewById(R.id.calendarRecyclerView);
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        viewModel.updateSelectedDate(new Date());
 
         homeSintomiContainer = view.findViewById(R.id.homeSintomiContainer);
         homeMoodContainer = view.findViewById(R.id.homeMoodContainer);
@@ -105,15 +108,17 @@ public class HomeFragment extends Fragment implements SensorEventListener {
             stepsTextView.setText(getString(R.string.passi_oggi) + ": " + passiSalvati);
         }
 
-        dataSelezionata = new Date();
-        viewModel.updateSelectedDate(dataSelezionata);
+        viewModel.getDataSelezionata().observe(getViewLifecycleOwner(), data -> {
+            if (data == null) return;
+            dataSelezionata = data;
+            aggiornaTestoBottone(null);
+            sincronizzaCalendarioConData(data);
+        });
 
         adapter = new CalendarioHorizontalAdapter(new ArrayList<>(), new CalendarioHorizontalAdapter.OnDateClickListener() {
             @Override
             public void onDateClick(Date dataSelez) {
-                dataSelezionata = dataSelez;
                 viewModel.updateSelectedDate(dataSelez);
-                aggiornaTestoBottone(null);
             }
 
             @Override
@@ -126,28 +131,28 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         dayRecycler.setLayoutManager(layoutManager);
         dayRecycler.setAdapter(adapter);
 
+
+
         viewModel.getCicloActual().observe(getViewLifecycleOwner(), cicloConReg -> {
             if (cicloConReg != null) {
                 viewModel.calcoloPredict(cicloConReg.getCiclo().getDataInizio());
-                viewModel.updateSelectedDate(dataSelezionata);
+                if (dataSelezionata != null){
+                    viewModel.updateSelectedDate(dataSelezionata);
+                }
             }
         });
 
         viewModel.getListaFechas().observe(getViewLifecycleOwner(), fechas -> {
             if (fechas != null) {
                 adapter.setListaFechas(fechas);
-                int todayIndex = -1;
-                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
-                String todayStr = fmt.format(new Date());
-                for (int i = 0; i < fechas.size(); i++) {
-                    if (fmt.format(fechas.get(i)).equals(todayStr)) {
-                        todayIndex = i;
-                        break;
-                    }
-                }
-                if (todayIndex != -1) {
-                    adapter.setPosicionSeleccionada(todayIndex);
-                    dayRecycler.scrollToPosition(todayIndex);
+
+                Date dataIniziale = dataSelezionata != null ? dataSelezionata : new Date();
+
+                if (!scrollInizialeCalendario) {
+                    portaCalendarioAllaData(dataIniziale);
+                    scrollInizialeCalendario = true;
+                } else {
+                    sincronizzaCalendarioConData(dataSelezionata);
                 }
             }
         });
@@ -192,6 +197,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
                         }
                 );
         swipeDueDitaHelper.configuraSwipeDueDita(view);
+
     }
 
 
@@ -202,9 +208,37 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         if (faseSelezionataDalViewModel == null){
             dayButton.setText(dataSelezionataFormattata);
         } else {
-            dayButton.setText(dataSelezionataFormattata + "\n" + faseSelezionataDalViewModel.getLabel());
+            dayButton.setText(dataSelezionataFormattata + "\n" + getString(faseSelezionataDalViewModel.getResId()));
         }
     }
+
+    private void sincronizzaCalendarioConData(Date data){
+        if (adapter == null || data == null) return;
+
+        int posizione = adapter.trovaPosizioneData(data);
+
+        if (posizione != RecyclerView.NO_POSITION) {
+            adapter.setPosizioneSelezionata(posizione);
+        }
+    }
+
+    private void portaCalendarioAllaData(Date data) {
+        if (adapter == null || data == null) return;
+
+        int posizione = adapter.trovaPosizioneData(data);
+        if (posizione == RecyclerView.NO_POSITION) return;
+
+        adapter.setPosizioneSelezionata(posizione);
+        RecyclerView.LayoutManager manager = dayRecycler.getLayoutManager();
+
+        if (manager instanceof LinearLayoutManager) {
+            dayRecycler.post(() -> {
+                ((LinearLayoutManager) manager)
+                        .scrollToPositionWithOffset(posizione, 0);
+            });
+        }
+    }
+
 
     private void mostraStatisticheFase(StatisticheCalculator.StatisticheFase stats) {
         homeSintomiContainer.removeAllViews();
@@ -267,16 +301,15 @@ public class HomeFragment extends Fragment implements SensorEventListener {
         calendario.add(java.util.Calendar.DAY_OF_MONTH, giorni);
 
         Date nuovaData = calendario.getTime();
+        int nuovaPosizione = adapter.trovaPosizioneData(nuovaData);
 
-        dataSelezionata = nuovaData;
+        if (nuovaPosizione == RecyclerView.NO_POSITION) return;
         viewModel.updateSelectedDate(nuovaData);
-
-        aggiornaTestoBottone(null);
     }
 
-    /////////// PARA EL CONTADOR DE PASOS
+    /////////// PER IL CONTATORE PASSI
 
-    // empezamos a escuchar el sensor
+    // iniziamo ad ascoltare il sensore
     private void registerStepCounter(){
         if (sensorManager != null && stepCounterSensor != null){
             sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -284,8 +317,9 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     }
 
     @Override
-    public void onResume(){ //cuanto la pantalla está activa, se comprueba el permiso
+    public void onResume(){ // quando lo schermo è attivo, viene controllato il permesso
         super.onResume();
+        passiLettiDalSensore = false;
         if (hasActivityRecognitionPermission()) registerStepCounter();
     }
 
@@ -301,7 +335,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     }
 
     @Override
-    public void onPause(){ // dejamos de escuchar al salir de la pantalla -> ahorrar batería
+    public void onPause(){ // smettiamo di ascoltare all'uscita dallo schermo -> risparmio batteria
         super.onPause();
         if (sensorManager != null) sensorManager.unregisterListener(this);
         if (passiLettiDalSensore) viewModel.savePassiOggi(ultimiPassiOggi);
@@ -311,9 +345,9 @@ public class HomeFragment extends Fragment implements SensorEventListener {
     public void onSensorChanged(@NonNull SensorEvent event) {
         if (event.sensor.getType() != Sensor.TYPE_STEP_COUNTER) return;
 
-        int passiSensore = Math.round(event.values[0]); // valor que manda el sensor
-        String oggi = dateFormat.format(new Date()); // obtiene el día actual
-        // leemos lo que teníamos guardado en las share preferences
+        int passiSensore = Math.round(event.values[0]); // valore inviato dal sensore
+        String oggi = dateFormat.format(new Date()); // ottiene il giorno corrente
+        // leggiamo ciò che avevamo salvato nelle shared preferences
         String diaGuardado = stepPrefs.getString("giorno", null);
         int passiBase = stepPrefs.getInt("passi_base", -1);
 
@@ -326,6 +360,7 @@ public class HomeFragment extends Fragment implements SensorEventListener {
 
         ultimiPassiOggi = passiOggi;
         passiLettiDalSensore = true;
+        stepPrefs.edit().putInt("passi_oggi", passiOggi).apply();
         stepsTextView.setText(getString(R.string.passi_oggi) + ": " + passiOggi);
     }
 

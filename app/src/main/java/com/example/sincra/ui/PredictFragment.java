@@ -34,6 +34,7 @@ public class PredictFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_predict, container, false);
     }
 
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
@@ -50,10 +51,12 @@ public class PredictFragment extends Fragment {
         viewModel.getProxCicli().observe(getViewLifecycleOwner(), data -> {
             if (data != null) {
                 adapter.updateList(data);
+            } else {
+                adapter.updateList(new ArrayList<>());
             }
         });
 
-        // petición para el cálculo asíncrono
+        // richiesta per il calcolo asincrono
         viewModel.loadPredictions();
     }
 }

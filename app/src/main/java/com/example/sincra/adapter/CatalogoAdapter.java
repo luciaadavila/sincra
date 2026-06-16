@@ -38,22 +38,16 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
 
         if (elemento.isSelected()) {
             holder.text.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.red));
-            // Opcional: puedes cambiar el fondo del contenedor entero si quieres que parezca un botón activo
-            // holder.itemView.setBackgroundResource(R.drawable.bg_item_seleccionado);
         } else {
-            // Ejemplo: un gris neutro
             holder.text.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.gray));
-            // holder.itemView.setBackgroundResource(R.drawable.bg_item_deseleccionado);
         }
         holder.itemView.setOnClickListener(v -> {
             int actualPosition = holder.getBindingAdapterPosition();
             if (actualPosition != RecyclerView.NO_POSITION) {
-                ElementoCatalogo itemClickeado = listaCatalogo.get(actualPosition);
+                ElementoCatalogo itemClickato = listaCatalogo.get(actualPosition);
 
-                // Invertimos el booleano en memoria
-                itemClickeado.setSelected(!itemClickeado.isSelected());
+                itemClickato.setSelected(!itemClickato.isSelected());
 
-                // Refrescamos ÚNICAMENTE esta celda. Adiós al lag de notifyDataSetChanged()
                 notifyItemChanged(actualPosition);
             }
         });

@@ -50,10 +50,10 @@ public class HomeViewModel extends AndroidViewModel {
         repo = new CicloRepository(application);
         repoReg = new RegistrazioneRepository(application);
 
-        // Inicializamos los LiveData básicos
+        // Inizializziamo i LiveData di base
         this.cicloActual = repo.getCicloActual();
 
-        // Transformación de los días de regla para compararlos fácilmente en el Adapter
+        // Trasformazione dei giorni di ciclo per confrontarli facilmente nell'Adapter
         this.diasDeRegla = Transformations.map(repo.getFechasConPeriodo(), lista -> {
             List<String> diasStr = new ArrayList<>();
             if (lista != null) {
@@ -103,11 +103,22 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void updateSelectedDate(Date data) {
+        if (data == null) return;
+
+        Date dataNormalizzata = CicloRepository.truncarFecha(data);
+        dataSelezionata.setValue(dataNormalizzata);
+
         repo.getExecutor().execute(() -> {
             Ciclo ciclo = repo.getCicloPerData(data);
             FaseCiclo fase = getFaseCiclo(data, ciclo);
+
+            if (fase == null) return;
             faseSeleccionada.postValue(fase);
         });
+    }
+
+    public LiveData<Date> getDataSelezionata(){
+        return dataSelezionata;
     }
 
     public LiveData<FaseCiclo> getFaseSeleccionada() {

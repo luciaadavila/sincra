@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
+import com.example.sincra.model.Ciclo;
 import com.example.sincra.model.ElementoCatalogo;
 import com.example.sincra.model.Registrazione;
 import com.example.sincra.model.relazioni.RegistrazioneConElementi;
@@ -20,14 +21,17 @@ import com.example.sincra.utils.FaseCicloUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.RegistroViewHolder> {
     private List<RegistrazioneConElementi> items;
     private final OnItemClickListener listener;
     private final OnItemLongClickListener longListener;
-    private final SimpleDateFormat titleDateFormat = new SimpleDateFormat("EEEE dd MMM yyy", Locale.ITALIAN);
+    private final SimpleDateFormat titleDateFormat = new SimpleDateFormat("EEEE dd MMM yyyy", Locale.ITALIAN);
+    private Map<Integer, Ciclo> cicliPerId = new HashMap<>();
 
 
     public interface OnItemClickListener {
@@ -42,27 +46,7 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
         this.items = items;
         this.listener = listener;
         this.longListener = longListener;
-    }
 
-    public static class RegistroViewHolder extends RecyclerView.ViewHolder {
-        final TextView dayTitle;
-        final TextView cycleDay;
-        final TextView isCycleDay;
-        final TextView moods;
-        final TextView symptoms;
-        final TextView phase;
-        final TextView steps;
-
-        public RegistroViewHolder(@NonNull View itemView) {
-            super(itemView);
-            dayTitle = itemView.findViewById(R.id.dayTitle);
-            cycleDay = itemView.findViewById(R.id.cycleDay);
-            steps = itemView.findViewById(R.id.steps);
-            isCycleDay = itemView.findViewById(R.id.isCycleDay);
-            moods = itemView.findViewById(R.id.moods);
-            symptoms = itemView.findViewById(R.id.symptoms);
-            phase = itemView.findViewById(R.id.phase);
-        }
     }
 
     @Override
@@ -88,11 +72,12 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
             }
         }
 
+        /*
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(item);
             }
-        });
+        });*/
 
         holder.itemView.setOnLongClickListener(v -> {
             if (longListener != null){
@@ -105,17 +90,15 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
 
         holder.dayTitle.setText(titleDateFormat.format(registro.getDate()));
 
-        holder.cycleDay.setText(
-                holder.itemView.getContext().getString(
+        holder.cycleDay.setText(holder.itemView.getContext().getString(
                         R.string.ciclo_giorno,
                         registro.getGiornoCiclo()
-                )
-        );
+                ));
 
-        FaseCiclo fase = FaseCicloUtils.calcoloFase(registro.getGiornoCiclo(), 5, 28);
+        FaseCiclo fase = configuraFaseCiclo(registro);
 
         if (fase != null) {
-            holder.phase.setText(holder.itemView.getContext().getString(R.string.fase_label, fase.getLabel()));
+            holder.phase.setText(holder.itemView.getContext().getString(R.string.fase_label, holder.itemView.getContext().getString(fase.getResId())));
         } else {
             holder.phase.setText(R.string.fase_vuota);
         }
@@ -140,6 +123,23 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
 
         holder.moods.setText(holder.itemView.getContext().getString(R.string.umore_label, moodsText));
         holder.symptoms.setText(holder.itemView.getContext().getString(R.string.sintomi_label, symptomsText));
+    }
+
+    private FaseCiclo configuraFaseCiclo(Registrazione registro){
+        Ciclo ciclo = cicliPerId.get(registro.getCicloId());
+        int durataPeriodo = 5;
+        int durataTotale = 28;
+
+        if (ciclo != null) {
+            if (ciclo.getDurataPeriodo() > 0){
+                durataPeriodo = ciclo.getDurataPeriodo();
+            }
+            if (ciclo.getDurataTotale() > 0){
+                durataTotale = ciclo.getDurataTotale();
+            }
+        }
+
+        return FaseCicloUtils.calcoloFase(registro.getGiornoCiclo(), durataPeriodo, durataTotale);
     }
 
     private void addSpreadGesture(RegistroViewHolder holder, RegistrazioneConElementi item){
@@ -168,10 +168,22 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
                 scaleDetector.onTouchEvent(event);
                 if (event.getPointerCount()>1){
                     gestoMultitouch = true;
+
+                    v.cancelLongPress();
+                    v.setLongClickable(false);
+
+                    // per evitar il scroll verticale
+                    if (v.getParent() != null){
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                    }
                 }
 
                 if (event.getActionMasked() == MotionEvent.ACTION_UP || event.getActionMasked() == MotionEvent.ACTION_CANCEL){
                     v.animate().scaleX(1f).scaleY(1f).setDuration(120).start();
+
+                    if (v.getParent() != null){
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                    }
 
                     if (spreadDetectado && listener != null) {
                         listener.onItemClick(item);
@@ -182,6 +194,7 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
                     scale = 1f;
                     spreadDetectado = false;
                     gestoMultitouch = false;
+                    v.setLongClickable(true);
 
                     return consumirEvento;
                 }
@@ -190,14 +203,41 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.Regist
         });
     }
 
+    public void setRegistrazioni(List<RegistrazioneConElementi> newItems){
+        this.items = newItems;
+        notifyDataSetChanged();
+    }
+
+    public void setCicliPerId(Map<Integer, Ciclo> cicliPerId) {
+        this.cicliPerId = cicliPerId != null ? cicliPerId : new HashMap<>();
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public int getItemCount() {
         return items != null ? items.size() : 0;
     }
 
-    public void setRegistrazioni(List<RegistrazioneConElementi> newItems){
-        this.items = newItems;
-        notifyDataSetChanged();
+    public static class RegistroViewHolder extends RecyclerView.ViewHolder {
+        final TextView dayTitle;
+        final TextView cycleDay;
+        final TextView isCycleDay;
+        final TextView moods;
+        final TextView symptoms;
+        final TextView phase;
+        final TextView steps;
+
+        public RegistroViewHolder(@NonNull View itemView) {
+            super(itemView);
+            dayTitle = itemView.findViewById(R.id.dayTitle);
+            cycleDay = itemView.findViewById(R.id.cycleDay);
+            steps = itemView.findViewById(R.id.steps);
+            isCycleDay = itemView.findViewById(R.id.isCycleDay);
+            moods = itemView.findViewById(R.id.moods);
+            symptoms = itemView.findViewById(R.id.symptoms);
+            phase = itemView.findViewById(R.id.phase);
+        }
     }
+
 }

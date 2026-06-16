@@ -35,19 +35,12 @@ public class StatisticheFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState
-    ) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_statistiche, container, false);
     }
 
     @Override
-    public void onViewCreated(
-            @NonNull View view,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public void onViewCreated( @NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         summaryContainer = view.findViewById(R.id.summaryContainer);
@@ -57,7 +50,7 @@ public class StatisticheFragment extends Fragment {
 
         fasiRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         fasiRecycler.setAdapter(adapter);
-        fasiRecycler.setNestedScrollingEnabled(false); // Refuerzo por código
+        fasiRecycler.setNestedScrollingEnabled(false);
         fasiRecycler.setHasFixedSize(false);
 
         StatisticheViewModel viewModel = new ViewModelProvider(this).get(StatisticheViewModel.class);
@@ -73,52 +66,32 @@ public class StatisticheFragment extends Fragment {
     }
 
     private void renderSummary(StatisticheCalculator.StatisticheResult result) {
+        ///////////
         LinearLayout row1 = createHorizontalRow();
 
-        row1.addView(createSummaryCard(
-                "Cicli",
-                String.valueOf(result.getNumeroCicli())
-        ));
-
-        row1.addView(createSummaryCard(
-                "Durata media",
-                result.getDurataMediaCiclo() + " giorni"
-        ));
+        row1.addView(createSummaryCard(getString(R.string.cicli), String.valueOf(result.getNumeroCicli())));
+        row1.addView(createSummaryCard(getString(R.string.durata_media), result.getDurataMediaCiclo() + getString(R.string.giorni)));
 
         summaryContainer.addView(row1);
 
+        //////////
         LinearLayout row2 = createHorizontalRow();
 
-        row2.addView(createSummaryCard(
-                "Periodo medio",
-                result.getDurataMediaPeriodo() + " giorni"
-        ));
-
-        row2.addView(createSummaryCard(
-                "Variazione",
-                result.getVariazioneMediaCiclo() + " giorni"
-        ));
+        row2.addView(createSummaryCard(getString(R.string.periodo_medio), result.getDurataMediaPeriodo() + getString(R.string.giorni)));
+        row2.addView(createSummaryCard(getString(R.string.variazione), result.getVariazioneMediaCiclo() + getString(R.string.giorni)));
 
         summaryContainer.addView(row2);
 
+        ///////////////
         LinearLayout row3 = createHorizontalRow();
 
-        row3.addView(createSummaryCard(
-                "Ciclo più breve",
-                result.getCicloMin() + " giorni"
-        ));
-
-        row3.addView(createSummaryCard(
-                "Ciclo più lungo",
-                result.getCicloMax() + " giorni"
-        ));
+        row3.addView(createSummaryCard(getString(R.string.ciclo_pi_breve), result.getCicloMin() + getString(R.string.giorni)));
+        row3.addView(createSummaryCard(getString(R.string.ciclo_pi_lungo), result.getCicloMax() + getString(R.string.giorni)));
 
         summaryContainer.addView(row3);
     }
 
-    private List<StatisticheCalculator.StatisticheFase> getFasiOrdinate(
-            StatisticheCalculator.StatisticheResult result
-    ) {
+    private List<StatisticheCalculator.StatisticheFase> getFasiOrdinate(StatisticheCalculator.StatisticheResult result) {
         List<StatisticheCalculator.StatisticheFase> list = new ArrayList<>();
 
         list.add(result.getStatsFase(FaseCiclo.MESTRUALE));
@@ -134,9 +107,10 @@ public class StatisticheFragment extends Fragment {
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
         );
+
         rowParams.setMargins(0, 0, 0, dp(10));
         row.setLayoutParams(rowParams);
 
@@ -151,10 +125,11 @@ public class StatisticheFragment extends Fragment {
         card.setBackgroundResource(R.drawable.bg_stats_card);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                0,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                1f
+            0,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            1f
         );
+
         params.setMargins(dp(4), 0, dp(4), 0);
         card.setLayoutParams(params);
 

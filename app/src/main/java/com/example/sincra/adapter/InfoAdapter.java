@@ -26,14 +26,6 @@ public class InfoAdapter extends RecyclerView.Adapter<InfoAdapter.InfoViewHolder
         this.listener = listener;
     }
 
-    public static class InfoViewHolder extends RecyclerView.ViewHolder {
-        final TextView optionTitle;
-
-        public InfoViewHolder(@NonNull View itemView) {
-            super(itemView);
-            optionTitle = itemView.findViewById(R.id.optionTitle);
-        }
-    }
 
     @NonNull
     @Override
@@ -49,7 +41,6 @@ public class InfoAdapter extends RecyclerView.Adapter<InfoAdapter.InfoViewHolder
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                // Usamos holder.getBindingAdapterPosition() que es más seguro que 'position'
                 listener.onOptionClick(option, holder.getBindingAdapterPosition());
             }
         });
@@ -60,4 +51,12 @@ public class InfoAdapter extends RecyclerView.Adapter<InfoAdapter.InfoViewHolder
         return options.size();
     }
 
+    public static class InfoViewHolder extends RecyclerView.ViewHolder {
+        final TextView optionTitle;
+
+        public InfoViewHolder(@NonNull View itemView) {
+            super(itemView);
+            optionTitle = itemView.findViewById(R.id.optionTitle);
+        }
+    }
 }

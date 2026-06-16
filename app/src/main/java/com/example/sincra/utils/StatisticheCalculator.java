@@ -38,7 +38,7 @@ public class StatisticheCalculator {
 
         Set<Integer> processedRegIds = new HashSet<>();
 
-        // 2. Elaboriamo le registrazioni con elementi (sintomi/mood)
+        // 2. Elaboriamo le registrazioni con elementi (sintomi/umore)
         if (registrazioniConElementi != null) {
             for (RegistrazioneConElementi rce : registrazioniConElementi) {
                 Registrazione reg = rce.registrazione;

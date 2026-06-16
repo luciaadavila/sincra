@@ -58,7 +58,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Come ti senti oggi?"
+                            android:text="@string/come_ti_senti_oggi"
                             android:textColor="@color/gray"
                             android:textSize="15sp" />
 
@@ -95,7 +95,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Aggiungi i sintomi che hai notato"
+                            android:text="@string/aggiungi_sintomi_notati"
                             android:textColor="@color/gray"
                             android:textSize="15sp" />
 
@@ -124,7 +124,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="56dp"
                             android:layout_marginTop="36dp"
-                            android:text="Salvare"
+                            android:text="@string/salva"
                             android:textAllCaps="false"
                             android:textSize="16sp"
                             android:textStyle="bold"

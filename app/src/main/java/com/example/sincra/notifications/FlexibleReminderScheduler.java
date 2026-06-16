@@ -13,11 +13,11 @@ import java.util.concurrent.TimeUnit;
 public class FlexibleReminderScheduler {
     private static final String WORK_NAME = "sincra_flexible_reminder_work";
 
-    // attiva il recordatorio flessibile (chiamato da mainActivity in onCreate)
+    // attiva il promemoria flessibile (chiamato da MainActivity in onCreate)
     public static void startFlexibleReminder(Context context) {
 
         PeriodicWorkRequest richiesta = new PeriodicWorkRequest.Builder(
-                DailyReminderWorker.class, // classe che se deve eseguire (doWork())
+                DailyReminderWorker.class, // classe da eseguire (doWork())
                 1,
                 TimeUnit.DAYS
         ).build();

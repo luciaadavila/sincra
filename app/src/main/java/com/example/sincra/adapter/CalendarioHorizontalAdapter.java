@@ -21,13 +21,13 @@ import java.util.Locale;
 public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<CalendarioHorizontalAdapter.CalendarViewHolder> {
 
     private List<Date> listaFechas;
-    private int posicionSeleccionada = -1; 
+    private int posizioneSelezzionata = RecyclerView.NO_POSITION;
     private final OnDateClickListener listener;
-    private List<String> fechasConPeriodo; // Formato "dd-MM-yyyy" que traeremos de Room
-    private List<String> diasProbables; // Formato "dd-MM-yyyy" que traeremos de Room
+    private List<String> fechasConPeriodo;
+    private List<String> diasProbables;
 
     private final SimpleDateFormat numFormat = new SimpleDateFormat("dd", Locale.getDefault());
-    private final SimpleDateFormat textFormat = new SimpleDateFormat("EEE", Locale.getDefault()); // Ej: "lun", "mar"
+    private final SimpleDateFormat textFormat = new SimpleDateFormat("EEE", Locale.getDefault()); // Es: "lun", "mar"
     private final SimpleDateFormat keyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
     public interface OnDateClickListener {
@@ -45,16 +45,18 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
         notifyDataSetChanged();
     }
 
-    public void setPosicionSeleccionada(int position) {
-        int posicionAnterior = this.posicionSeleccionada;
-        this.posicionSeleccionada = position;
+    public void setPosizioneSelezionata(int nuovaPosizione) {
+        if (nuovaPosizione < 0 || nuovaPosizione >= getItemCount()) return;
+        if (nuovaPosizione == posizioneSelezzionata) return;
 
-        if (posicionAnterior != -1) {
-            notifyItemChanged(posicionAnterior);
+        int posizionePrecedente = posizioneSelezzionata;
+        posizioneSelezzionata = nuovaPosizione;
+
+        if (posizionePrecedente != RecyclerView.NO_POSITION) {
+            notifyItemChanged(posizionePrecedente);
         }
-        if (this.posicionSeleccionada != -1) {
-            notifyItemChanged(this.posicionSeleccionada);
-        }
+
+        notifyItemChanged(posizioneSelezzionata);
     }
 
     public void setFechasConPeriodo(List<String> fechasConPeriodo) {
@@ -83,12 +85,9 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
 
         String keyFecha = keyFormat.format(fecha);
 
-        int actualPosition = holder.getBindingAdapterPosition();
-
-        // Limpiamos el fondo por defecto para evitar errores al reciclar vistas
         holder.dayNum.setBackgroundResource(0);
 
-        boolean isSelected = (actualPosition == posicionSeleccionada);
+        boolean isSelected = (position == posizioneSelezzionata);
         boolean isPeriodDay = (fechasConPeriodo != null && fechasConPeriodo.contains(keyFecha));
         boolean isProbableDay = (diasProbables != null && diasProbables.contains(keyFecha));
 
@@ -104,7 +103,7 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
             holder.dayLabel.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.red));
 
         } else {
-            // Día normal
+            // giorno normale
             holder.dayNum.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.black));
             holder.dayLabel.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.gray));
         }
@@ -112,16 +111,26 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
 
     }
 
-    public void updateSelection(int newPosition){
-        int prevPos = posicionSeleccionada;
-        posicionSeleccionada = newPosition;
-        notifyItemChanged(prevPos);
-        notifyItemChanged(posicionSeleccionada);
+
+    public int trovaPosizioneData(Date data){
+        if (data == null || listaFechas == null) return RecyclerView.NO_POSITION;
+
+        String chiaveData = keyFormat.format(data);
+
+        for (int i=0; i<listaFechas.size(); i++){
+            if (keyFormat.format(listaFechas.get(i)).equals(chiaveData)){
+                return i;
+            }
+        }
+
+        return RecyclerView.NO_POSITION;
     }
+
+
 
     @Override
     public int getItemCount() {
-        return listaFechas.size();
+        return listaFechas != null ? listaFechas.size() : 0;
     }
 
     public static class CalendarViewHolder extends RecyclerView.ViewHolder {
@@ -140,8 +149,7 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
                 public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
                     int currentPos = getBindingAdapterPosition();
                     if (externalListener != null && currentPos != RecyclerView.NO_POSITION) {
-                        // CORREGIDO: Añadido "adapter." para solucionar los errores estáticos
-                        adapter.updateSelection(currentPos);
+                        adapter.setPosizioneSelezionata(currentPos);
                         externalListener.onDateClick(adapter.listaFechas.get(currentPos));
                     }
                     return true;
@@ -151,9 +159,13 @@ public class CalendarioHorizontalAdapter extends RecyclerView.Adapter<Calendario
                 public boolean onDoubleTap(@NonNull MotionEvent e) {
                     int currentPos = getBindingAdapterPosition();
                     if (externalListener != null && currentPos != RecyclerView.NO_POSITION) {
-                        // CORREGIDO: Añadido "adapter." para obtener la fecha correctamente
                         externalListener.onDateDoubleClick(adapter.listaFechas.get(currentPos));
                     }
+                    return true;
+                }
+
+                @Override
+                public boolean onDown(@NonNull MotionEvent e){
                     return true;
                 }
             });

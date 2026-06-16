@@ -36,7 +36,7 @@ public class ElementoCatalogo {
         this.userId = userId;
     }
 
-    // getters y setters
+
     public int getElementoId() {
         return elementoId;
     }

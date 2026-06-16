@@ -28,16 +28,16 @@ public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditab
 
     }
 
-    public static class CatalogoEditableViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView nameText;
-
-        public CatalogoEditableViewHolder(View itemView) {
-            super(itemView);
-
-            nameText = itemView.findViewById(R.id.nameText);
-        }
+    public void updateList(List<ElementoCatalogo> data){
+        items = data;
+        notifyDataSetChanged();
     }
+
+    public ElementoCatalogo getItem(int position) {
+        return items.get(position);
+    }
+
 
     @NonNull
     @Override
@@ -66,14 +66,13 @@ public class CatalogoEditableAdapter extends RecyclerView.Adapter<CatalogoEditab
         return items.size();
     }
 
+    public static class CatalogoEditableViewHolder extends RecyclerView.ViewHolder {
+        final TextView nameText;
 
-    public ElementoCatalogo getItem(int position) {
-        return items.get(position);
-    }
-
-    public void updateList(List<ElementoCatalogo> data){
-        items = data;
-        notifyDataSetChanged();
+        public CatalogoEditableViewHolder(View itemView) {
+            super(itemView);
+            nameText = itemView.findViewById(R.id.nameText);
+        }
     }
 }
 

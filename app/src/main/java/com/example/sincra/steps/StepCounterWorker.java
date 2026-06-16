@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-// sottoclasse de worker
 public class StepCounterWorker extends Worker implements SensorEventListener {
     private CountDownLatch latch;
     private Integer passiSensoreAttuali = null;
@@ -88,20 +87,20 @@ public class StepCounterWorker extends Worker implements SensorEventListener {
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        String hoy = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String oggi = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
-        String diaGuardado = prefs.getString(KEY_DIA, null);
+        String giornoSalvato = prefs.getString(KEY_DIA, null);
         int passiBase = prefs.getInt(KEY_PASSI_BASE, -1);
 
-        if (!hoy.equals(diaGuardado) || passiBase < 0 || passiSensore < passiBase) {
+        if (!oggi.equals(giornoSalvato) || passiBase < 0 || passiSensore < passiBase) {
             passiBase = passiSensore;
-            prefs.edit().putString(KEY_DIA, hoy).putInt(KEY_PASSI_BASE, passiBase).putInt(KEY_PASSI_HOY, 0).apply();
+            prefs.edit().putString(KEY_DIA, oggi).putInt(KEY_PASSI_BASE, passiBase).putInt(KEY_PASSI_HOY, 0).apply();
             return;
         }
 
         int passiOggi = passiSensore - passiBase;
 
-        prefs.edit().putString(KEY_DIA, hoy).putInt(KEY_PASSI_HOY, passiOggi).apply();
+        prefs.edit().putString(KEY_DIA, oggi).putInt(KEY_PASSI_HOY, passiOggi).apply();
     }
 
     @Override

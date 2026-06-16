@@ -33,8 +33,6 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etRegisterPassword);
         etConfirmPassword = findViewById(R.id.etRegisterConfirmPassword);
         Button btnRegister = findViewById(R.id.btnRegister);
-        ProgressBar progressRegister = findViewById(R.id.progressRegister);
-
 
         btnRegister.setOnClickListener(v -> validateAndRegister());
 
@@ -78,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Registro exitoso, pasamos al flujo principal
+                        // Registrazione riuscita, passiamo al flusso principale
                         updateUI(mAuth.getCurrentUser());
                     } else {
                         Toast.makeText(this, getString(R.string.registrazione_fallita, Objects.requireNonNull(task.getException()).getMessage()), Toast.LENGTH_SHORT).show();
@@ -88,22 +86,22 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser firebaseUser) {
         if (firebaseUser != null) {
-            // Sincronizar con base de datos local
+            // sincronizza con il database locale
             databaseExecutor.execute(() -> {
                 com.example.sincra.database.AppDatabase db = com.example.sincra.database.AppDatabase.getDatabase(this);
-                com.example.sincra.model.User user = db.userDAO().getByFirebaseUid(firebaseUser.getUid());
+                com.example.sincra.model.User user = db.userDAO().getByFirebaseUidSync(firebaseUser.getUid());
                 long localId;
                 if (user == null) {
                     user = new com.example.sincra.model.User(firebaseUser.getUid(),
-                            firebaseUser.getDisplayName() != null ? firebaseUser.getDisplayName() : "Utente",
+                            firebaseUser.getDisplayName() != null ? firebaseUser.getDisplayName() : getString(R.string.utente),
                             new java.util.Date(), 28, 5);
                     db.userDAO().insert(user);
-                    localId = db.userDAO().getLocalIdByFirebaseUid(firebaseUser.getUid());
+                    localId = db.userDAO().getLocalIdByFirebaseUidSync(firebaseUser.getUid());
                 } else {
                     localId = user.getUserId();
                 }
 
-                // Guardar localId en SharedPreferences para acceso rápido
+                // salva localId in SharedPreferences per un accesso rapido
                 getSharedPreferences("user_prefs", MODE_PRIVATE).edit()
                         .putLong("local_user_id", localId).apply();
 

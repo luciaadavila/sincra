@@ -15,9 +15,6 @@ import java.util.List;
 public class PredictViewModel extends AndroidViewModel {
 
     private final CicloRepository repo;
-    private final MutableLiveData<List<String>> diasProbables = new MutableLiveData<>();
-
-    // en este caso si que es necesario mutable porque no consultamos una tabla
     private final MutableLiveData<List<PredictSettimana>> proxCicli = new MutableLiveData<>();
 
 
@@ -31,6 +28,9 @@ public class PredictViewModel extends AndroidViewModel {
     }
 
     public void loadPredictions() {
+        if (proxCicli.getValue() != null){
+            return;
+        }
         repo.generatePredictions(proxCicli::postValue);
     }
 }

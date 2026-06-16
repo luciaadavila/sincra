@@ -46,16 +46,6 @@ public class StatisticheCicloFragment extends Fragment {
     }
 
 
-    @NonNull
-    public static StatisticheCicloFragment newInstance(int cicloId) {
-        StatisticheCicloFragment fragment = new StatisticheCicloFragment();
-        Bundle args = new Bundle();
-        args.putInt("cicloId", cicloId);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -111,9 +101,9 @@ public class StatisticheCicloFragment extends Fragment {
 
         Map<String, Registrazione> registriPerData = creaMappaRegistriPerData(registrazioni);
 
-        addRow("Giorno", totalDays, i -> String.valueOf(i + 1), true);
+        addRow(getString(R.string.giorno), totalDays, i -> String.valueOf(i + 1), true);
 
-        addRow("Fase", totalDays, i -> {
+        addRow(getString(R.string.fase), totalDays, i -> {
             int giornoCiclo = i + 1;
 
             FaseCiclo fase = FaseCicloUtils.calcoloFase(
@@ -125,14 +115,14 @@ public class StatisticheCicloFragment extends Fragment {
             return getSiglaFase(fase);
         }, false);
 
-        addRow("Periodo", totalDays, i -> {
+        addRow(getString(R.string.periodo), totalDays, i -> {
             java.util.Date dataColonna = CicloRepository.xDay(ciclo.getDataInizio(), i);
             String key = formattaChiaveData(dataColonna);
             Registrazione reg = registriPerData.get(key);
             return (reg != null && reg.isPeriodo()) ? "🔴" : "";
         }, false);
 
-        addRow("Passi", totalDays, i -> {
+        addRow(getString(R.string.passi) , totalDays, i -> {
             java.util.Date dataColonna = CicloRepository.xDay(ciclo.getDataInizio(), i);
             String key = formattaChiaveData(dataColonna);
             Registrazione reg = registriPerData.get(key);
@@ -211,7 +201,6 @@ public class StatisticheCicloFragment extends Fragment {
             case FOLLICOLARE -> "F";
             case OVULATORIA -> "O";
             case LUTEALE -> "L";
-            default -> "";
         };
     }
 
@@ -238,13 +227,13 @@ public class StatisticheCicloFragment extends Fragment {
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.HORIZONTAL);
 
-        // Nome della riga
+        // nome della riga
         TextView labelView = new TextView(getContext());
         labelView.setText(label);
         labelView.setGravity(Gravity.CENTER_VERTICAL);
         labelView.setTextSize(13);
         labelView.setSingleLine(true);
-        labelView.setTypeface(null, Typeface.BOLD); // Etichette di riga sempre in grassetto
+        labelView.setTypeface(null, Typeface.BOLD);
         LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
                 dp(LABEL_WIDTH_DP),
                 dp(CELL_HEIGHT_DP)
@@ -252,7 +241,7 @@ public class StatisticheCicloFragment extends Fragment {
         labelView.setLayoutParams(labelParams);
         row.addView(labelView);
 
-        // Celle dinamiche
+        // celle dinamiche
         for (int i = 0; i < totalDays; i++) {
             TextView cell = new TextView(getContext());
             cell.setText(cellProvider.apply(i));
@@ -261,7 +250,7 @@ public class StatisticheCicloFragment extends Fragment {
             cell.setSingleLine(true);
 
             if (isBoldRow) {
-                cell.setTypeface(null, Typeface.BOLD); // Etichette di colonna (giorni) in grassetto
+                cell.setTypeface(null, Typeface.BOLD);
             }
 
             LinearLayout.LayoutParams cellParams = new LinearLayout.LayoutParams(

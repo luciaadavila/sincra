@@ -36,7 +36,7 @@ public class StatisticheCicloViewModel extends AndroidViewModel {
     }
 
     public void setCicloId(int cicloId) {
-        // Evitamos recargar la base de datos si es el mismo ID que ya está cargado
+        // evitiamo di ricaricare il database se è lo stesso ID già caricato
         if (cicloIdInput.getValue() != null && cicloIdInput.getValue() == cicloId) {
             return;
         }

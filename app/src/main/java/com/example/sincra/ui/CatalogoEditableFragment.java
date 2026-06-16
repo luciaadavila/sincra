@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -41,10 +42,15 @@ public class CatalogoEditableFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_catalogo_editable, container, false);
+        return inflater.inflate(R.layout.fragment_catalogo_editable, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
 
         TextView title = view.findViewById(R.id.titleText);
         EditText input = view.findViewById(R.id.inputNew);
@@ -61,7 +67,7 @@ public class CatalogoEditableFragment extends Fragment {
             }
 
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
 
                 if (position != RecyclerView.NO_POSITION) {
@@ -71,15 +77,13 @@ public class CatalogoEditableFragment extends Fragment {
             }
 
             @Override
-            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 View itemView = viewHolder.itemView;
 
                 if (dX < 0) {
-                    // Fondo rojo al deslizar hacia la izquierda
                     background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
                     background.draw(c);
 
-                    // Icono de papelera
                     if (deleteIcon != null) {
                         int iconMargin = 32;
                         int iconSize = deleteIcon.getIntrinsicWidth();
@@ -98,8 +102,8 @@ public class CatalogoEditableFragment extends Fragment {
         };
 
         new ItemTouchHelper(swipeCallback).attachToRecyclerView(recycler);
-        tipo = getArguments() != null ? getArguments().getString("tipo") : "mood";
-        title.setText(Objects.requireNonNull(tipo).equals("mood") ? "Stati d'animo" : "Sintomi");
+        tipo = getArguments() != null ? getArguments().getString(getString(R.string.tipo)) : "mood";
+        title.setText(Objects.requireNonNull(tipo).equals("mood") ? getString(R.string.stati_d_animo) : getString(R.string.sintomi));
 
         viewModel = new ViewModelProvider(this).get(CatalogoViewModel.class);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -121,12 +125,9 @@ public class CatalogoEditableFragment extends Fragment {
             }
             return false;
         });
-
-
-        return view;
     }
 
-    private void addElemento(EditText input) {
+    private void addElemento(@NonNull EditText input) {
         String inputText = input.getText().toString().trim();
 
         if (!inputText.isEmpty()) {
@@ -135,22 +136,22 @@ public class CatalogoEditableFragment extends Fragment {
         }
     }
 
-    private void mostraDialogModifica(ElementoCatalogo item) {
+    private void mostraDialogModifica(@NonNull ElementoCatalogo item) {
         EditText editText = new EditText(requireContext());
         editText.setText(item.getNome());
         editText.setSelection(editText.getText().length());
 
         new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Modifica")
+                .setTitle(R.string.modifica)
                 .setView(editText)
-                .setPositiveButton("Salva", (dialog, which) -> {
+                .setPositiveButton(R.string.salva, (dialog, which) -> {
                     String nuovoNome = editText.getText().toString().trim();
 
                     if (!nuovoNome.isEmpty()) {
                         viewModel.updateItem(item, nuovoNome);
                     }
                 })
-                .setNegativeButton("Annulla", null)
+                .setNegativeButton(R.string.annulla, null)
                 .show();
     }
 }

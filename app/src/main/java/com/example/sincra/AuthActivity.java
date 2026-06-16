@@ -1,5 +1,5 @@
 package com.example.sincra;
-// codice di autenticazione con Google di https://firebase.google.com/docs/auth/android/google-signin?hl=es-419#java
+// codice di autenticazione con Google da https://firebase.google.com/docs/auth/android/google-signin?hl=es-419#java
 // https://github.com/firebase/snippets-android/blob/a413b0658ff2fc7a72c4b0c59e84a889ff7fac45/auth/app/src/main/java/com/google/firebase/quickstart/auth/GoogleSignInActivity.java
 // https://github.com/firebase/snippets-android/blob/a413b0658ff2fc7a72c4b0c59e84a889ff7fac45/auth/app/src/main/java/com/google/firebase/quickstart/auth/EmailPasswordActivity.java#L60
 
@@ -52,7 +52,7 @@ public class AuthActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
 
-        // Lógica Login Email
+        // Logica Login Email
         findViewById(R.id.btnLoginEmail).setOnClickListener(v -> {
             String email = etEmail.getText().toString();
             String password = etPassword.getText().toString();
@@ -61,12 +61,12 @@ public class AuthActivity extends AppCompatActivity {
             }
         });
 
-        // Declaramos el botón
+        // Dichiariamo il pulsante
         SignInButton btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
         btnGoogleLogin.setOnClickListener(v -> launchCredentialManager());
 
         findViewById(R.id.tvRegisterLink).setOnClickListener(v -> {
-            // Lanza tu nueva pantalla de Registro
+            // Lancia la nuova schermata di Registrazione
             startActivity(new Intent(this, RegisterActivity.class));
         });
     }
@@ -74,7 +74,7 @@ public class AuthActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
+        // Controlla se l'utente ha effettuato l'accesso (non nullo) e aggiorna l'interfaccia utente di conseguenza.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null){
             updateUI(currentUser);
@@ -93,18 +93,18 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void launchCredentialManager() {
-        // configurar la solicitud de google
+        // configura la richiesta di google
         GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false) // Cambiado a false para mostrar todas las cuentas
+                .setFilterByAuthorizedAccounts(false) // Impostato su false per mostrare tutti gli account
                 .setServerClientId(getString(R.string.default_web_client_id))
                 .build();
 
-        // Create the Credential Manager request
+        // Crea la richiesta di Credential Manager
         GetCredentialRequest request = new GetCredentialRequest.Builder()
                 .addCredentialOption(googleIdOption)
                 .build();
 
-        // Launch Credential Manager UI
+        // Avvia l'interfaccia utente di Credential Manager
         credentialManager.getCredentialAsync(
                 AuthActivity.this,
                 request,
@@ -113,14 +113,14 @@ public class AuthActivity extends AppCompatActivity {
                 new CredentialManagerCallback<>() {
                     @Override
                     public void onResult(GetCredentialResponse result) {
-                        // Extract credential from the result returned by Credential Manager
+                        // Estrae le credenziali dal risultato restituito da Credential Manager
                         handleSignIn(result.getCredential());
                     }
 
                     @Override
                     public void onError(@NonNull GetCredentialException e) {
                         String errorMsg = getString(R.string.errore_generico, e.getMessage());
-                        if (e.getMessage() != null && e.getMessage().contains("No credentials available")) {
+                        if (e.getMessage() != null && e.getMessage().contains(getString(R.string.non_si_sono_credenziali_disponibili))) {
                             errorMsg = getString(R.string.errore_google_auth);
                         }
                         final String finalErrorMsg = errorMsg;
@@ -130,60 +130,58 @@ public class AuthActivity extends AppCompatActivity {
         );
     }
 
-    // [START handle_sign_in]
     private void handleSignIn(Credential credential) {
-        // Check if credential is of type Google ID
+        // Controlla se le credenziali sono di tipo Google ID
         if (credential instanceof CustomCredential customCredential
                 && credential.getType().equals(TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)) {
-            // Create Google ID Token
+            // Crea il Token ID Google
             Bundle credentialData = customCredential.getData();
             GoogleIdTokenCredential googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credentialData);
 
-            // Sign in to Firebase with using the token
+            // Accedi a Firebase usando il token
             firebaseAuthWithGoogle(googleIdTokenCredential.getIdToken());
         } else {
-            Log.w(TAG, "Credential is not of type Google ID!");
+            Log.w(TAG, getString(R.string.le_credenziali_non_sono_di_tipo_google_id));
         }
     }
-    // [END handle_sign_in]
 
-    // [START auth_with_google]
+
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithCredential:success");
+                        // Accesso riuscito, aggiorna l'interfaccia utente con le informazioni dell'utente che ha effettuato l'accesso
+                        Log.d(TAG, "signInWithCredential: success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         updateUI(user);
                     } else {
-                        // If sign in fails, display a message to the user
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        // Se l'accesso fallisce, visualizza un messaggio all'utente
+                        Log.w(TAG, "signInWithCredential: failure", task.getException());
                         updateUI(null);
                     }
                 });
     }
-    // [END auth_with_google]
+
 
     private void updateUI(FirebaseUser firebaseUser) {
         if (firebaseUser != null){
-            // Sincronizar con base de datos local
+            // sincronizza con il database locale
             databaseExecutor.execute(() -> {
                 com.example.sincra.database.AppDatabase db = com.example.sincra.database.AppDatabase.getDatabase(this);
-                com.example.sincra.model.User user = db.userDAO().getByFirebaseUid(firebaseUser.getUid());
+                com.example.sincra.model.User user = db.userDAO().getByFirebaseUidSync(firebaseUser.getUid());
                 long localId;
                 if (user == null) {
                     user = new com.example.sincra.model.User(firebaseUser.getUid(), 
-                            firebaseUser.getDisplayName() != null ? firebaseUser.getDisplayName() : "Utente",
+                            firebaseUser.getDisplayName() != null ? firebaseUser.getDisplayName() : getString(R.string.utente),
                             new java.util.Date(), 28, 5);
                     db.userDAO().insert(user);
-                    localId = db.userDAO().getLocalIdByFirebaseUid(firebaseUser.getUid());
+                    localId = db.userDAO().getLocalIdByFirebaseUidSync(firebaseUser.getUid());
                 } else {
                     localId = user.getUserId();
                 }
                 
-                // Guardar localId en SharedPreferences para acceso rápido
+                // salva localId in SharedPreferences per un accesso rapido
                 getSharedPreferences("user_prefs", MODE_PRIVATE).edit()
                         .putLong("local_user_id", localId).apply();
 

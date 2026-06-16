@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sincra.R;
 import com.example.sincra.adapter.CatalogoAdapter;
-import com.example.sincra.database.repositorio.CicloRepository; // IMPORTANTE: Añadido para truncar
+import com.example.sincra.database.repositorio.CicloRepository;
 import com.example.sincra.model.ElementoCatalogo;
 import com.example.sincra.model.Registrazione;
 import com.example.sincra.utils.SwipeDueDitaHelper;
@@ -75,7 +75,7 @@ public class DetailDayFragment extends Fragment {
 
         textDate.setText(currentDate);
 
-        // 2. Configurare la disposizione visuale in griglie (3 colonne)
+        // configura la disposizione visuale in griglie (3 colonne)
         moodRecycler.setLayoutManager(new GridLayoutManager(getContext(), 3));
         symptomRecycler.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
@@ -108,7 +108,7 @@ public class DetailDayFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(DetailDayViewModel.class);
 
-        // 5. Osservare tutti gli stati d'animo disponibili per l'utente
+        // osservare tutti gli stati d'animo disponibili per l'utente
         viewModel.getAllMoods().observe(getViewLifecycleOwner(), moods -> {
             if (moods != null) {
                 currentMoodsFromDb = moods;
@@ -116,7 +116,7 @@ public class DetailDayFragment extends Fragment {
             }
         });
 
-        // 6. Osservare tutti i sintomi disponibili per l'utente
+        // osservare tutti i sintomi disponibili per l'utente
         viewModel.getAllSymptoms().observe(getViewLifecycleOwner(), symptoms -> {
             if (symptoms != null) {
                 currentSymptomsFromDb = symptoms;
@@ -194,33 +194,25 @@ public class DetailDayFragment extends Fragment {
     private void salvaRegistroDelGiorno() {
         List<ElementoCatalogo> selezionati = new ArrayList<>();
 
-        // Estraiamo in modo pulito ciò che è selezionato nella UI
         selezionati.addAll(moodAdapter.getSelezionati());
         selezionati.addAll(symptomAdapter.getSelezionati());
 
-        // Invio asincrono al repository.
-        // Se registrazione è stata creata nuova sopra, il suo cicloId sarà 0 (orfano).
         viewModel.save(registrazione, selezionati);
 
-        // Finire e rimuovere il fragment dalla pila di navigazione
         if (getActivity() != null) {
             getActivity().getSupportFragmentManager().popBackStack();
         }
     }
 
-    // APPLICHIAMO IL TRONCAMENTO RIGOROSO QUI
     public Date stringToDate(String dateString){
         Date dateToSave;
         if (dateString != null) {
             try {
-                // parse() tronca già le ore perché il formato ha solo giorno-mese-anno
                 dateToSave = dateFormat.parse(dateString);
             } catch (ParseException e) {
-                // Se fallisce, tronchiamo il Date attuale
                 dateToSave = CicloRepository.truncarFecha(new Date());
             }
         } else {
-            // Se arriva nullo, tronchiamo il Date attuale
             dateToSave = CicloRepository.truncarFecha(new Date());
         }
 

@@ -17,21 +17,21 @@ import java.util.List;
 import java.util.Locale;
 
 public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHolder>{
-    private List<Object> items;
+    private List<Ciclo> cicli;
     private final OnCicloClickListener clickListener;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
     public interface OnCicloClickListener {
-        void onCicloClick(Object item);
+        void onCicloClick(Ciclo item);
     }
 
-    public CicloAdapter(List<?> items, OnCicloClickListener clickListener) {
-        this.items = (List<Object>) items;
+    public CicloAdapter(List<Ciclo> cicli, OnCicloClickListener clickListener) {
+        this.cicli = cicli;
         this.clickListener = clickListener;
     }
 
-    public void setList(List<?> nuevosItems) {
-        this.items = (List<Object>) nuevosItems;
+    public void setList(List<Ciclo> nuoviCicli ) {
+        this.cicli = nuoviCicli;
         notifyDataSetChanged();
     }
 
@@ -44,7 +44,7 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
 
     @Override
     public void onBindViewHolder(@NonNull CicloViewHolder holder, int position) {
-        Ciclo ciclo = (Ciclo) items.get(position);
+        Ciclo ciclo = (Ciclo) cicli.get(position);
 
         if (ciclo != null){
             String start = dateFormat.format(ciclo.getDataInizio());
@@ -75,7 +75,7 @@ public class CicloAdapter extends RecyclerView.Adapter<CicloAdapter.CicloViewHol
 
     @Override
     public int getItemCount() {
-        return items != null ? items.size() : 0;
+        return cicli != null ? cicli.size() : 0;
     }
 
     public static class CicloViewHolder extends RecyclerView.ViewHolder {

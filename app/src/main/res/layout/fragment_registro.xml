@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="I tuoi registri"
+            android:text="@string/i_tuoi_registri"
             android:textSize="24sp"
             android:textStyle="bold"
             android:shadowColor="@color/white"
@@ -26,11 +26,18 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Espandi un registro per vedere i dettagli"
+            android:text="@string/espandi_un_registro_per_vedere_i_dettagli"
             android:textSize="14sp"
             android:textColor="@color/gray"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/emptyRegistroText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nessun_registro"
+            android:visibility="gone" />
     
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/registroRecycler"
@@ -60,7 +67,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Trascina qui per eliminare"
+            android:text="@string/trascina_per_eliminare"
             android:textSize="14sp" />
     </LinearLayout>
 </FrameLayout>

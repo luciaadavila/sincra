@@ -75,20 +75,20 @@ public class RegistrazioneRepository {
             long userId = getLocalId();
             Date dataReg = CicloRepository.truncarFecha(registro.getData());
 
-            // 1. Buscamos el ciclo al que pertenece esta fecha (el que empezó en o antes de dataReg)
+            // 1. Cerchiamo il ciclo a cui appartiene questa data (quello che è iniziato il o prima di dataReg)
             Ciclo c = cicloDao.getCicloPerDataSync(dataReg, userId);
 
             if (c == null) {
-                // Si no hay ningún ciclo previo, creamos uno inicial para esta fecha
+                // Se non c'è alcun ciclo precedente, ne creiamo uno iniziale per questa data
                 c = new Ciclo(dataReg, null, 28, 5, userId);
                 long id = cicloDao.insert(c);
                 c.setCicloId((int) id);
             }
 
-            // Vinculamos la registración con su ciclo e ID de usuario (si fuera necesario)
+            // Colleghiamo la registrazione con il suo ciclo e ID utente (se necessario)
             registro.setCicloId(c.getCicloId());
             
-            // 2. Calculamos SIEMPRE el día del ciclo (1-based)
+            // 2. Calcoliamo SEMPRE il giorno del ciclo (1-based)
             int giornoCalcolato = CicloRepository.difDays(c.getDataInizio(), dataReg);
             registro.setGiornoCiclo(giornoCalcolato);
 
@@ -110,10 +110,10 @@ public class RegistrazioneRepository {
         executor.execute(() -> {
             Date dataTrunc = CicloRepository.truncarFecha(date);
             long userId = getLocalId();
-            Registrazione registrazione = dao.getRegistroByDate(dataTrunc, userId);
+            Registrazione registrazione = dao.getRegistroByDateSync(dataTrunc, userId);
 
             if (registrazione == null) {
-                // Si no existe el registro, buscamos o creamos el ciclo correspondiente
+                // Se la registrazione non esiste, cerchiamo o creiamo il ciclo corrispondente
                 Ciclo c = cicloDao.getCicloPerDataSync(dataTrunc, userId);
 
                 if (c == null) {
@@ -126,11 +126,10 @@ public class RegistrazioneRepository {
                 registrazione = new Registrazione(dataTrunc, false, giornoCiclo, c.getCicloId(), passi);
                 dao.insert(registrazione);
             } else {
-                // Si ya existe, actualizamos los passi
+                // Se esiste già, aggiorniamo i passi
                 int passiAttuali = registrazione.getPassi();
                 registrazione.setPassi(Math.max(passiAttuali, passi));
 
-                // Por seguridad, si los datos del ciclo son inválidos, los recalculamos
                 if (registrazione.getGiornoCiclo() <= 0 || registrazione.getCicloId() == null) {
                     Ciclo c = cicloDao.getCicloPerDataSync(dataTrunc, userId);
                     if (c != null) {

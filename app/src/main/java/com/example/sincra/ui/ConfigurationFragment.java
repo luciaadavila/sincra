@@ -51,6 +51,8 @@ public class ConfigurationFragment extends Fragment {
     public ConfigurationFragment() {
     }
 
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,21 +69,14 @@ public class ConfigurationFragment extends Fragment {
                     } else {
                         if (richiestaNotificaInAttesa == NOTIFICA_GIORNALIERA) {
                             dailyNotificationSwitch.setChecked(false);
-                            prefs.edit()
-                                    .putBoolean(KEY_DAILY_NOTIFICATIONS_ENABLED, false)
-                                    .apply();
+                            prefs.edit().putBoolean(KEY_DAILY_NOTIFICATIONS_ENABLED, false).apply();
+
                         } else if (richiestaNotificaInAttesa == NOTIFICA_FLESSIBILE) {
                             flexibleNotificationSwitch.setChecked(false);
-                            prefs.edit()
-                                    .putBoolean(KEY_FLEXIBLE_NOTIFICATIONS_ENABLED, false)
-                                    .apply();
+                            prefs.edit().putBoolean(KEY_FLEXIBLE_NOTIFICATIONS_ENABLED, false).apply();
                         }
 
-                        Toast.makeText(
-                                requireContext(),
-                                "Permesso notifiche non concesso",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                        Toast.makeText(requireContext(), R.string.permesso_notifiche_negato, Toast.LENGTH_SHORT).show();
                     }
 
                     richiestaNotificaInAttesa = NESSUNA_NOTIFICA;
@@ -95,35 +90,21 @@ public class ConfigurationFragment extends Fragment {
                         enableSteps();
                     } else {
                         stepsSwitch.setChecked(false);
-
-                        prefs.edit()
-                                .putBoolean(KEY_STEPS_ENABLED, false)
-                                .apply();
-
-                        Toast.makeText(
-                                requireContext(),
-                                "Permesso attività fisica non concesso",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                        prefs.edit().putBoolean(KEY_STEPS_ENABLED, false).apply();
+                        Toast.makeText(requireContext(), R.string.permesso_attivita_fisica_negato, Toast.LENGTH_SHORT).show();
                     }
                 }
         );
     }
 
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState
-    ) {
+    public View onCreateView( @NonNull LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_configuration, container, false);
     }
 
     @Override
-    public void onViewCreated(
-            @NonNull View view,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public void onViewCreated( @NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -132,14 +113,10 @@ public class ConfigurationFragment extends Fragment {
         flexibleNotificationSwitch = view.findViewById(R.id.flexibleNotificationSwitch);
         stepsSwitch = view.findViewById(R.id.stepsSwitch);
 
-        boolean notificheGiornaliereAttive =
-                prefs.getBoolean(KEY_DAILY_NOTIFICATIONS_ENABLED, false);
+        boolean notificheGiornaliereAttive = prefs.getBoolean(KEY_DAILY_NOTIFICATIONS_ENABLED, false);
+        boolean notificheFlessibiliAttive = prefs.getBoolean(KEY_FLEXIBLE_NOTIFICATIONS_ENABLED, false);
 
-        boolean notificheFlessibiliAttive =
-                prefs.getBoolean(KEY_FLEXIBLE_NOTIFICATIONS_ENABLED, false);
-
-        boolean passiAttivi =
-                prefs.getBoolean(KEY_STEPS_ENABLED, true);
+        boolean passiAttivi = prefs.getBoolean(KEY_STEPS_ENABLED, true);
 
         dailyNotificationSwitch.setChecked(notificheGiornaliereAttive);
         flexibleNotificationSwitch.setChecked(notificheFlessibiliAttive);
@@ -192,11 +169,10 @@ public class ConfigurationFragment extends Fragment {
             return;
         }
 
-        boolean permessoConcesso =
-                ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED;
+        boolean permessoConcesso = ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED;
 
         if (permessoConcesso) {
             if (richiestaNotificaInAttesa == NOTIFICA_GIORNALIERA) {
@@ -217,102 +193,52 @@ public class ConfigurationFragment extends Fragment {
             return;
         }
 
-        boolean permessoConcesso =
-                ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACTIVITY_RECOGNITION
-                ) == PackageManager.PERMISSION_GRANTED;
+        boolean permessoConcesso = ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PackageManager.PERMISSION_GRANTED;
 
         if (permessoConcesso) {
             enableSteps();
+
         } else {
-            activityRecognitionPermissionLauncher.launch(
-                    Manifest.permission.ACTIVITY_RECOGNITION
-            );
+            activityRecognitionPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION);
         }
     }
 
     private void enableDailyNotifications() {
-        prefs.edit()
-                .putBoolean(KEY_DAILY_NOTIFICATIONS_ENABLED, true)
-                .apply();
-
+        prefs.edit().putBoolean(KEY_DAILY_NOTIFICATIONS_ENABLED, true).apply();
         DailyReminderScheduler.startDailyReminder(requireContext());
-
-        Toast.makeText(
-                requireContext(),
-                "Notifiche giornaliere attivate",
-                Toast.LENGTH_SHORT
-        ).show();
+        Toast.makeText( requireContext(), R.string.notifiche_giornaliere_attivate, Toast.LENGTH_SHORT).show();
     }
 
     private void disableDailyNotifications() {
-        prefs.edit()
-                .putBoolean(KEY_DAILY_NOTIFICATIONS_ENABLED, false)
-                .apply();
-
+        prefs.edit().putBoolean(KEY_DAILY_NOTIFICATIONS_ENABLED, false).apply();
         DailyReminderScheduler.cancelDailyReminder(requireContext());
-
-        Toast.makeText(
-                requireContext(),
-                "Notifiche giornaliere disattivate",
-                Toast.LENGTH_SHORT
-        ).show();
+        Toast.makeText(requireContext(), R.string.notifiche_giornaliere_disattivate, Toast.LENGTH_SHORT).show();
     }
 
     private void enableFlexibleNotifications() {
-        prefs.edit()
-                .putBoolean(KEY_FLEXIBLE_NOTIFICATIONS_ENABLED, true)
-                .apply();
-
+        prefs.edit().putBoolean(KEY_FLEXIBLE_NOTIFICATIONS_ENABLED, true).apply();
         FlexibleReminderScheduler.startFlexibleReminder(requireContext());
-
-        Toast.makeText(
-                requireContext(),
-                "Notifiche flessibili attivate",
-                Toast.LENGTH_SHORT
-        ).show();
+        Toast.makeText(requireContext(), R.string.notifiche_flessibili_attivate, Toast.LENGTH_SHORT).show();
     }
 
     private void disableFlexibleNotifications() {
-        prefs.edit()
-                .putBoolean(KEY_FLEXIBLE_NOTIFICATIONS_ENABLED, false)
-                .apply();
-
+        prefs.edit().putBoolean(KEY_FLEXIBLE_NOTIFICATIONS_ENABLED, false).apply();
         FlexibleReminderScheduler.cancelFlexibleReminder(requireContext());
-
-        Toast.makeText(
-                requireContext(),
-                "Notifiche flessibili disattivate",
-                Toast.LENGTH_SHORT
-        ).show();
+        Toast.makeText(requireContext(), R.string.notifiche_flessibili_disattivate, Toast.LENGTH_SHORT).show();
     }
 
     private void enableSteps() {
-        prefs.edit()
-                .putBoolean(KEY_STEPS_ENABLED, true)
-                .apply();
-
+        prefs.edit().putBoolean(KEY_STEPS_ENABLED, true).apply();
         StepCounterScheduler.startStepCounter(requireContext());
-
-        Toast.makeText(
-                requireContext(),
-                "Contatore passi attivato",
-                Toast.LENGTH_SHORT
-        ).show();
+        Toast.makeText(requireContext(), R.string.contatore_passi_attivato, Toast.LENGTH_SHORT).show();
     }
 
     private void disableSteps() {
-        prefs.edit()
-                .putBoolean(KEY_STEPS_ENABLED, false)
-                .apply();
-
+        prefs.edit().putBoolean(KEY_STEPS_ENABLED, false).apply();
         StepCounterScheduler.cancelStepCounter(requireContext());
-
-        Toast.makeText(
-                requireContext(),
-                "Contatore passi disattivato",
-                Toast.LENGTH_SHORT
-        ).show();
+        Toast.makeText(requireContext(), R.string.contatore_passi_disattivato, Toast.LENGTH_SHORT).show();
     }
 }

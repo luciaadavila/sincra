@@ -24,6 +24,7 @@ import com.example.sincra.model.User;
             User.class,
             RegistroCatalogoRel.class},
         version = 10)
+
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract ElementoCatalogoDAO elementoCatalogoDAO();
